@@ -1,4 +1,1 @@
-GP2CourseWorkProject
-====================
-
-Games Programming 2 Coursework Project
+GP2 Course Work Project
