@@ -1,11 +1,9 @@
+#include <iostream>
+
 #include "FBXLoader.h"
-
 #include "GameObject.h"
-
 #include "Mesh.h"
 #include "Transform.h"
-
-#include <iostream>
 
 int level = 0; 
 
