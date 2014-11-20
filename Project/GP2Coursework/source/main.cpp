@@ -1,14 +1,15 @@
+//Headers
 #include <iostream>
+#include <vector>
 #include <GL/glew.h>
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/glm.hpp>
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <gl/GLU.h>
-#include <vector>
 
 //Our headers
 #include "Vertex.h"
@@ -21,83 +22,50 @@
 #include "Camera.h"
 #include "Light.h"
 #include "FBXLoader.h"
+#include "PostProcessing.h"
 
+//Using statements
+using glm::mat4;
+using glm::vec4;
+using glm::vec3;
+
+//Paths
 const std::string ASSET_PATH = "assets/";
 const std::string SHADER_PATH = "shaders/";
 const std::string TEXTURE_PATH = "textures/";
 const std::string FONT_PATH = "fonts/";
 const std::string MODEL_PATH = "models/";
 
-using glm::mat4;
-using glm::vec4;
-using glm::vec3;
-
 //SDL Window
 SDL_Window * window = NULL;
+
 //SDL GL Context
 SDL_GLContext glcontext = NULL;
 
 //Window Width
 const int WINDOW_WIDTH = 640;
+
 //Window Height
 const int WINDOW_HEIGHT = 480;
 
+//Flag for game's running state. 
 bool running = true;
 
+//Scene bare light colour
 vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
+//Main scene game objects
 std::vector<GameObject*> displayList;
 GameObject * mainCamera;
 GameObject * mainLight;
-
-
-Vertex triangleData[] = {
-		{ vec3(-0.5f, 0.5f, 0.5f), vec3(0.25f,0.25f,0.5f),vec2(0.0f, 0.0f), vec4(1.0f, 0.0f, 0.0f, 1.0f) },// Top Left
-		{ vec3(-0.5f, -0.5f, 0.5f), vec3(0.25f, 0.25f, 0.5f), vec2(0.0f, 1.0f), vec4(0.0f, 1.0f, 0.0f, 1.0f) },// Bottom Left
-		{ vec3(0.5f, -0.5f, 0.5f), vec3(0.25f, -0.25f, 0.5f), vec2(1.0f, 1.0f), vec4(0.0f, 0.0f, 1.0f, 1.0f) }, //Bottom Right
-		{ vec3(0.5f, 0.5f, 0.5f), vec3(0.25f, -0.25f, 0.5f), vec2(1.0f, 0.0f), vec4(1.0f, 0.0f, 0.0f, 1.0f) },// Top Right
-		
-		
-		//back
-		{ vec3(-0.5f, 0.5f, -0.5f), vec3(0.25f, 0.25f, -0.5f), vec2(0.0f, 0.0f), vec4(0.0f, 0.0f, 1.0f, 1.0f) },// Top Left
-		{ vec3(-0.5f, -0.5f, -0.5f), vec3(0.25f, 0.25f, -0.5f), vec2(0.0f, 1.0f), vec4(1.0f, 0.0f, 0.0f, 1.0f) },// Bottom Left
-		{ vec3(0.5f, -0.5f, -0.5f), vec3(0.25f, -0.25f, -0.5f), vec2(1.0f, 1.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f) }, //Bottom Right
-		{ vec3(0.5f, 0.5f, -0.5f), vec3(0.25f, -0.25f, -0.5f), vec2(1.0f, 0.0f), vec4(0.0f, 1.0f, 0.0f, 1.0f) }// Top Right
-};
-
-
-GLuint indices[]={
-    //front
-    0,1,2,
-    0,3,2,
-    
-    //left
-    4,5,1,
-    4,1,0,
-    
-    //right
-    3,7,2,
-    7,6,2,
-    
-    //bottom
-    1,5,2,
-    6,2,1,
-    
-    //top
-    5,0,7,
-    5,7,3,
-    
-    //back
-    4,5,6,
-    4,7,6
-};
+PostProcessing postProcessor;
 
 void CheckForErrors()
 {
     GLenum error;
-    do{
+    do
         error=glGetError();
-    }while(error!=GL_NO_ERROR);
+	while(error!=GL_NO_ERROR);
 }
 
 //Global functions
@@ -114,10 +82,9 @@ void InitWindow(int width, int height, bool fullscreen)
 		);
 }
 
-
-
 void CleanUp()
 {
+
     auto iter=displayList.begin();
 	while(iter!=displayList.end())
     {
@@ -135,7 +102,8 @@ void CleanUp()
     }
     displayList.clear();
     
-	// clean up, reverse order!!!
+	// clean up in reverse
+	postProcessor.destroy();
 	SDL_GL_DeleteContext(glcontext);
 	SDL_DestroyWindow(window);
 	IMG_Quit();
@@ -148,8 +116,7 @@ void CleanUp()
 //Function to initialise OpenGL
 void initOpenGL()
 {
-    //Ask for version 3.2 of OpenGL
-    
+    //Ask for version 3.2 of OpenGL    
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -157,6 +124,7 @@ void initOpenGL()
 	//Create OpenGL Context
 	glcontext = SDL_GL_CreateContext(window);
 
+	//Check for GLEW error
     glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
@@ -186,87 +154,117 @@ void initOpenGL()
 
 //Function to set/reset viewport
 void setViewport( int width, int height )
-{
-    
+{    
     //make sure height is always above 1
-    if ( height == 0 ) {
-        height = 1;
-    }
+    if ( height == 0 ) height = 1;
 
-    
     //Setup viewport
     glViewport( 0, 0, ( GLsizei )width, ( GLsizei )height );
 }
 
 void Initialise()
 {
+	//Set shader paths
+	std::string vsPath = ASSET_PATH + SHADER_PATH + "/passThroughVS.glsl";
+	std::string fsPath = ASSET_PATH + SHADER_PATH + "/SimplePostProcessFS.glsl";
+
+	//Initialise post-processor
+	postProcessor.init(WINDOW_WIDTH, WINDOW_HEIGHT, vsPath, fsPath);
+
+	//Set up main camera gameobject
     mainCamera=new GameObject();
     mainCamera->setName("MainCamera");
     
+	//Set up main camera transform
     Transform *t=new Transform();
-    t->setPosition(0.0f,0.0f,10.0f);
+    t->setPosition(0.0f,0.0f,2.0f);
     mainCamera->setTransform(t);
     
+	//Set up main camera camera
     Camera * c=new Camera();
     c->setAspectRatio((float)(WINDOW_WIDTH/WINDOW_HEIGHT));
     c->setFOV(45.0f);
     c->setNearClip(0.1f);
-    c->setFarClip(1000.0f);
-    
+    c->setFarClip(1000.0f);    
     mainCamera->setCamera(c);
+
+	//Add main camera to game object list.
     displayList.push_back(mainCamera);
     
+	//Set up main light game object
 	mainLight = new GameObject();
 	mainLight->setName("MainLight");
 
+	//Set up main light transform.
 	t = new Transform();
 	t->setPosition(0.0f, 0.0f, 0.0f);
 	mainLight->setTransform(t);
 
+	//Main light light
 	Light * light = new Light();
 	mainLight->setLight(light);
+
+	//Add main light to game object list.
 	displayList.push_back(mainLight);
-
-
-    GameObject * cube=new GameObject();
-    cube->setName("Cube");
-    Transform *transform=new Transform();
-    transform ->setPosition(0.0f,0.0f,0.0f);
-    cube ->setTransform(transform);
     
-    Material * material=new Material();
-    std::string vsPath = ASSET_PATH + SHADER_PATH+ "/specularVS.glsl";
-    std::string fsPath = ASSET_PATH + SHADER_PATH + "/specularFS.glsl";
-    material -> loadShader(vsPath,fsPath);
-    cube->setMaterial(material);
-    
-    Mesh * mesh=new Mesh();
-    cube->setMesh(mesh);
-    displayList.push_back(cube);
-
-    
-    //alternative sytanx
+    //Initialise all  game objects
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
     {
         (*iter)->init();
     }
     
-    mesh->copyVertexData(8,sizeof(Vertex), (void**)triangleData);
-    mesh->copyIndexData(36,sizeof(int), (void**)indices);
-
+	//Load and place model with bump mapping.
 	std::string modelPath = ASSET_PATH + MODEL_PATH + "armoredrecon.fbx";
 	GameObject * go = loadFBXFromFile(modelPath);
 	for (int i = 0; i < go->getChildCount(); i++)
 	{
 		Material * material = new Material();
 		material->init();
-		std::string vsPath = ASSET_PATH + SHADER_PATH + "/specularVS.glsl";
-		std::string fsPath = ASSET_PATH + SHADER_PATH + "/specularFS.glsl";
+		std::string vsPath = ASSET_PATH + SHADER_PATH + "/BumpmappingVS.glsl";
+		std::string fsPath = ASSET_PATH + SHADER_PATH + "/BumpmappingFS.glsl";
 		material->loadShader(vsPath, fsPath);
+
+		std::string diffTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_diff.png";
+		material->loadDiffuseMap(diffTexturePath);
+
+		std::string specTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_spec.png";
+		material->loadSpecularMap(specTexturePath);
+
+		std::string bumpTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_N.png";
+		material->loadBumpMap(bumpTexturePath);
 
 		go->getChild(i)->setMaterial(material);
 	}
-	go->getTransform()->setPosition(0.0f, 0.0f, -10.0f);
+	go->getTransform()->setPosition(2.0f, -2.0f, -6.0f);
+	go->getTransform()->setRotation(0.0f, -40.0f, 0.0f);
+	displayList.push_back(go);
+
+	//Load and place model with parallex mapping.
+	go = loadFBXFromFile(modelPath);
+	for (int i = 0; i < go->getChildCount(); i++)
+	{
+		Material * material = new Material();
+		material->init();
+		std::string vsPath = ASSET_PATH + SHADER_PATH + "/ParallaxMappingVS.glsl";
+		std::string fsPath = ASSET_PATH + SHADER_PATH + "/ParallaxMappingFS.glsl";
+		material->loadShader(vsPath, fsPath);
+
+		std::string diffTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_diff.png";
+		material->loadDiffuseMap(diffTexturePath);
+
+		std::string specTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_spec.png";
+		material->loadSpecularMap(specTexturePath);
+
+		std::string bumpTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_N.png";
+		material->loadBumpMap(bumpTexturePath);
+
+		std::string heightTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_Height.png";
+		material->loadHeightMap(heightTexturePath);
+
+		go->getChild(i)->setMaterial(material);
+	}
+	go->getTransform()->setPosition(-2.0f, -2.0f, -6.0f);
+	go->getTransform()->setRotation(0.0f, -40.0f, 0.0f);
 	displayList.push_back(go);
 }
 
@@ -274,7 +272,7 @@ void Initialise()
 //Function to update the game state
 void update()
 {
-    //alternative sytanx
+    //Update all game objects.
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
     {
         (*iter)->update();
@@ -308,10 +306,12 @@ void renderGameObject(GameObject * pObject)
 		GLint specularLightLocation = currentMaterial->getUniformLocation("specularLightColour");
 		GLint specularpowerLocation = currentMaterial->getUniformLocation("specularPower");
 		GLint cameraPositionLocation = currentMaterial->getUniformLocation("cameraPosition");
-
+		GLint diffuseTextureLocation = currentMaterial->getUniformLocation("diffuseMap");
+		GLint specTextureLocation = currentMaterial->getUniformLocation("specMap");
+		GLint bumpTextureLocation = currentMaterial->getUniformLocation("bumpMap");
+		GLint heightTextureLocation = currentMaterial->getUniformLocation("heightMap");
 		Camera * cam = mainCamera->getCamera();
 		Light* light = mainLight->getLight();
-
 
 		mat4 MVP = cam->getProjection()*cam->getView()*currentTransform->getModel();
 		mat4 Model = currentTransform->getModel();
@@ -342,6 +342,11 @@ void renderGameObject(GameObject * pObject)
 		glUniform3fv(cameraPositionLocation, 1, glm::value_ptr(cameraPosition));
 		glUniform1f(specularpowerLocation, specularPower);
 
+		glUniform1i(diffuseTextureLocation, 0);
+		glUniform1i(specTextureLocation, 1);
+		glUniform1i(bumpTextureLocation, 2);
+		glUniform1i(heightTextureLocation, 3);
+
 		glDrawElements(GL_TRIANGLES, currentMesh->getIndexCount(), GL_UNSIGNED_INT, 0);
 	}
 
@@ -354,8 +359,9 @@ void renderGameObject(GameObject * pObject)
 //Function to render(aka draw)
 void render()
 {
-    //old imediate mode!
-    //Set the clear colour(background)
+	//Bind Framebuffer
+	postProcessor.bind();
+
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
 	glClearDepth(1.0f);
     //clear the colour and depth buffer
@@ -366,7 +372,9 @@ void render()
 	{
 		renderGameObject((*iter));
 	}
-    
+
+	//now switch to normal framebuffer
+	postProcessor.draw();
     SDL_GL_SwapWindow(window);
 }
 
@@ -378,29 +386,34 @@ int main(int argc, char * arg[])
     // init everyting - SDL, if it is nonzero we have a problem
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
-        std::cout << "ERROR SDL_Init " <<SDL_GetError()<< std::endl;
-        
+        std::cout << "ERROR SDL_Init " <<SDL_GetError()<< std::endl;        
         return -1;
     }
     
 	int imageInitFlags = IMG_INIT_JPG | IMG_INIT_PNG;
 	int returnInitFlags = IMG_Init(imageInitFlags);
-	if (((returnInitFlags) & (imageInitFlags)) != imageInitFlags) {
+	if (((returnInitFlags) & (imageInitFlags)) != imageInitFlags) 
+	{
+		//Handle error
 		std::cout << "ERROR SDL_Image Init " << IMG_GetError() << std::endl;
-		// handle error
 	}
 
-	if (TTF_Init() == -1) {
+	if (TTF_Init() == -1) 
+	{
 		std::cout << "TTF_Init: " << TTF_GetError();
 	}
     
+	//Initialise window
 	InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, false);
+
     //Call our InitOpenGL Function
     initOpenGL();
     CheckForErrors();
+
     //Set our viewport
 	setViewport(WINDOW_WIDTH, WINDOW_HEIGHT);
 
+	//Initialise the scene
     Initialise();
     
     //Value to hold the event generated by SDL
@@ -416,12 +429,12 @@ int main(int argc, char * arg[])
                 running = false;
             }
         }
+		//Update and render all game objects
 		update();
-        //render
-		render();        
-    }    
+		render();   
+    } 
 
-	CleanUp();
-    
+	//Clean up and exit.
+	CleanUp();    
     return 0;
 }

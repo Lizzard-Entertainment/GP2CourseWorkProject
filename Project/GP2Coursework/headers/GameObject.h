@@ -1,9 +1,11 @@
 #ifndef GameObject_h
 #define GameObject_h
 
+//Headers
 #include <string>
 #include <vector>
 
+//Forward declaration of classes
 class Component;
 class Transform;
 class Mesh;

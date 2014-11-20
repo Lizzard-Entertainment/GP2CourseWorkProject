@@ -1,14 +1,18 @@
 #ifndef Transform_h
 #define Transform_h
 
+//Headers
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+//Our headers
 #include "Component.h"
 
+//Using statements
 using glm::mat4;
 using glm::vec3;
+
 
 class Transform:public Component
 {

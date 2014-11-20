@@ -1,12 +1,15 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
+//Headers
 #include <glm/glm.hpp>
+
+//Our headers
 #include "Component.h"
 
+//Using statements
 using glm::vec4;
 using glm::vec3;
-
 
 class Light :public Component
 {

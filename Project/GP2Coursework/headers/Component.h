@@ -1,8 +1,10 @@
 #ifndef Component_h
 #define Component_h
 
+//Headers
 #include <string>
 
+//Forward declaration of gameobject
 class GameObject;
 
 class Component

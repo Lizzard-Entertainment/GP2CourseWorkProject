@@ -1,9 +1,9 @@
 #ifndef Shader_h
 #define Shader_h
 
+//Headers
 #include <GL/glew.h>
 #include <SDL_opengl.h>
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -19,5 +19,4 @@ GLuint loadShaderFromMemory(const char * pMem, SHADER_TYPE shaderType);
 
 bool checkForLinkErrors(GLuint program);
 bool checkForCompilerErrors(GLuint shaderProgram);
-
 #endif

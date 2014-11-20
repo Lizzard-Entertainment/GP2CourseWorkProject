@@ -1,11 +1,13 @@
 #ifndef Mesh_h
 #define Mesh_h
 
+//Headers
 #include <GL/glew.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <gl/GLU.h>
 
+//Our headers
 #include "Component.h"
 
 class Mesh:public Component

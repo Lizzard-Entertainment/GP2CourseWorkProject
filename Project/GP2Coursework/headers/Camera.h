@@ -1,13 +1,15 @@
 #ifndef Camera_h
 #define Camera_h
 
-#include <GL/glew.h>
+//Headers
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+//Our headers
 #include "Component.h"
 
+//Using statements
 using glm::mat4;
 using glm::vec3;
 

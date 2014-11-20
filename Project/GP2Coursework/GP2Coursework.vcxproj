@@ -75,6 +75,7 @@
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\Material.cpp" />
     <ClCompile Include="source\Mesh.cpp" />
+    <ClCompile Include="source\PostProcessing.cpp" />
     <ClCompile Include="source\Shader.cpp" />
     <ClCompile Include="source\Texture.cpp" />
     <ClCompile Include="source\Transform.cpp" />
@@ -87,10 +88,38 @@
     <ClInclude Include="headers\Light.h" />
     <ClInclude Include="headers\Material.h" />
     <ClInclude Include="headers\Mesh.h" />
+    <ClInclude Include="headers\PostProcessing.h" />
     <ClInclude Include="headers\Shader.h" />
     <ClInclude Include="headers\Texture.h" />
     <ClInclude Include="headers\Transform.h" />
     <ClInclude Include="headers\Vertex.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\ambientFS.glsl" />
+    <None Include="assets\shaders\ambientVS.glsl" />
+    <None Include="assets\shaders\BumpmappingFS.glsl" />
+    <None Include="assets\shaders\BumpmappingVS.glsl" />
+    <None Include="assets\shaders\colourFilterPostFS.glsl" />
+    <None Include="assets\shaders\diffuseFS.glsl" />
+    <None Include="assets\shaders\diffuseVS.glsl" />
+    <None Include="assets\shaders\DirectionalLightTextureFS.glsl" />
+    <None Include="assets\shaders\DirectionalLightTextureVS.glsl" />
+    <None Include="assets\shaders\ParallaxMappingFS.glsl" />
+    <None Include="assets\shaders\ParallaxMappingVS.glsl" />
+    <None Include="assets\shaders\passThroughVS.glsl" />
+    <None Include="assets\shaders\simpleFS.glsl" />
+    <None Include="assets\shaders\simplePostProcessFS.glsl" />
+    <None Include="assets\shaders\simpleVS.glsl" />
+    <None Include="assets\shaders\specularFS.glsl" />
+    <None Include="assets\shaders\specularFSPerPixel.glsl" />
+    <None Include="assets\shaders\specularVS.glsl" />
+    <None Include="assets\shaders\specularVSPerPixel.glsl" />
+    <None Include="assets\shaders\textureFS.glsl" />
+    <None Include="assets\shaders\textureVS.glsl" />
+    <None Include="assets\shaders\vertexColourFS.glsl" />
+    <None Include="assets\shaders\vertexColourTextureFS.glsl" />
+    <None Include="assets\shaders\vertexColourTextureVS.glsl" />
+    <None Include="assets\shaders\vertexColourVS.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
