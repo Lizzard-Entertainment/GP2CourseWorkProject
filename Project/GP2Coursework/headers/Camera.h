@@ -21,8 +21,8 @@ public:
     
 	void update();
     
-	void setLook(float x, float y, float z);
-    
+	void setLookAt(float x, float y, float z);
+	void setDirection(vec3 direction);
 	void setUp(float x, float y, float z);
     
     void setNearClip(float near);
@@ -36,6 +36,7 @@ public:
 protected:
 private:
 	vec3 m_LookAt;
+	vec3 m_Direction;
 	vec3 m_Up;
     
 	mat4 m_View;

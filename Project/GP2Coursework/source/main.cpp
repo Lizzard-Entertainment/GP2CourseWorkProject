@@ -36,6 +36,11 @@ const std::string TEXTURE_PATH = "textures/";
 const std::string FONT_PATH = "fonts/";
 const std::string MODEL_PATH = "models/";
 
+//Constant vectors
+const vec3 X_AXIS = vec3(1, 0, 0);
+const vec3 Y_AXIS = vec3(0, 1, 0);
+const vec3 Z_AXIS = vec3(0, 0, 1);
+
 //SDL Window
 SDL_Window * window = NULL;
 
@@ -56,9 +61,14 @@ vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 //Main scene game objects
 std::vector<GameObject*> displayList;
-GameObject * mainCamera;
+GameObject * orbitCamera;
+GameObject * debugCamera;
+GameObject * mainCamera;  //This is switched out with the orbit or debug camera, and is used in any calculations etc.
 GameObject * mainLight;
 PostProcessing postProcessor;
+
+//Main camera controls
+bool isDebugCam = false; //When true, the camera can be controlled freely by the player.  When false, the camera orbits the centre of the scene.  Keyboard M
 
 void CheckForErrors()
 {
@@ -171,26 +181,51 @@ void Initialise()
 	//Initialise post-processor
 	postProcessor.init(WINDOW_WIDTH, WINDOW_HEIGHT, vsPath, fsPath);
 
-	//Set up main camera gameobject
-    mainCamera=new GameObject();
-    mainCamera->setName("MainCamera");
+#pragma region Orbit Camera
+
+	//Set up orbit camera gameobject
+	orbitCamera = new GameObject();
+	orbitCamera->setName("OrbitCamera");
     
 	//Set up main camera transform
-    Transform *t=new Transform();
-    t->setPosition(0.0f,0.0f,2.0f);
-    mainCamera->setTransform(t);
+	Transform *t = new Transform();
+    t->setPosition(0, 0, 10);
+	orbitCamera->setTransform(t);
     
 	//Set up main camera camera
-    Camera * c=new Camera();
-    c->setAspectRatio((float)(WINDOW_WIDTH/WINDOW_HEIGHT));
-    c->setFOV(45.0f);
-    c->setNearClip(0.1f);
-    c->setFarClip(1000.0f);    
-    mainCamera->setCamera(c);
+	Camera * c = new Camera();
+	c->setAspectRatio((float)(WINDOW_WIDTH / WINDOW_HEIGHT));
+	c->setLookAt(0.0f, 0.0f, 0.0f);
+	orbitCamera->setCamera(c);
 
 	//Add main camera to game object list.
-    displayList.push_back(mainCamera);
-    
+    displayList.push_back(orbitCamera);
+
+#pragma endregion
+
+#pragma region Debug camera
+
+	//Set up orbit camera gameobject
+	debugCamera = new GameObject();
+	debugCamera->setName("DebugCamera");
+
+	//Set up main camera transform
+	t = new Transform();
+	t->setPosition(0, 0, 10);
+	debugCamera->setTransform(t);
+
+	//Set up main camera camera
+	c = new Camera();
+	c->setAspectRatio((float)(WINDOW_WIDTH / WINDOW_HEIGHT));
+	debugCamera->setCamera(c);
+
+	//Add main camera to game object list.
+	displayList.push_back(debugCamera);
+
+#pragma endregion
+
+#pragma region Main Light
+
 	//Set up main light game object
 	mainLight = new GameObject();
 	mainLight->setName("MainLight");
@@ -206,7 +241,12 @@ void Initialise()
 
 	//Add main light to game object list.
 	displayList.push_back(mainLight);
-    
+
+#pragma endregion
+
+	//Set main camera
+	mainCamera = orbitCamera;
+
     //Initialise all  game objects
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
     {
@@ -235,7 +275,7 @@ void Initialise()
 
 		go->getChild(i)->setMaterial(material);
 	}
-	go->getTransform()->setPosition(2.0f, -2.0f, -6.0f);
+	go->getTransform()->setPosition(2.0f, 0.0f, 0.0f);
 	go->getTransform()->setRotation(0.0f, -40.0f, 0.0f);
 	displayList.push_back(go);
 
@@ -263,7 +303,7 @@ void Initialise()
 
 		go->getChild(i)->setMaterial(material);
 	}
-	go->getTransform()->setPosition(-2.0f, -2.0f, -6.0f);
+	go->getTransform()->setPosition(-2.0f, 0.0f, 0.0f);
 	go->getTransform()->setRotation(0.0f, -40.0f, 0.0f);
 	displayList.push_back(go);
 }
@@ -378,7 +418,118 @@ void render()
     SDL_GL_SwapWindow(window);
 }
 
+void HandleInput(SDL_Keycode key)
+{
+	float cameraSpeed = 1.0f;
+	vec3 origin = vec3(0, 0, 0);
+	
+	//Toggle debug cam and return out of the method.
+	if (key == SDLK_m)
+	{
+		//Switch between cameras.
+		if (mainCamera->getName() == "OrbitCamera")
+		{
+			vec3 lookAt = (debugCamera->getTransform()->getPosition() + debugCamera->getTransform()->getFacing());
+			debugCamera->getCamera()->setLookAt(lookAt.x, lookAt.y, lookAt.z);
+			mainCamera = debugCamera;
+		}
+		else
+		{
+			mainCamera = orbitCamera;
+		}
 
+
+		std::cout << "Main camera: " << mainCamera->getName() << std::endl;
+
+		//Return out.  No further processing on this key press.
+		return;
+	}
+
+	//Controls for debug cam: A-D rotate, W-S forward and back, Q-E height.
+	if (isDebugCam)
+	{
+		switch (key)
+		{
+			case SDLK_a:
+			{
+				mainCamera->getTransform()->rotate(cameraSpeed, Y_AXIS);
+				break;
+			}
+
+			case SDLK_d:
+			{
+				mainCamera->getTransform()->rotate(cameraSpeed, Y_AXIS);
+				break;
+			}
+
+			case SDLK_w:
+			{
+				break;
+			}
+
+			case SDLK_s:
+			{
+				break;
+			}
+
+			case SDLK_z:
+			{
+				break;
+			}
+
+			case SDLK_c:
+			{
+				break;
+			}
+		}
+	}
+	//Controls for orbit camera:  A-D Pan left and right.  W-S Pan up and down.  Q-E Zoom in and out.
+	else
+	{
+		switch (key)
+		{
+			case SDLK_a:
+			{
+				mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, Y_AXIS, origin);
+				break;
+			}
+
+			case SDLK_d:
+			{
+				mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, Y_AXIS, origin);
+				break;
+			}
+
+			case SDLK_w:
+			{
+				if (mainCamera->getTransform()->getPosition().y < 7.0f)
+				{
+					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, origin);
+					break;
+				}
+			}
+
+			case SDLK_s:
+			{
+				if (mainCamera->getTransform()->getPosition().y > -7.0f)
+				{
+					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, origin);
+					break;
+				}
+			}
+
+			case SDLK_z:
+			{
+				break;
+			}
+
+			case SDLK_c:
+			{
+				break;
+			}
+		}
+	}
+}
 
 //Main Method
 int main(int argc, char * arg[])
@@ -418,17 +569,27 @@ int main(int argc, char * arg[])
     
     //Value to hold the event generated by SDL
     SDL_Event event;
+
     //Game Loop
 	while (running)
     {
         //While we still have events in the queue
-        while (SDL_PollEvent(&event)) {
+        while (SDL_PollEvent(&event)) 
+		{
             //Get event type
-            if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
+            if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) 
+			{
                 //set our boolean which controls the loop to false
                 running = false;
             }
+			
+			if (event.type == SDL_KEYDOWN)
+			{
+				//Handle keyboard inputs
+				HandleInput(event.key.keysym.sym);
+			}
         }
+
 		//Update and render all game objects
 		update();
 		render();   
@@ -438,3 +599,6 @@ int main(int argc, char * arg[])
 	CleanUp();    
     return 0;
 }
+
+
+//std::cout << "Neat debugging statement!" << std::to_string(valueToString) << std::endl;
