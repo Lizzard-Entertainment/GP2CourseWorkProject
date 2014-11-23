@@ -26,10 +26,10 @@ void Transform::update()
 	mat4 rotation = mat4(1.0f);
 
 	//Set up translation matrix.
-	translate = glm::translate(mat4(1.0f), m_Position);
+	translate = glm::translate(translate, m_Position);
 	
 	//Scale matrix? pfft.
-	scale = glm::scale(mat4(1.0f), m_Scale);
+	scale = glm::scale(scale, m_Scale);
     
 	/*
 	Improve efficiancy by feeding in the previous matrix to the current.  Since they're all going to be multiplied in the end, this saves time.
@@ -114,6 +114,13 @@ void Transform::rotateAroundPoint(float rotation, vec3 axis, vec3 focus)
 	std::cout << "Coords after movement: " << std::to_string(m_Position.x) << " , " << std::to_string((m_Position.y)) << " , " << std::to_string((m_Position.z)) << std::endl <<std::endl;
 }
 
+void Transform::zoom(float zoomSpeed)
+{
+	std::cout << "Zoomie" << std::endl << std::endl;
+	setScale(zoomSpeed, zoomSpeed, zoomSpeed);
+}
+
+
 void Transform::rotate(float rotation, vec3 axis)
 {
 	//mat4 rotationMatrix = glm::rotate(mat4(1.0f), rotation, axis);
@@ -122,20 +129,12 @@ void Transform::rotate(float rotation, vec3 axis)
 	rotationMatrix = glm::rotate(rotationMatrix, rotation, axis);
 
 	//Multiply the rotation matrix by a vector 4, to allow the matrix to fit into a vector3
-	m_Facing = vec3(rotationMatrix * vec4(m_Rotation, 0.0f));
+	m_Rotation = vec3(rotationMatrix * vec4(m_Rotation, 0.0f));
 }
 
 void Transform::translate(vec3 translation)
 {
-	//mat4 translationMatrix(1.0f);
-	//translationMatrix = glm::translate(translationMatrix, translation);
-	//m_Position = vec3(translationMatrix * vec4(m_Position, 1.0f));
-
 	m_Position += translation;
 }
 
-void Transform::zoom(float zoomSpeed)
-{
-
-}
 

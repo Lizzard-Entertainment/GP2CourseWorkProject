@@ -522,11 +522,13 @@ void HandleInput(SDL_Keycode key)
 
 			case SDLK_z:
 			{
+				mainCamera->getTransform()->zoom(50);
 				break;
 			}
 
 			case SDLK_c:
 			{
+				mainCamera->getTransform()->zoom(-cameraSpeed);
 				break;
 			}
 		}
