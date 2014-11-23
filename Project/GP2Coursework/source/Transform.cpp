@@ -121,15 +121,17 @@ void Transform::rotate(float rotation, vec3 axis)
 	mat4 rotationMatrix(1.0f);
 	rotationMatrix = glm::rotate(rotationMatrix, rotation, axis);
 
-	//Multiply the rotation matrix by an identity vector, to allow the matrix to fit into a vector3
+	//Multiply the rotation matrix by a vector 4, to allow the matrix to fit into a vector3
 	m_Facing = vec3(rotationMatrix * vec4(m_Rotation, 0.0f));
 }
 
 void Transform::translate(vec3 translation)
 {
-	mat4 translationMatrix(1.0f);
-	translationMatrix = glm::translate(translationMatrix, translation);
-	m_Position = vec3(translationMatrix * vec4(m_Position, 1.0f));
+	//mat4 translationMatrix(1.0f);
+	//translationMatrix = glm::translate(translationMatrix, translation);
+	//m_Position = vec3(translationMatrix * vec4(m_Position, 1.0f));
+
+	m_Position += translation;
 }
 
 void Transform::zoom(float zoomSpeed)

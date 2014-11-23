@@ -429,13 +429,13 @@ void HandleInput(SDL_Keycode key)
 		//Switch between cameras.
 		if (mainCamera->getName() == "OrbitCamera")
 		{
-			vec3 lookAt = (debugCamera->getTransform()->getPosition() + debugCamera->getTransform()->getFacing());
-			debugCamera->getCamera()->setLookAt(lookAt.x, lookAt.y, lookAt.z);
 			mainCamera = debugCamera;
+			isDebugCam = true;
 		}
 		else
 		{
 			mainCamera = orbitCamera;
+			isDebugCam = false;
 		}
 
 
@@ -445,30 +445,32 @@ void HandleInput(SDL_Keycode key)
 		return;
 	}
 
-	//Controls for debug cam: A-D rotate, W-S forward and back, Q-E height.
+	//Controls for debug cam: WSAD directional movement, Q-E rotate.
 	if (isDebugCam)
 	{
 		switch (key)
 		{
-			case SDLK_a:
-			{
-				mainCamera->getTransform()->rotate(cameraSpeed, Y_AXIS);
-				break;
-			}
-
-			case SDLK_d:
-			{
-				mainCamera->getTransform()->rotate(cameraSpeed, Y_AXIS);
-				break;
-			}
-
 			case SDLK_w:
 			{
+				mainCamera->getTransform()->translate(vec3(0, 0, -cameraSpeed));
+				break;
+			}
+
+			case SDLK_a:
+			{
+				mainCamera->getTransform()->translate(vec3(-cameraSpeed, 0, 0));
 				break;
 			}
 
 			case SDLK_s:
 			{
+				mainCamera->getTransform()->translate(vec3(0, 0, cameraSpeed));
+				break;
+			}
+
+			case SDLK_d:
+			{
+				mainCamera->getTransform()->translate(vec3(cameraSpeed, 0, 0));
 				break;
 			}
 
