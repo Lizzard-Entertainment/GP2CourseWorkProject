@@ -116,8 +116,16 @@ void Transform::rotateAroundPoint(float rotation, vec3 axis, vec3 focus)
 
 void Transform::zoom(float zoomSpeed)
 {
-	std::cout << "Zoomie" << std::endl << std::endl;
-	setScale(zoomSpeed, zoomSpeed, zoomSpeed);
+	//std::cout << "Zoomie" << std::endl << std::endl;
+	//setScale(zoomSpeed, zoomSpeed, zoomSpeed);
+
+	//TO DO / TRY
+	//Get translation to origin and reverse it multiplied by zoomSpeed.
+	//mat4 translationMatrix(1.0f);
+	//translationMatrix = glm::translate(translationMatrix, -vec3(0.0f, 0.0f, 0.0f))+ zoomSpeed;
+	//m_Position = vec3(translationMatrix * vec4(m_Position, 1.0f));
+
+	setPosition(m_Position.x, m_Position.y, m_Position.z + zoomSpeed);
 }
 
 
