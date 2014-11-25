@@ -43,11 +43,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>E:\Documents\Github\GP2CourseWorkProject\Project\GP2Coursework\headers;C:\GP2-Software Libraries\glew-1.11.0\include;C:\GP2-Software Libraries\glm-0.9.5.4\glm;C:\GP2-Software Libraries\SDL2\SDL2_ttf-2.0.12\include;C:\GP2-Software Libraries\SDL2\SDL2_image-2.0.0\include;C:\GP2-Software Libraries\SDL2\SDL2-2.0.3\include;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\include;C:\Specialised Applications\glew-1.11.0\include;C:\Specialised Applications\SDL2_ttf-2.0.12\include;C:\Specialised Applications\SDL2_image-2.0.0\include;C:\Specialised Applications\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\headers;$(ProjectDir)\libraries\glew\include;$(ProjectDir)\libraries\glm;$(ProjectDir)\libraries\SDL2\SDL2_ttf-2.0.12\include;$(ProjectDir)\libraries\SDL2\SDL2_image-2.0.0\include;$(ProjectDir)\libraries\SDL2\SDL2-2.0.3\include;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\GP2-Software Libraries\glew-1.11.0\lib\Release\Win32;C:\GP2-Software Libraries\SDL2\SDL2_ttf-2.0.12\lib\x86;C:\GP2-Software Libraries\SDL2\SDL2_image-2.0.0\lib\x86;C:\GP2-Software Libraries\SDL2\SDL2-2.0.3\lib\x86;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\lib\vs2013\x86\debug;C:\Specialised Applications\glew-1.11.0\lib\Release\Win32;C:\Specialised Applications\SDL2_ttf-2.0.12\lib\x86;C:\Specialised Applications\SDL2_image-2.0.0\lib\x86;C:\Specialised Applications\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\libraries\glew\lib\Release\Win32;$(ProjectDir)\libraries\SDL2\SDL2_ttf-2.0.12\lib\x86;$(ProjectDir)\libraries\SDL2\SDL2_image-2.0.0\lib\x86;$(ProjectDir)\libraries\SDL2\SDL2-2.0.3\lib\x86;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\lib\vs2013\x86\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>sdl2.lib;sdl2main.lib;opengl32.lib;glu32.lib;glew32.lib;SDL2_image.lib;SDL2_ttf.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>

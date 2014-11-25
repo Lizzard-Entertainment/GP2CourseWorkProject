@@ -28,22 +28,20 @@ public:
     void setScale(float x,float y,float z);
     
 	void rotateAroundPoint(float rotation, vec3 axis, vec3 focus);
-	void rotate(float rotation, vec3 axis);
-	void translate(vec3 distance);
 	void zoom(float zoomSpeed);
 
     vec3& getPosition();
     vec3& getScale();
     vec3& getRotation();
     mat4& getModel();
-	vec3& getFacing();
 
 private:
     vec3 m_Position;
     vec3 m_Scale;
     vec3 m_Rotation;
     mat4 m_Model;
-	vec3 m_Facing;
+
+	void DEBUGShowCoords();
 
 protected:
 };

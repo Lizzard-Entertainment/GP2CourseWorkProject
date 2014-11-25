@@ -195,7 +195,7 @@ int GameObject::getChildCount()
 	return m_Children.size();
 }
 
-GameObject * GameObject::getChild(int index)
+GameObject * GameObject::getChild(size_t index)
 {
 	if (index < m_Children.size())
 		return m_Children[index];

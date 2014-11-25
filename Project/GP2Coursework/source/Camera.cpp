@@ -26,21 +26,12 @@ void Camera::update()
     	
 	//Set matrices
 	m_Projection = glm::perspective(m_FOV, m_AspectRatio, m_NearClip, m_FarClip);
-
-	if (m_Parent->getName() == "DebugCamera")
-		m_View = glm::lookAt(position, position + vec3(0.0f, 0.0f, 1.0f), m_Up);
-	else
-		m_View = glm::lookAt(position, m_LookAt, m_Up);
+	m_View = glm::lookAt(position, m_LookAt, m_Up);
 }
 
 void Camera::setLookAt(float x, float y, float z)
 {
     m_LookAt = vec3(x, y, z);
-}
-
-void Camera::setDirection(vec3 direction)
-{
-	m_Direction = direction;
 }
 
 void Camera::setUp(float x, float y, float z)

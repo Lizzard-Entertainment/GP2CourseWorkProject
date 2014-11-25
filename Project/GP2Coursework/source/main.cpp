@@ -184,44 +184,48 @@ void Initialise()
 
 #pragma region Orbit Camera
 
-	//Set up orbit camera gameobject
+	//Set up orbitcamera gameobject - this will be the initial camera
 	orbitCamera = new GameObject();
 	orbitCamera->setName("OrbitCamera");
     
-	//Set up main camera transform
+	//Set up orbitcamera transform
 	Transform *t = new Transform();
-    t->setPosition(0, 0, 10);
+    t->setPosition(0.0f, 2.0f, 10.0f);
 	orbitCamera->setTransform(t);
     
-	//Set up main camera camera
+	//Set up orbitcamera camera
 	Camera * c = new Camera();
 	c->setAspectRatio((float)(WINDOW_WIDTH / WINDOW_HEIGHT));
 	c->setLookAt(0.0f, 0.0f, 0.0f);
 	orbitCamera->setCamera(c);
 
-	//Add main camera to game object list.
-    displayList.push_back(orbitCamera);
-
 #pragma endregion
 
 #pragma region Debug camera
 
-	//Set up orbit camera gameobject
+	//Set up debugcamera gameobject
 	debugCamera = new GameObject();
 	debugCamera->setName("DebugCamera");
 
-	//Set up main camera transform
+	//Set up debugcamera transform
 	t = new Transform();
-	t->setPosition(0, 0, 10);
+	t->setPosition(0.0f, 0.0f, 10.0f);
 	debugCamera->setTransform(t);
 
-	//Set up main camera camera
+	//Set up debugcamera camera
 	c = new Camera();
 	c->setAspectRatio((float)(WINDOW_WIDTH / WINDOW_HEIGHT));
+	c->setLookAt(0.0f, 0.0f, 0.0f);
 	debugCamera->setCamera(c);
 
-	//Add main camera to game object list.
-	displayList.push_back(debugCamera);
+#pragma endregion
+
+#pragma region Main Camera
+
+	//Adds the main camera to the list of game objects, since it's the game object that will be worked on.
+	//The debug and orbit camera act as definitions for the main camera, and are not worked on directly.
+	mainCamera = orbitCamera;
+	displayList.push_back(mainCamera);
 
 #pragma endregion
 
@@ -422,7 +426,7 @@ void render()
 void HandleInput(SDL_Keycode key)
 {
 	float cameraSpeed = 1.0f;
-	vec3 origin = vec3(0, 0, 0);
+	vec3 origin = vec3(0.0f, 0.0f, 0.0f);
 	
 	//Toggle debug cam and return out of the method.
 	if (key == SDLK_m)
@@ -439,54 +443,20 @@ void HandleInput(SDL_Keycode key)
 			isDebugCam = false;
 		}
 
-
 		std::cout << "Main camera: " << mainCamera->getName() << std::endl;
 
 		//Return out.  No further processing on this key press.
 		return;
 	}
 
-	//Controls for debug cam: WSAD directional movement, Q-E rotate.
 	if (isDebugCam)
 	{
-		switch (key)
-		{
-			case SDLK_w:
-			{
-				mainCamera->getTransform()->translate(vec3(0, 0, -cameraSpeed));
-				break;
-			}
-
-			case SDLK_a:
-			{
-				mainCamera->getTransform()->translate(vec3(-cameraSpeed, 0, 0));
-				break;
-			}
-
-			case SDLK_s:
-			{
-				mainCamera->getTransform()->translate(vec3(0, 0, cameraSpeed));
-				break;
-			}
-
-			case SDLK_d:
-			{
-				mainCamera->getTransform()->translate(vec3(cameraSpeed, 0, 0));
-				break;
-			}
-
-			case SDLK_z:
-			{
-				break;
-			}
-
-			case SDLK_c:
-			{
-				break;
-			}
-		}
+		/*
+		TODO - TOM
+		flying/debug controls.  WASD for movement, mouse to aim.
+		*/
+		return;
 	}
-	//Controls for orbit camera:  A-D Pan left and right.  W-S Pan up and down.  Q-E Zoom in and out.
 	else
 	{
 		switch (key)
@@ -510,19 +480,22 @@ void HandleInput(SDL_Keycode key)
 					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, origin);
 					break;
 				}
+				else break;
 			}
 
 			case SDLK_s:
 			{
-				if (mainCamera->getTransform()->getPosition().y > -7.0f)
+				if (mainCamera->getTransform()->getPosition().y > 1.0f)
 				{
 					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, origin);
 					break;
 				}
+				else break;
 			}
 
 			case SDLK_z:
 			{
+				//if (mainCamera->getTransform()->getPosition().z > 1.0f)
 				mainCamera->getTransform()->zoom(-cameraSpeed);
 				break;
 			}

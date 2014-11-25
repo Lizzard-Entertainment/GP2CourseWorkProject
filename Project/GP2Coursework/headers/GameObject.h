@@ -49,9 +49,7 @@ public:
 	Light* getLight();
 
 	int getChildCount();
-	GameObject * getChild(int index);
-
-    
+	GameObject * getChild(size_t index);
 
 protected:
 private:

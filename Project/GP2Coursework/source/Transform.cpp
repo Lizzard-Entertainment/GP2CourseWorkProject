@@ -1,7 +1,6 @@
 #include <glm/glm.hpp>
 #include <GL\glew.h>
 #include <iostream>
-#include "Camera.h"
 #include "Transform.h"
 #include "GameObject.h"
 
@@ -17,6 +16,7 @@ Transform::~Transform()
 {
     
 }
+
 // make public the transform and rotation matrix and use it in update.  none of this ap nonsense.
 void Transform::update()
 {
@@ -87,11 +87,6 @@ mat4& Transform::getModel()
     return m_Model;
 }
 
-vec3& Transform::getFacing()
-{
-	return m_Facing;
-}
-
 void Transform::rotateAroundPoint(float rotation, vec3 axis, vec3 focus)
 {
 	//Initialise matrices
@@ -110,39 +105,18 @@ void Transform::rotateAroundPoint(float rotation, vec3 axis, vec3 focus)
 	*/
 	m_Position = vec3(CompositeMatrix * vec4(m_Position, 1.0f));
 
-	//Debug statement
-	std::cout << "Coords after movement: " << std::to_string(m_Position.x) << " , " << std::to_string((m_Position.y)) << " , " << std::to_string((m_Position.z)) << std::endl <<std::endl;
+	DEBUGShowCoords();
 }
 
 void Transform::zoom(float zoomSpeed)
 {
-	//std::cout << "Zoomie" << std::endl << std::endl;
-	//setScale(zoomSpeed, zoomSpeed, zoomSpeed);
-
-	//TO DO / TRY
-	//Get translation to origin and reverse it multiplied by zoomSpeed.
-	//mat4 translationMatrix(1.0f);
-	//translationMatrix = glm::translate(translationMatrix, -vec3(0.0f, 0.0f, 0.0f))+ zoomSpeed;
-	//m_Position = vec3(translationMatrix * vec4(m_Position, 1.0f));
-
 	setPosition(m_Position.x, m_Position.y, m_Position.z + zoomSpeed);
+
+	DEBUGShowCoords();
 }
 
-
-void Transform::rotate(float rotation, vec3 axis)
+void Transform::DEBUGShowCoords()
 {
-	//mat4 rotationMatrix = glm::rotate(mat4(1.0f), rotation, axis);
-	//m_Position = vec3(rotationMatrix * vec4(m_Position, 1.0f));
-	mat4 rotationMatrix(1.0f);
-	rotationMatrix = glm::rotate(rotationMatrix, rotation, axis);
-
-	//Multiply the rotation matrix by a vector 4, to allow the matrix to fit into a vector3
-	m_Rotation = vec3(rotationMatrix * vec4(m_Rotation, 0.0f));
+	//Prints the XYZ of the camera out to the console.
+	std::cout << "Coords after movement: " << std::to_string(m_Position.x) << " , " << std::to_string((m_Position.y)) << " , " << std::to_string((m_Position.z)) << std::endl << std::endl;
 }
-
-void Transform::translate(vec3 translation)
-{
-	m_Position += translation;
-}
-
-
