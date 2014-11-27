@@ -32,7 +32,8 @@ using glm::vec3;
 
 //Paths
 const std::string ASSET_PATH = "assets/";
-const std::string SHADER_PATH = "shaders/";
+const std::string DRAWING_SHADER_PATH = "shaders/drawing/";
+const std::string POSTP_SHADER_PATH = "shaders/postprocessing/";
 const std::string TEXTURE_PATH = "textures/";
 const std::string FONT_PATH = "fonts/";
 const std::string MODEL_PATH = "models/";
@@ -87,6 +88,7 @@ std::string PostProcessingFilterNames[5] =
 	"MIDNIGHT"
 };
 
+//Post processing index
 int PPindex = 0;
 
 //Main camera controls
@@ -143,8 +145,6 @@ void CleanUp()
 	SDL_Quit();
 }
 
-
-
 //Function to initialise OpenGL
 void initOpenGL()
 {
@@ -197,12 +197,13 @@ void setViewport( int width, int height )
 void Initialise()
 {
 	//Set shader paths
-	std::string vsPath = ASSET_PATH + SHADER_PATH + "passThroughVS.glsl";
-	std::string fsPath = ASSET_PATH + SHADER_PATH + PostProcessingFilterPaths[PPindex];
+	std::string vsPath = ASSET_PATH + POSTP_SHADER_PATH + "/passThroughVS.glsl";
+	std::string fsPath = ASSET_PATH + POSTP_SHADER_PATH + PostProcessingFilterPaths[PPindex];
 
 	//Initialise post-processor
 	postProcessor.init(WINDOW_WIDTH, WINDOW_HEIGHT, vsPath, fsPath);
 
+#pragma region Euan
 #pragma region Orbit Camera
 
 	//Set up orbitcamera gameobject - this will be the initial camera
@@ -249,8 +250,7 @@ void Initialise()
 	displayList.push_back(mainCamera);
 
 #pragma endregion
-
-#pragma region Main Light
+#pragma endregion
 
 	//Set up main light game object
 	mainLight = new GameObject();
@@ -268,9 +268,6 @@ void Initialise()
 	//Add main light to game object list.
 	displayList.push_back(mainLight);
 
-#pragma endregion
-
-
     //Initialise all  game objects
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
     {
@@ -284,8 +281,8 @@ void Initialise()
 	{
 		Material * material = new Material();
 		material->init();
-		std::string vsPath = ASSET_PATH + SHADER_PATH + "/BumpmappingVS.glsl";
-		std::string fsPath = ASSET_PATH + SHADER_PATH + "/BumpmappingFS.glsl";
+		std::string vsPath = ASSET_PATH + DRAWING_SHADER_PATH + "BumpmappingVS.glsl";
+		std::string fsPath = ASSET_PATH + DRAWING_SHADER_PATH + "BumpmappingFS.glsl";
 		material->loadShader(vsPath, fsPath);
 
 		std::string diffTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_diff.png";
@@ -309,8 +306,8 @@ void Initialise()
 	{
 		Material * material = new Material();
 		material->init();
-		std::string vsPath = ASSET_PATH + SHADER_PATH + "/ParallaxMappingVS.glsl";
-		std::string fsPath = ASSET_PATH + SHADER_PATH + "/ParallaxMappingFS.glsl";
+		std::string vsPath = ASSET_PATH + DRAWING_SHADER_PATH + "ParallaxMappingVS.glsl";
+		std::string fsPath = ASSET_PATH + DRAWING_SHADER_PATH + "ParallaxMappingFS.glsl";
 		material->loadShader(vsPath, fsPath);
 
 		std::string diffTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_diff.png";
@@ -442,6 +439,7 @@ void render()
     SDL_GL_SwapWindow(window);
 }
 
+#pragma region Euan
 void HandleInput(SDL_Keycode key)
 {
 	float cameraSpeed = 1.0f;
@@ -475,7 +473,7 @@ void HandleInput(SDL_Keycode key)
 		if (PPindex < (sizeof(PostProcessingFilterPaths) / sizeof(*PostProcessingFilterPaths)))
 		{
 			ChangeShader:  //Goto label for code reuse.  Called from the else statement.
-			postProcessor.changeFragmentShaderFilename(PostProcessingFilterPaths[PPindex], ASSET_PATH + SHADER_PATH);
+			postProcessor.changeFragmentShaderFilename(PostProcessingFilterPaths[PPindex], ASSET_PATH + POSTP_SHADER_PATH);
 			std::cout << "Current shader: " << PostProcessingFilterNames[PPindex] << std::endl << std::endl;
 			return;
 		}
@@ -547,6 +545,7 @@ void HandleInput(SDL_Keycode key)
 		}
 	}
 }
+#pragma endregion
 
 //Main Method
 int main(int argc, char * arg[])

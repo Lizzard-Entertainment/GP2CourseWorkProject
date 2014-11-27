@@ -16,6 +16,12 @@
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{1543e883-62ab-43c5-956d-7630f18e7015}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\PostProcessing">
+      <UniqueIdentifier>{5b083e70-f0c7-4103-a0d0-a923a24682a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Drawing">
+      <UniqueIdentifier>{7af05d55-3c01-4618-bf40-7f3c91134840}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Camera.cpp">
@@ -94,83 +100,35 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\vertexColourVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\PostProcessing\BlurFilterPPFS.glsl">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
-    <None Include="assets\shaders\vertexColourTextureVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\PostProcessing\BWPPFS.glsl">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
-    <None Include="assets\shaders\vertexColourTextureFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\PostProcessing\MidnightPPFS.glsl">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
-    <None Include="assets\shaders\vertexColourFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\PostProcessing\passThroughVS.glsl">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
-    <None Include="assets\shaders\textureVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\PostProcessing\SepiaPPFS.glsl">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
-    <None Include="assets\shaders\textureFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\PostProcessing\simplePostProcessFS.glsl">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
-    <None Include="assets\shaders\specularVSPerPixel.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\Drawing\BumpmappingFS.glsl">
+      <Filter>Resource Files\Shaders\Drawing</Filter>
     </None>
-    <None Include="assets\shaders\specularVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\Drawing\BumpmappingVS.glsl">
+      <Filter>Resource Files\Shaders\Drawing</Filter>
     </None>
-    <None Include="assets\shaders\specularFSPerPixel.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\Drawing\ParallaxMappingFS.glsl">
+      <Filter>Resource Files\Shaders\Drawing</Filter>
     </None>
-    <None Include="assets\shaders\specularFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\simpleVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\simplePostProcessFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\simpleFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\passThroughVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\ParallaxMappingVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\ParallaxMappingFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\DirectionalLightTextureVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\DirectionalLightTextureFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\diffuseVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\diffuseFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\BumpmappingVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\BumpmappingFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\ambientVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\ambientFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\BlurFilterPPFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\SepiaPPFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\Drawing\ParallaxMappingVS.glsl">
+      <Filter>Resource Files\Shaders\Drawing</Filter>
     </None>
   </ItemGroup>
 </Project>
