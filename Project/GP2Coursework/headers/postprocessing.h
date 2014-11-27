@@ -14,7 +14,8 @@ public:
 	~PostProcessing();
 
 	void init(int width, int height,std::string& vertexShaderFilename,std::string& fragmentShaderFilename);
-	
+	void changeFragmentShaderFilename(std::string& fragmentShaderFilename, std::string& path);
+
 	void bind();
 	void draw();
 
@@ -32,6 +33,8 @@ private:
 	GLuint m_FBOTexture;
 
 	GLuint m_FullScreenVBO;
+
+	std::string m_VertexShader;
 
 	GLuint m_PostProcessingProgram;
 	int m_Width;

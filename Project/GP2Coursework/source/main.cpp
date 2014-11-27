@@ -68,6 +68,27 @@ GameObject * mainCamera;  //This is switched out with the orbit or debug camera,
 GameObject * mainLight;
 PostProcessing postProcessor;
 
+//Post Processing array
+std::string PostProcessingFilterPaths[5] =
+{
+	"simplePostProcessFS.glsl",
+	"BlurFilterPPFS.glsl",
+	"BWPPFS.glsl",
+	"SepiaPPFS.glsl",
+	"MidnightPPFS.glsl"
+};
+
+std::string PostProcessingFilterNames[5] =
+{
+	"NONE",
+	"BLUR",
+	"BLACK AND WHITE",
+	"SEPIA",
+	"MIDNIGHT"
+};
+
+int PPindex = 0;
+
 //Main camera controls
 bool isDebugCam = false; //When true, the camera can be controlled freely by the player.  When false, the camera orbits the centre of the scene.  Keyboard M
 
@@ -176,8 +197,8 @@ void setViewport( int width, int height )
 void Initialise()
 {
 	//Set shader paths
-	std::string vsPath = ASSET_PATH + SHADER_PATH + "/passThroughVS.glsl";
-	std::string fsPath = ASSET_PATH + SHADER_PATH + "/SimplePostProcessFS.glsl";
+	std::string vsPath = ASSET_PATH + SHADER_PATH + "passThroughVS.glsl";
+	std::string fsPath = ASSET_PATH + SHADER_PATH + PostProcessingFilterPaths[PPindex];
 
 	//Initialise post-processor
 	postProcessor.init(WINDOW_WIDTH, WINDOW_HEIGHT, vsPath, fsPath);
@@ -249,8 +270,6 @@ void Initialise()
 
 #pragma endregion
 
-	//Set main camera
-	mainCamera = orbitCamera;
 
     //Initialise all  game objects
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
@@ -428,7 +447,7 @@ void HandleInput(SDL_Keycode key)
 	float cameraSpeed = 1.0f;
 	vec3 origin = vec3(0.0f, 0.0f, 0.0f);
 	
-	//Toggle debug cam and return out of the method.
+	//Switch main camera and return out of the method.
 	if (key == SDLK_m)
 	{
 		//Switch between cameras.
@@ -448,6 +467,26 @@ void HandleInput(SDL_Keycode key)
 		//Return out.  No further processing on this key press.
 		return;
 	}
+
+	//Switch shaders
+	if (key == SDLK_TAB)
+	{
+		PPindex++;
+		if (PPindex < (sizeof(PostProcessingFilterPaths) / sizeof(*PostProcessingFilterPaths)))
+		{
+			ChangeShader:  //Goto label for code reuse.  Called from the else statement.
+			postProcessor.changeFragmentShaderFilename(PostProcessingFilterPaths[PPindex], ASSET_PATH + SHADER_PATH);
+			std::cout << "Current shader: " << PostProcessingFilterNames[PPindex] << std::endl << std::endl;
+			return;
+		}
+		else
+		{
+			PPindex = 0;
+			goto ChangeShader;
+			return;
+		}
+	}
+
 
 	if (isDebugCam)
 	{

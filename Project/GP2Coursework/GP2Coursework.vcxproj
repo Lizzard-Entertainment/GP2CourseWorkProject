@@ -98,9 +98,10 @@
   <ItemGroup>
     <None Include="assets\shaders\ambientFS.glsl" />
     <None Include="assets\shaders\ambientVS.glsl" />
+    <None Include="assets\shaders\BlurFilterPPFS.glsl" />
     <None Include="assets\shaders\BumpmappingFS.glsl" />
     <None Include="assets\shaders\BumpmappingVS.glsl" />
-    <None Include="assets\shaders\colourFilterPostFS.glsl" />
+    <None Include="assets\shaders\SepiaPPFS.glsl" />
     <None Include="assets\shaders\diffuseFS.glsl" />
     <None Include="assets\shaders\diffuseVS.glsl" />
     <None Include="assets\shaders\DirectionalLightTextureFS.glsl" />
