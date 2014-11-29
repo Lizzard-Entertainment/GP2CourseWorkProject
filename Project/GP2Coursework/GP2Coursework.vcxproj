@@ -102,10 +102,12 @@
     <None Include="assets\shaders\Drawing\ParallaxMappingVS.glsl" />
     <None Include="assets\shaders\PostProcessing\BlurFilterPPFS.glsl" />
     <None Include="assets\shaders\PostProcessing\BWPPFS.glsl" />
+    <None Include="assets\shaders\PostProcessing\InvertedPPFS.glsl" />
     <None Include="assets\shaders\PostProcessing\MidnightPPFS.glsl" />
     <None Include="assets\shaders\PostProcessing\passThroughVS.glsl" />
+    <None Include="assets\shaders\PostProcessing\PolaroidPPFS.glsl" />
     <None Include="assets\shaders\PostProcessing\SepiaPPFS.glsl" />
-    <None Include="assets\shaders\PostProcessing\simplePostProcessFS.glsl" />
+    <None Include="assets\shaders\PostProcessing\NonePPFS.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

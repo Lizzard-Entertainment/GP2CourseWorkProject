@@ -115,9 +115,6 @@
     <None Include="assets\shaders\PostProcessing\SepiaPPFS.glsl">
       <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
-    <None Include="assets\shaders\PostProcessing\simplePostProcessFS.glsl">
-      <Filter>Resource Files\Shaders\PostProcessing</Filter>
-    </None>
     <None Include="assets\shaders\Drawing\BumpmappingFS.glsl">
       <Filter>Resource Files\Shaders\Drawing</Filter>
     </None>
@@ -129,6 +126,15 @@
     </None>
     <None Include="assets\shaders\Drawing\ParallaxMappingVS.glsl">
       <Filter>Resource Files\Shaders\Drawing</Filter>
+    </None>
+    <None Include="assets\shaders\PostProcessing\InvertedPPFS.glsl">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
+    </None>
+    <None Include="assets\shaders\PostProcessing\PolaroidPPFS.glsl">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
+    </None>
+    <None Include="assets\shaders\PostProcessing\NonePPFS.glsl">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
   </ItemGroup>
 </Project>

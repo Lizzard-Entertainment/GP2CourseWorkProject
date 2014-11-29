@@ -61,6 +61,10 @@ bool running = true;
 //Scene bare light colour
 vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
+//Font
+GLuint fontTexture;
+std::string shaderText;
+
 //Main scene game objects
 std::vector<GameObject*> displayList;
 GameObject * orbitCamera;
@@ -70,22 +74,26 @@ GameObject * mainLight;
 PostProcessing postProcessor;
 
 //Post Processing array
-std::string PostProcessingFilterPaths[5] =
+std::string PostProcessingFilterPaths[6] =
 {
-	"simplePostProcessFS.glsl",
+	"NonePPFS.glsl",
 	"BlurFilterPPFS.glsl",
 	"BWPPFS.glsl",
 	"SepiaPPFS.glsl",
-	"MidnightPPFS.glsl"
+	//"MidnightPPFS.glsl",
+	"PolaroidPPFS.glsl",
+	"InvertedPPFS.glsl",
 };
 
-std::string PostProcessingFilterNames[5] =
+std::string PostProcessingFilterNames[6] =
 {
 	"NONE",
 	"BLUR",
 	"BLACK AND WHITE",
 	"SEPIA",
-	"MIDNIGHT"
+	//"MIDNIGHT",
+	"POLAROID",
+	"INVERTED"
 };
 
 //Post processing index
@@ -137,6 +145,7 @@ void CleanUp()
     displayList.clear();
     
 	// clean up in reverse
+	glDeleteTextures(0, &fontTexture);
 	postProcessor.destroy();
 	SDL_GL_DeleteContext(glcontext);
 	SDL_DestroyWindow(window);
@@ -428,6 +437,8 @@ void render()
     //clear the colour and depth buffer
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //alternative sytanx
 	for (auto iter = displayList.begin(); iter != displayList.end(); iter++)
 	{
@@ -475,6 +486,7 @@ void HandleInput(SDL_Keycode key)
 			ChangeShader:  //Goto label for code reuse.  Called from the else statement.
 			postProcessor.changeFragmentShaderFilename(PostProcessingFilterPaths[PPindex], ASSET_PATH + POSTP_SHADER_PATH);
 			std::cout << "Current shader: " << PostProcessingFilterNames[PPindex] << std::endl << std::endl;
+			shaderText = PostProcessingFilterNames[PPindex];
 			return;
 		}
 		else
