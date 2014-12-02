@@ -282,35 +282,35 @@ void Initialise()
         (*iter)->init();
     }
     
-	////Load and place model with bump mapping.
-	//std::string modelPath = ASSET_PATH + MODEL_PATH + "armoredrecon.fbx";
-	//GameObject * go = loadFBXFromFile(modelPath);
-	//for (int i = 0; i < go->getChildCount(); i++)
-	//{
-	//	Material * material = new Material();
-	//	material->init();
-	//	std::string vsPath = ASSET_PATH + DRAWING_SHADER_PATH + "BumpmappingVS.glsl";
-	//	std::string fsPath = ASSET_PATH + DRAWING_SHADER_PATH + "BumpmappingFS.glsl";
-	//	material->loadShader(vsPath, fsPath);
-
-	//	std::string diffTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_diff.png";
-	//	material->loadDiffuseMap(diffTexturePath);
-
-	//	std::string specTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_spec.png";
-	//	material->loadSpecularMap(specTexturePath);
-
-	//	std::string bumpTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_N.png";
-	//	material->loadBumpMap(bumpTexturePath);
-
-	//	go->getChild(i)->setMaterial(material);
-	//}
-	//go->getTransform()->setPosition(2.0f, 0.0f, 0.0f);
-	//go->getTransform()->setRotation(0.0f, -40.0f, 0.0f);
-	//displayList.push_back(go);
-
-	//Load and place model with parallex mapping.
+	//Load and place model with bump mapping.
 	std::string modelPath = ASSET_PATH + MODEL_PATH + "armoredrecon.fbx";
 	GameObject * go = loadFBXFromFile(modelPath);
+	for (int i = 0; i < go->getChildCount(); i++)
+	{
+		Material * material = new Material();
+		material->init();
+		std::string vsPath = ASSET_PATH + DRAWING_SHADER_PATH + "BumpmappingVS.glsl";
+		std::string fsPath = ASSET_PATH + DRAWING_SHADER_PATH + "BumpmappingFS.glsl";
+		material->loadShader(vsPath, fsPath);
+
+		std::string diffTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_diff.png";
+		material->loadDiffuseMap(diffTexturePath);
+
+		std::string specTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_spec.png";
+		material->loadSpecularMap(specTexturePath);
+
+		std::string bumpTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_N.png";
+		material->loadBumpMap(bumpTexturePath);
+
+		go->getChild(i)->setMaterial(material);
+	}
+	go->getTransform()->setPosition(2.5f, 0.0f, 0.0f);
+	go->getTransform()->setRotation(0.0f, -40.0f, 0.0f);
+	displayList.push_back(go);
+
+	//Load and place model with parallex mapping.
+	modelPath = ASSET_PATH + MODEL_PATH + "armoredrecon.fbx";
+	go = loadFBXFromFile(modelPath);
 	for (int i = 0; i < go->getChildCount(); i++)
 	{
 		Material * material = new Material();
@@ -333,8 +333,8 @@ void Initialise()
 
 		go->getChild(i)->setMaterial(material);
 	}
-	go->getTransform()->setPosition(0.0f, 0.0f, 0.0f);
-	go->getTransform()->setRotation(0.0f, -40.0f, 0.0f);
+	go->getTransform()->setPosition(-2.5f, 0.0f, 0.0f);
+	go->getTransform()->setRotation(0.0f, 40.0f, 0.0f);
 	displayList.push_back(go);
 }
 

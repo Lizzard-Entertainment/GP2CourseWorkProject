@@ -110,7 +110,12 @@ void Transform::rotateAroundPoint(float rotation, vec3 axis, vec3 focus)
 
 void Transform::zoom(float zoomSpeed)
 {
-	setPosition(m_Position.x, m_Position.y, m_Position.z + zoomSpeed);
+	mat4 TranslationToOrigin(1.0f);
+	mat4 TranslationBack(1.0f);
+
+	TranslationToOrigin = glm::translate(mat4(1.0f), -vec3(0.0f, 0.0f, 0.0f));
+	TranslationBack = glm::translate(TranslationToOrigin, (vec3(0.0f, 0.0f, 0.0f) + zoomSpeed));
+	m_Position = vec3(TranslationBack * vec4(m_Position, 1.0f));
 
 	DEBUGShowCoords();
 }
