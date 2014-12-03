@@ -61,10 +61,6 @@ bool running = true;
 //Scene bare light colour
 vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-//Font
-GLuint fontTexture;
-std::string shaderText;
-
 //Main scene game objects
 std::vector<GameObject*> displayList;
 GameObject * orbitCamera;
@@ -144,7 +140,6 @@ void CleanUp()
     displayList.clear();
     
 	// clean up in reverse
-	glDeleteTextures(0, &fontTexture);
 	postProcessor.destroy();
 	SDL_GL_DeleteContext(glcontext);
 	SDL_DestroyWindow(window);
@@ -486,7 +481,6 @@ void HandleInput(SDL_Keycode key)
 			ChangeShader:  //Goto label for code reuse.  Called from the else statement.
 			postProcessor.changeFragmentShaderFilename(PostProcessingFilterPaths[PPindex], ASSET_PATH + POSTP_SHADER_PATH);
 			std::cout << "Current shader: " << PostProcessingFilterNames[PPindex] << std::endl << std::endl;
-			shaderText = PostProcessingFilterNames[PPindex];
 			return;
 		}
 		else
@@ -524,34 +518,34 @@ void HandleInput(SDL_Keycode key)
 
 			case SDLK_w:
 			{
-				if (mainCamera->getTransform()->getPosition().y < 7.0f)
-				{
+				//if (mainCamera->getTransform()->getPosition().y < 7.0f)
+				//{
 					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, origin);
 					break;
-				}
-				else break;
+				//}
+				//else break;
 			}
 
 			case SDLK_s:
 			{
-				if (mainCamera->getTransform()->getPosition().y > 1.0f)
-				{
+				//if (mainCamera->getTransform()->getPosition().y > 1.0f)
+				//{
 					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, origin);
 					break;
-				}
-				else break;
+				//}
+				//else break;
 			}
 
 			case SDLK_z:
 			{
 				//if (mainCamera->getTransform()->getPosition().z > 1.0f)
-				mainCamera->getTransform()->zoom(-cameraSpeed);
+				mainCamera->getTransform()->zoom(-cameraSpeed, origin);
 				break;
 			}
 
 			case SDLK_c:
 			{
-				mainCamera->getTransform()->zoom(cameraSpeed);
+				mainCamera->getTransform()->zoom(cameraSpeed, origin);
 				break;
 			}
 		}

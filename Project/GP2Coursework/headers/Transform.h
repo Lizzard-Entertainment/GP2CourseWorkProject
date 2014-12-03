@@ -28,7 +28,7 @@ public:
     void setScale(float x,float y,float z);
     
 	void rotateAroundPoint(float rotation, vec3 axis, vec3 focus);
-	void zoom(float zoomSpeed);
+	void zoom(float zoomSpeed, vec3 focus);
 
     vec3& getPosition();
     vec3& getScale();

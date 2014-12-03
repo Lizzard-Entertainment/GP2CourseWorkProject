@@ -93,11 +93,12 @@ void Transform::rotateAroundPoint(float rotation, vec3 axis, vec3 focus)
 	mat4 TranslationToOrigin(1.0f);   //Matrix for the translation to the origin.  T1
 	mat4 RotationAroundOrigin(1.0f);  //Rotation matrix for rotation around the origin. R o T1
 	mat4 CompositeMatrix(1.0f);       //Composite matrix for reverse translation after rotation. T2 o R o T1
+	vec3 positionToFocusVector = m_Position - focus;
 
 	//Move to the origin, rotate, move back.
-	TranslationToOrigin = glm::translate(mat4(1.0f), -focus);
+	TranslationToOrigin = glm::translate(mat4(1.0f), -positionToFocusVector);
 	RotationAroundOrigin = glm::rotate(TranslationToOrigin, rotation, axis);
-	CompositeMatrix = glm::translate(RotationAroundOrigin, focus);
+	CompositeMatrix = glm::translate(RotationAroundOrigin, positionToFocusVector);
 
 	/*
 	m_Position is fed into a vector4 so that it may conform with the matrix4 composite matrix and output a matrix4.
@@ -108,13 +109,14 @@ void Transform::rotateAroundPoint(float rotation, vec3 axis, vec3 focus)
 	DEBUGShowCoords();
 }
 
-void Transform::zoom(float zoomSpeed)
+void Transform::zoom(float zoomSpeed, vec3 focus)
 {
 	mat4 TranslationToOrigin(1.0f);
 	mat4 TranslationBack(1.0f);
+	vec3 positionToFocus = m_Position - focus;
 
-	TranslationToOrigin = glm::translate(mat4(1.0f), -vec3(0.0f, 0.0f, 0.0f));
-	TranslationBack = glm::translate(TranslationToOrigin, (vec3(0.0f, 0.0f, 0.0f) + zoomSpeed));
+	TranslationToOrigin = glm::translate(mat4(1.0f), -positionToFocus);
+	TranslationBack = glm::translate(TranslationToOrigin, positionToFocus + zoomSpeed);
 	m_Position = vec3(TranslationBack * vec4(m_Position, 1.0f));
 
 	DEBUGShowCoords();
