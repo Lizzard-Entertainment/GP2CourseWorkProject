@@ -18,7 +18,7 @@ PostProcessing::~PostProcessing()
 void PostProcessing::changeFragmentShaderFilename(std::string& fragmentShaderFilename, std::string& path)
 {
 	createShader(m_VertexShader, path + fragmentShaderFilename);
-	//std::cout << m_VertexShader << std::endl << path + fragmentShaderFilename << std::endl << std::endl;
+	std::cout << m_VertexShader << std::endl << path + fragmentShaderFilename << std::endl << std::endl;
 	createFullScreenQuad();
 }
 
@@ -51,18 +51,19 @@ void PostProcessing::createShader(std::string& vertexShaderFilename, std::string
 	glDeleteShader(fragmentShaderProgram);
 
 	glBindAttribLocation(m_PostProcessingProgram, 0, "vertexPosition");
-
 }
 
 void PostProcessing::createFullScreenQuad()
 {
 	/* init_resources */
-	GLfloat vertices[] = {
+	GLfloat vertices[] = 
+	{
 		-1, -1,
 		1, -1,
 		-1, 1,
 		1, 1,
 	};
+
 	glGenBuffers(1, &m_FullScreenVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_FullScreenVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);

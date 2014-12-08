@@ -1,9 +1,6 @@
 #include "Mesh.h"
 #include "Vertex.h"
 
-#include "Mesh.h"
-#include "Vertex.h"
-
 Mesh::Mesh()
 {
 	m_VertexCount = 0;
@@ -31,6 +28,21 @@ void Mesh::init()
 	glGenBuffers(1, &m_EBO);
 	//Make the EBO active
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+
+	//DOES NOT WORK ON AMD AND INTEL PROCESSOR. 
+	////Tell the shader that 0 is the position element
+	//glEnableVertexAttribArray(0);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), NULL);
+	//glEnableVertexAttribArray(1);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)sizeof(vec3));
+	//glEnableVertexAttribArray(2);
+	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec3)));
+	//glEnableVertexAttribArray(3);
+	//glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec3) + sizeof(vec2)));
+	//glEnableVertexAttribArray(4);
+	//glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec3) + sizeof(vec2) + sizeof(vec4)));
+	//glEnableVertexAttribArray(5);
+	//glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec3) + sizeof(vec2) + sizeof(vec4) + sizeof(vec3)));
 }
 
 void Mesh::destroy()
@@ -45,7 +57,6 @@ void Mesh::bind()
 	glBindVertexArray(m_VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-
 }
 
 void Mesh::copyVertexData(int count, int stride, void ** data)
