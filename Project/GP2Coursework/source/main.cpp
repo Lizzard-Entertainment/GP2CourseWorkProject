@@ -478,18 +478,18 @@ void HandleInput(SDL_Keycode key)
 	}
 
 	//Switch shaders - BROKEN AT THE MOMENT DUE TO BRAIN'S AMD/INTEL FIX. 
-	//if (key == SDLK_TAB)
-	//{
-	//	//Increment PPS index.  If the index exceeds the capacity of the array, set index to 0.
-	//	PPindex++;
-	//	if (PPindex >= (sizeof(PostProcessingFilterPaths) / sizeof(*PostProcessingFilterPaths)))
-	//		PPindex = 0;
+	if (key == SDLK_TAB)
+	{
+		//Increment PPS index.  If the index exceeds the capacity of the array, set index to 0.
+		PPindex++;
+		if (PPindex >= (sizeof(PostProcessingFilterPaths) / sizeof(*PostProcessingFilterPaths)))
+			PPindex = 0;
 
-	//	//Change post processing shader
-	//	postProcessor.changeFragmentShaderFilename(PostProcessingFilterPaths[PPindex], ASSET_PATH + POSTP_SHADER_PATH);
-	//	std::cout << "Debug - Current Post Processing Shader: " << PostProcessingFilterNames[PPindex] << std::endl << std::endl;
-	//	return;
-	//}
+		//Change post processing shader
+		postProcessor.changeFragmentShaderFilename(PostProcessingFilterPaths[PPindex], ASSET_PATH + POSTP_SHADER_PATH);
+		std::cout << "Debug - Current Post Processing Shader: " << PostProcessingFilterNames[PPindex] << std::endl << std::endl;
+		return;
+	}
 
 	//A switch statement and cameraEnum would be better here.
 	if (isDebugCam)	
