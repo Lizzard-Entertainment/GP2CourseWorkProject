@@ -1,6 +1,5 @@
 //TO DO
 //FIX SHADER ERROR.  NOT SURE WHERE TO START.
-//METHOD FOR RENDER.  TAKES INPUT OF ALL REQUIRED PARAMETERS FROM DRAWING SECTION.
 
 //Headers
 #include <iostream>
@@ -28,6 +27,7 @@
 #include "Light.h"
 #include "FBXLoader.h"
 #include "PostProcessing.h"
+#include "CameraTypeEnum.h"
 
 //Using statements
 using glm::mat4;
@@ -67,8 +67,10 @@ vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 //Main scene game objects
 std::vector<GameObject*> displayList;
+std::vector<GameObject*> camerasVec;
 GameObject * orbitCamera;
-GameObject * debugCamera;
+GameObject * flyingCamera;
+GameObject * FPCamera;
 GameObject * mainCamera;  //This is switched out with the orbit or debug camera, and is used in any calculations etc.
 GameObject * mainLight;
 PostProcessing postProcessor;
@@ -97,9 +99,6 @@ std::string PostProcessingFilterNames[6] =
 //Post processing index
 int PPindex = 0;
 
-//Main camera controls
-bool isDebugCam = false; //When true, the camera can be controlled freely by the player.  When false, the camera orbits the centre of the scene.  Keyboard M
-
 void CheckForErrors()
 {
     GLenum error;
@@ -126,6 +125,7 @@ void InitWindow(int width, int height, bool fullscreen)
 void CleanUp()
 {
 
+	//Clean up game objects
     auto iter=displayList.begin();
 	while(iter!=displayList.end())
     {
@@ -143,6 +143,24 @@ void CleanUp()
     }
     displayList.clear();
     
+	//Clean up cameras
+	iter = camerasVec.begin();
+	while (iter != camerasVec.end())
+	{
+		(*iter)->destroy();
+		if ((*iter))
+		{
+			delete (*iter);
+			(*iter) = NULL;
+			iter = camerasVec.erase(iter);
+		}
+		else
+		{
+			iter++;
+		}
+	}
+	camerasVec.clear();
+
 	// clean up in reverse
 	postProcessor.destroy();
 	SDL_GL_DeleteContext(glcontext);
@@ -201,8 +219,13 @@ void setViewport( int width, int height )
     glViewport( 0, 0, ( GLsizei )width, ( GLsizei )height );
 }
 
+
 void Initialise()
 {
+	//Forward declare modeldrawcall
+	void ModelDrawCall(std::string modelFile, std::string vertexShaderFile, std::string fragmentShaderFile,
+		std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation);
+
 	//Set shader paths
 	std::string vsPath = ASSET_PATH + POSTP_SHADER_PATH + "passThroughVS.glsl";
 	std::string fsPath = ASSET_PATH + POSTP_SHADER_PATH + PostProcessingFilterPaths[PPindex];
@@ -211,11 +234,12 @@ void Initialise()
 	postProcessor.init(WINDOW_WIDTH, WINDOW_HEIGHT, vsPath, fsPath);
 
 #pragma region Euan
+
 #pragma region Orbit Camera
 
 	//Set up orbitcamera gameobject - this will be the initial camera
 	orbitCamera = new GameObject();
-	orbitCamera->setName("OrbitCamera");
+	orbitCamera->setName("Orbit Camera");
     
 	//Set up orbitcamera transform
 	Transform *t = new Transform();
@@ -228,24 +252,52 @@ void Initialise()
 	c->setLookAt(0.0f, 0.0f, 0.0f);
 	orbitCamera->setCamera(c);
 
+	//Push to cameras vector
+	camerasVec.push_back(orbitCamera);
+
 #pragma endregion
 
-#pragma region Debug camera
+#pragma region Debug camera - TODO: NOT IMPLEMENTED.  IDENTICAL TO ORBIT FOR THE TIME BEING.
 
 	//Set up debugcamera gameobject
-	debugCamera = new GameObject();
-	debugCamera->setName("DebugCamera");
+	flyingCamera = new GameObject();
+	flyingCamera->setName("Flying Camera");
 
 	//Set up debugcamera transform
 	t = new Transform();
 	t->setPosition(0.0f, 0.0f, 10.0f);
-	debugCamera->setTransform(t);
+	flyingCamera->setTransform(t);
 
 	//Set up debugcamera camera
 	c = new Camera();
 	c->setAspectRatio((float)(WINDOW_WIDTH / WINDOW_HEIGHT));
 	c->setLookAt(0.0f, 0.0f, 0.0f);
-	debugCamera->setCamera(c);
+	flyingCamera->setCamera(c);
+
+	//Push to cameras vector
+	camerasVec.push_back(flyingCamera);
+
+#pragma endregion
+
+#pragma region First Person camera - TODO: NOT IMPLEMENTED.  IDENTICAL TO ORBIT FOR THE TIME BEING.
+
+	//Equate to orbit for the time being.
+	FPCamera = new GameObject();
+	FPCamera->setName("First Person Camera");
+
+	//Set up debugcamera transform
+	t = new Transform();
+	t->setPosition(0.0f, 0.0f, 10.0f);
+	FPCamera->setTransform(t);
+
+	//Set up debugcamera camera
+	c = new Camera();
+	c->setAspectRatio((float)(WINDOW_WIDTH / WINDOW_HEIGHT));
+	c->setLookAt(0.0f, 0.0f, 0.0f);
+	FPCamera->setCamera(c);
+
+	//Push to cameras vector
+	camerasVec.push_back(FPCamera);
 
 #pragma endregion
 
@@ -253,10 +305,11 @@ void Initialise()
 
 	//Adds the main camera to the list of game objects, since it's the game object that will be worked on.
 	//The debug and orbit camera act as definitions for the main camera, and are not worked on directly.
-	mainCamera = orbitCamera;
+	mainCamera = camerasVec[ORBIT_CAMERA];
 	displayList.push_back(mainCamera);
 
 #pragma endregion
+
 #pragma endregion
 
 	//Set up main light game object
@@ -275,68 +328,24 @@ void Initialise()
 	//Add main light to game object list.
 	displayList.push_back(mainLight);
 
-    //Initialise all  game objects
+    //Initialise all other game objects
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
     {
         (*iter)->init();
     }
     
-	//Load and place model with bump mapping.
-	std::string modelPath = ASSET_PATH + MODEL_PATH + "armoredrecon.fbx";
-	GameObject * go = loadFBXFromFile(modelPath);
-	for (int i = 0; i < go->getChildCount(); i++)
-	{
-		Material * material = new Material();
-		material->init();
-		std::string vsPath = ASSET_PATH + DRAWING_SHADER_PATH + "BumpmappingVS.glsl";
-		std::string fsPath = ASSET_PATH + DRAWING_SHADER_PATH + "BumpmappingFS.glsl";
-		material->loadShader(vsPath, fsPath);
+#pragma region Calum
+	/*TODO: Calum
+	Place models and stuff
+	*/
+#pragma endregion
 
-		std::string diffTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_diff.png";
-		material->loadDiffuseMap(diffTexturePath);
+	ModelDrawCall("armoredrecon.fbx", "BumpmappingVS.glsl", "BumpmappingFS.glsl",
+		"armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f));
 
-		std::string specTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_spec.png";
-		material->loadSpecularMap(specTexturePath);
-
-		std::string bumpTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_N.png";
-		material->loadBumpMap(bumpTexturePath);
-
-		go->getChild(i)->setMaterial(material);
-	}
-	go->getTransform()->setPosition(2.5f, 0.0f, 0.0f);
-	go->getTransform()->setRotation(0.0f, -40.0f, 0.0f);
-	displayList.push_back(go);
-
-	//Load and place model with parallex mapping.
-	modelPath = ASSET_PATH + MODEL_PATH + "armoredrecon.fbx";
-	go = loadFBXFromFile(modelPath);
-	for (int i = 0; i < go->getChildCount(); i++)
-	{
-		Material * material = new Material();
-		material->init();
-		std::string vsPath = ASSET_PATH + DRAWING_SHADER_PATH + "ParallaxMappingVS.glsl";
-		std::string fsPath = ASSET_PATH + DRAWING_SHADER_PATH + "ParallaxMappingFS.glsl";
-		material->loadShader(vsPath, fsPath);
-
-		std::string diffTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_diff.png";
-		material->loadDiffuseMap(diffTexturePath);
-
-		std::string specTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_spec.png";
-		material->loadSpecularMap(specTexturePath);
-
-		std::string bumpTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_N.png";
-		material->loadBumpMap(bumpTexturePath);
-
-		std::string heightTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_Height.png";
-		material->loadHeightMap(heightTexturePath);
-
-		go->getChild(i)->setMaterial(material);
-	}
-	go->getTransform()->setPosition(-2.5f, 0.0f, 0.0f);
-	go->getTransform()->setRotation(0.0f, 40.0f, 0.0f);
-	displayList.push_back(go);
+	ModelDrawCall("armoredrecon.fbx", "ParallaxMappingVS.glsl", "ParallaxMappingFS.glsl", 
+		"armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f));
 }
-
 
 //Function to update the game state
 void update()
@@ -451,25 +460,43 @@ void render()
 }
 
 #pragma region Euan
+
+void ModelDrawCall(std::string modelFile, std::string vertexShaderFile, std::string fragmentShaderFile, 
+	std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation)
+{
+	GameObject * go = loadFBXFromFile(ASSET_PATH + MODEL_PATH + modelFile);
+	for (int i = 0; i < go->getChildCount(); i++)
+	{
+		Material * material = new Material();
+		material->init();
+		material->loadShader(ASSET_PATH + DRAWING_SHADER_PATH + vertexShaderFile, ASSET_PATH + DRAWING_SHADER_PATH + fragmentShaderFile);
+		material->loadDiffuseMap(ASSET_PATH + TEXTURE_PATH + diffuseFile);
+		material->loadSpecularMap(ASSET_PATH + TEXTURE_PATH + specularFile);
+		material->loadBumpMap(ASSET_PATH + TEXTURE_PATH + normalFile);
+		if (heightFile != "") material->loadHeightMap(ASSET_PATH + TEXTURE_PATH + heightFile);  //BUMP MAPPING DOESN'T USE A HEIGHT MAP.  IF THIS IS NULL, SKIP OVER.
+		go->getChild(i)->setMaterial(material);
+	}
+	go->getTransform()->setPosition(position.x, position.y, position.z);
+	go->getTransform()->setRotation(rotation.x, rotation.y, rotation.z);
+	displayList.push_back(go);
+}
+
 void HandleInput(SDL_Keycode key)
 {
 	float cameraSpeed = 1.0f;
 	vec3 origin = vec3(0.0f, 0.0f, 0.0f);
-	
+
 	//Switch main camera and return out of the method.
 	if (key == SDLK_m)
 	{
-		//Switch between cameras.
-		if (mainCamera->getName() == "OrbitCamera")
-		{
-			mainCamera = debugCamera;
-			isDebugCam = true;
-		}
-		else
-		{
-			mainCamera = orbitCamera;
-			isDebugCam = false;
-		}
+		//Increment camera index.
+		cameraIndex++;
+
+		//If camera index exceeds 2, set to 0.
+		if (cameraIndex > 2) cameraIndex = 0;
+
+		//Assign main camera to position in cameras vector.
+		mainCamera = camerasVec[cameraIndex];
 
 		std::cout << "Debug - Main Camera: " << mainCamera->getName() << std::endl << std::endl;
 
@@ -491,63 +518,87 @@ void HandleInput(SDL_Keycode key)
 		return;
 	}
 
-	//A switch statement and cameraEnum would be better here.
-	if (isDebugCam)	
+	//Camera movement.
+	switch (cameraIndex)
 	{
-		/*
-		TODO - TOM
-		flying/debug controls.  WASD for movement, mouse to aim.
-		*/
-		return;
-	}
-	else  //Is orbit camera.
-	{
-		switch (key)
+		case ORBIT_CAMERA:
 		{
-			case SDLK_a:
+			switch (key)
 			{
-				mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, Y_AXIS, origin);
-				break;
-			}
+#pragma region Orbit camera controls: A-D = Pan.  W-S = Pitch.  Z-C = Zoom
+				case SDLK_a:
+				{
+					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, Y_AXIS, origin);
+					break;
+				}
 
-			case SDLK_d:
-			{
-				mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, Y_AXIS, origin);
-				break;
-			}
+				case SDLK_d:
+				{
+					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, Y_AXIS, origin);
+					break;
+				}
 
-			case SDLK_w:
-			{
-				//if (mainCamera->getTransform()->getPosition().y < 7.0f)  LIMITATIONS TEMPORARILY OMITTED DUE TO BUG.
-				//{
+				case SDLK_w:
+				{
+					//if (mainCamera->getTransform()->getPosition().y < 7.0f)  LIMITATIONS TEMPORARILY OMITTED DUE TO BUG.
+					//{
 					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, origin);
 					break;
-				//}
-				//else break;
-			}
+					//}
+					//else break;
+				}
 
-			case SDLK_s:
-			{
-				//if (mainCamera->getTransform()->getPosition().y > 1.0f) LIMITATIONS TEMPORARILY OMITTED DUE TO BUG.
-				//{
+				case SDLK_s:
+				{
+					//if (mainCamera->getTransform()->getPosition().y > 1.0f) LIMITATIONS TEMPORARILY OMITTED DUE TO BUG.
+					//{
 					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, origin);
 					break;
-				//}
-				//else break;
-			}
+					//}
+					//else break;
+				}
 
-			case SDLK_z:
-			{
-				mainCamera->getTransform()->zoom(-cameraSpeed, origin);
-				break;
-			}
+				case SDLK_z:
+				{
+					mainCamera->getTransform()->zoom(-cameraSpeed, origin);
+					break;
+				}
 
-			case SDLK_c:
-			{
-				mainCamera->getTransform()->zoom(cameraSpeed, origin);
-				break;
+				case SDLK_c:
+				{
+					mainCamera->getTransform()->zoom(cameraSpeed, origin);
+					break;
+				}
+#pragma endregion
 			}
 		}
+		case FLYING_CAMERA:
+		{
+#pragma region Flying Camera controls: WASD for movement, mouse to aim.
+#pragma region Tom
+			/*
+			TODO - TOM
+			flying/debug camera
+			*/
+			return;
+#pragma endregion
+#pragma endregion
+		}
+		case FIRST_PERSON_CAMERA:
+		{
+#pragma region First Person Camera controls: WASD movement, mouse to aim (and shoot)
+#pragma region Tom
+			/*
+			TODO - CALUM
+			first person camera when you get around to it.  WASD movement, mouse to aim (and shoot)
+			*/
+			return;
+#pragma endregion
+#pragma endregion
+		}
+
+		default:
+			break;
 	}
 }
 #pragma endregion

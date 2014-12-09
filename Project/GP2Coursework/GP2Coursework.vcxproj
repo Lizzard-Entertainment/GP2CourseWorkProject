@@ -83,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\Camera.h" />
+    <ClInclude Include="headers\CameraTypeEnum.h" />
     <ClInclude Include="headers\Component.h" />
     <ClInclude Include="headers\FBXLoader.h" />
     <ClInclude Include="headers\GameObject.h" />

@@ -98,6 +98,9 @@
     <ClInclude Include="headers\PostProcessing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="headers\CameraTypeEnum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\PostProcessing\BlurFilterPPFS.glsl">
