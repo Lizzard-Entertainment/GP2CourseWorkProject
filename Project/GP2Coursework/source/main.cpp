@@ -503,7 +503,7 @@ void HandleInput(SDL_Keycode key)
 	{
 		//Increment PPS index.  If the index exceeds the capacity of the array, set index to 0.
 		PPindex++;
-		if (PPindex >= (sizeof(PostProcessingArray) / sizeof(*PostProcessingArray)))  //MAY BE EASIER TO HARD CODE THE VALUE (6).
+		if (PPindex >= (sizeof(PostProcessingArray) / sizeof(*PostProcessingArray)))
 			PPindex = 0;
 
 		//Change post processing shader
