@@ -45,7 +45,7 @@ void Material::bind()
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, m_HeightMap);
 
-
+#pragma region Brians mesh fix.  Breaks shader tabbing.
 	GLint vertexPosLocation = glGetAttribLocation(m_ShaderProgram, "vertexPosition");
 	GLint vertexNormalLocation = glGetAttribLocation(m_ShaderProgram, "vertexNormals");
 	GLint vertexTexLocation = glGetAttribLocation(m_ShaderProgram, "vertexTexCoords");
@@ -73,6 +73,7 @@ void Material::bind()
 	glVertexAttribPointer(vertexTangentLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec3) + sizeof(vec2) + sizeof(vec4)));
 	glEnableVertexAttribArray(vertexBinormalLocation);
 	glVertexAttribPointer(vertexBinormalLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec3) + sizeof(vec2) + sizeof(vec4) + sizeof(vec3)));
+#pragma endregion
 }
 
 bool Material::loadShader(const std::string& vsFilename, const std::string& fsFilename)

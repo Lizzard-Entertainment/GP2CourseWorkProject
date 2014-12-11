@@ -29,7 +29,8 @@ void Mesh::init()
 	//Make the EBO active
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 
-	//DOES NOT WORK ON AMD AND INTEL PROCESSOR. 
+#pragma region Code before Brians mesh fix.
+	////DOES NOT WORK ON AMD AND INTEL PROCESSOR. 
 	////Tell the shader that 0 is the position element
 	//glEnableVertexAttribArray(0);
 	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), NULL);
@@ -43,6 +44,7 @@ void Mesh::init()
 	//glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec3) + sizeof(vec2) + sizeof(vec4)));
 	//glEnableVertexAttribArray(5);
 	//glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec3) + sizeof(vec2) + sizeof(vec4) + sizeof(vec3)));
+#pragma endregion
 }
 
 void Mesh::destroy()

@@ -15,12 +15,14 @@ PostProcessing::~PostProcessing()
 
 }
 
+#pragma region Euan
 void PostProcessing::changeFragmentShaderFilename(std::string& fragmentShaderFilename, std::string& path)
 {
 	createShader(m_VertexShader, path + fragmentShaderFilename);
-	std::cout << m_VertexShader << std::endl << path + fragmentShaderFilename << std::endl << std::endl;
+	//std::cout << m_VertexShader << std::endl << path + fragmentShaderFilename << std::endl << std::endl;
 	createFullScreenQuad();
 }
+#pragma endregion
 
 void PostProcessing::init(int width, int height, std::string& vertexShaderFilename, std::string& fragmentShaderFilename)
 {

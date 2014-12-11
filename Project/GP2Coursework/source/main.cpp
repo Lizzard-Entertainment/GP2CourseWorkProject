@@ -67,7 +67,7 @@ vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 //Main scene game objects
 std::vector<GameObject*> displayList;
-std::vector<GameObject*> camerasVec;
+std::vector<GameObject*> camerasVec;  //Vecgor for the camera types.  
 GameObject * orbitCamera;
 GameObject * flyingCamera;
 GameObject * FPCamera;
@@ -75,25 +75,15 @@ GameObject * mainCamera;  //This is switched out with the orbit or debug camera,
 GameObject * mainLight;
 PostProcessing postProcessor;
 
-//Post Processing array
-std::string PostProcessingFilterPaths[6] =
+//Post Processing array.   {Path, Name}
+std::string PostProcessingArray[6][2]
 {
-	"NonePPFS.glsl",
-	"BlurFilterPPFS.glsl",
-	"BWPPFS.glsl",
-	"SepiaPPFS.glsl",
-	"PolaroidPPFS.glsl",
-	"InvertedPPFS.glsl",
-};
-
-std::string PostProcessingFilterNames[6] =
-{
-	"NONE",
-	"BLUR",
-	"BLACK AND WHITE",
-	"SEPIA",
-	"POLAROID",
-	"INVERTED"
+	{ "NonePPFS.glsl" , "NONE"},
+	{ "BlurFilterPPFS.glsl" , "BLUR"},
+	{ "BWPPFS.glsl" , "BLACK AND WHITE" },
+	{ "SepiaPPFS.glsl", "SEPIA" },
+	{ "PolaroidPPFS.glsl", "POLAROID" },
+	{ "InvertedPPFS.glsl" , "INVERTED" }
 };
 
 //Post processing index
@@ -228,7 +218,7 @@ void Initialise()
 
 	//Set shader paths
 	std::string vsPath = ASSET_PATH + POSTP_SHADER_PATH + "passThroughVS.glsl";
-	std::string fsPath = ASSET_PATH + POSTP_SHADER_PATH + PostProcessingFilterPaths[PPindex];
+	std::string fsPath = ASSET_PATH + POSTP_SHADER_PATH + PostProcessingArray[PPindex][0];
 
 	//Initialise post-processor
 	postProcessor.init(WINDOW_WIDTH, WINDOW_HEIGHT, vsPath, fsPath);
@@ -257,6 +247,7 @@ void Initialise()
 
 #pragma endregion
 
+#pragma region Tom
 #pragma region Debug camera - TODO: NOT IMPLEMENTED.  IDENTICAL TO ORBIT FOR THE TIME BEING.
 
 	//Set up debugcamera gameobject
@@ -278,7 +269,9 @@ void Initialise()
 	camerasVec.push_back(flyingCamera);
 
 #pragma endregion
+#pragma endregion
 
+#pragma region Calum
 #pragma region First Person camera - TODO: NOT IMPLEMENTED.  IDENTICAL TO ORBIT FOR THE TIME BEING.
 
 	//Equate to orbit for the time being.
@@ -299,6 +292,7 @@ void Initialise()
 	//Push to cameras vector
 	camerasVec.push_back(FPCamera);
 
+#pragma endregion
 #pragma endregion
 
 #pragma region Main Camera
@@ -509,12 +503,12 @@ void HandleInput(SDL_Keycode key)
 	{
 		//Increment PPS index.  If the index exceeds the capacity of the array, set index to 0.
 		PPindex++;
-		if (PPindex >= (sizeof(PostProcessingFilterPaths) / sizeof(*PostProcessingFilterPaths)))
+		if (PPindex >= (sizeof(PostProcessingArray) / sizeof(*PostProcessingArray)))  //MAY BE EASIER TO HARD CODE THE VALUE (6).
 			PPindex = 0;
 
 		//Change post processing shader
-		postProcessor.changeFragmentShaderFilename(PostProcessingFilterPaths[PPindex], ASSET_PATH + POSTP_SHADER_PATH);
-		std::cout << "Debug - Current Post Processing Shader: " << PostProcessingFilterNames[PPindex] << std::endl << std::endl;
+		postProcessor.changeFragmentShaderFilename(PostProcessingArray[PPindex][0], ASSET_PATH + POSTP_SHADER_PATH);
+		std::cout << "Debug - Current Post Processing Shader: " << PostProcessingArray[PPindex][1] << std::endl << std::endl;
 		return;
 	}
 
@@ -587,7 +581,7 @@ void HandleInput(SDL_Keycode key)
 		case FIRST_PERSON_CAMERA:
 		{
 #pragma region First Person Camera controls: WASD movement, mouse to aim (and shoot)
-#pragma region Tom
+#pragma region Calum
 			/*
 			TODO - CALUM
 			first person camera when you get around to it.  WASD movement, mouse to aim (and shoot)

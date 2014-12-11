@@ -87,6 +87,7 @@ mat4& Transform::getModel()
     return m_Model;
 }
 
+#pragma region Euan
 void Transform::rotateAroundPoint(float rotation, vec3 axis, vec3 focus)
 {
 	//Initialise matrices
@@ -128,3 +129,4 @@ void Transform::DEBUGShowCoords()
 	//Prints the XYZ of the camera out to the console.
 	std::cout << "Debug - Position: " << std::to_string(m_Position.x) << " , " << std::to_string((m_Position.y)) << " , " << std::to_string((m_Position.z)) << std::endl << std::endl;
 }
+#pragma endregion
