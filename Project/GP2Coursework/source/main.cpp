@@ -485,7 +485,7 @@ void HandleMouse(Sint32 x, Sint32 y)
 	Camera * c = flyingCamera->getCamera();
 	vec3 oldLookAt = c->getLookAt();
 
-	c->setLookAt(oldLookAt.x + (x*0.01), oldLookAt.y + (y*0.01), 0.0f);
+	c->setLookAt(oldLookAt.x + (x*0.01f), oldLookAt.y + (y*0.01f), 0.0f);
 
 
 	/* If the mouse is moving to the left */
@@ -612,48 +612,47 @@ void HandleInput(SDL_Keycode key)
 #pragma region Flying Camera controls: WASD for movement, mouse to aim.
 #pragma region Tom
 
+			float Mx;
+			float My;
 
 			// ------ TOM
 			switch (key)
 			{
-#pragma region Orbit camera controls: A-D = Pan.  W-S = Pitch.  Z-C = Zoom
-			case SDLK_g:
-			{
-				mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, Y_AXIS, origin);
-				break;
-			}
 
-			case SDLK_j:
-			{
-				mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, Y_AXIS, origin);
-				break;
-			}
+				case SDLK_g:
+				{
+					Mx = cameraSpeed*(-1);
+					My = 0;
+					break;
+				}
 
-			case SDLK_z:
-			{
-				//if (mainCamera->getTransform()->getPosition().y < 7.0f)  LIMITATIONS TEMPORARILY OMITTED DUE TO BUG.
-				//{
-				mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, origin);
-				break;
-				//}
-				//else break;
-			}
+				case SDLK_j:
+				{
+					Mx = cameraSpeed*1;
+					My = 0;
+				}
 
-			case SDLK_h:
-			{
-				//if (mainCamera->getTransform()->getPosition().y > 1.0f) LIMITATIONS TEMPORARILY OMITTED DUE TO BUG.
-				//{
-				mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, origin);
-				break;
-				//}
-				//else break;
-			}
+				case SDLK_z:
+				{
+					My = cameraSpeed*(-1);
+					Mx = 0;
+				}
+
+				case SDLK_h:
+				{
+					My = cameraSpeed*1;
+					Mx = 0;
+				}
 
 
-			default:
-				break;
-#pragma endregion
+				default:
+					break;
+
 			}
+
+			vec3 oldMinCamPos = mainCamera->getTransform()->getPosition();
+			mainCamera->getTransform()->setPosition(oldMinCamPos.x + Mx, oldMinCamPos.y + My, oldMinCamPos.z);
+
 			return;
 
 
