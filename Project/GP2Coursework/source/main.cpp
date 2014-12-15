@@ -89,6 +89,11 @@ std::string PostProcessingArray[6][2]
 //Post processing index
 int PPindex = 0;
 
+
+//Input globals
+float cameraSpeed = 1.0f;
+vec3 origin = vec3(0.0f, 0.0f, 0.0f);
+
 void CheckForErrors()
 {
     GLenum error;
@@ -114,6 +119,7 @@ void InitWindow(int width, int height, bool fullscreen)
 
 void CleanUp()
 {
+	// clean up in reverse
 
 	//Clean up game objects
     auto iter=displayList.begin();
@@ -133,6 +139,9 @@ void CleanUp()
     }
     displayList.clear();
     
+	//Clean up post processor
+	postProcessor.destroy();
+
 	//Clean up cameras
 	iter = camerasVec.begin();
 	while (iter != camerasVec.end())
@@ -151,8 +160,6 @@ void CleanUp()
 	}
 	camerasVec.clear();
 
-	// clean up in reverse
-	postProcessor.destroy();
 	SDL_GL_DeleteContext(glcontext);
 	SDL_DestroyWindow(window);
 	IMG_Quit();
@@ -256,7 +263,7 @@ void Initialise()
 
 	//Set up debugcamera transform
 	t = new Transform();
-	t->setPosition(0.0f, 0.0f, 10.0f);
+	t->setPosition(0.0f, 2.0f, 10.0f);
 	flyingCamera->setTransform(t);
 
 	//Set up debugcamera camera
@@ -280,7 +287,7 @@ void Initialise()
 
 	//Set up debugcamera transform
 	t = new Transform();
-	t->setPosition(0.0f, 0.0f, 10.0f);
+	t->setPosition(0.0f, 5.0f, 10.0f);
 	FPCamera->setTransform(t);
 
 	//Set up debugcamera camera
@@ -298,7 +305,7 @@ void Initialise()
 #pragma region Main Camera
 
 	//Adds the main camera to the list of game objects, since it's the game object that will be worked on.
-	//The debug and orbit camera act as definitions for the main camera, and are not worked on directly.
+	//The cameras act as definitions for the main camera, and are not worked on directly.
 	mainCamera = camerasVec[ORBIT_CAMERA];
 	displayList.push_back(mainCamera);
 
@@ -347,6 +354,7 @@ void update()
     //Update all game objects.
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
     {
+		//Shader breaking - 4th iteration
         (*iter)->update();
     }
 }
@@ -424,7 +432,7 @@ void renderGameObject(GameObject * pObject)
 
 	for (int i = 0; i < pObject->getChildCount(); i++)
 	{
-		//SHADER TABBING SEEMS TO BREAK HERE.
+		//SHADER TABBING SEEMS TO BREAK HERE - 4th iteration.
 		renderGameObject(pObject->getChild(i));
 	}
 }
@@ -435,13 +443,16 @@ void render()
 	//Bind Framebuffer
 	postProcessor.bind();
 
+	//Clear
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
 	glClearDepth(1.0f);
+
     //clear the colour and depth buffer
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     //alternative sytanx
 	for (auto iter = displayList.begin(); iter != displayList.end(); iter++)
 	{
@@ -477,9 +488,6 @@ void ModelDrawCall(std::string modelFile, std::string vertexShaderFile, std::str
 
 void HandleInput(SDL_Keycode key)
 {
-	float cameraSpeed = 1.0f;
-	vec3 origin = vec3(0.0f, 0.0f, 0.0f);
-
 	//Switch main camera and return out of the method.
 	if (key == SDLK_m)
 	{
@@ -489,10 +497,13 @@ void HandleInput(SDL_Keycode key)
 		//If camera index exceeds 2, set to 0.
 		if (cameraIndex > 2) cameraIndex = 0;
 
-		//Assign main camera to position in cameras vector.
+		//Assign main camera to position in cameras vector. 
 		mainCamera = camerasVec[cameraIndex];
 
-		std::cout << "Debug - Main Camera: " << mainCamera->getName() << std::endl << std::endl;
+		//Remove the first element in display list (maincamera), then re-add the main camera at the front - one before the beginning, then clean up the vector.		
+		displayList.erase(displayList.begin());
+		displayList.insert(displayList.begin(), mainCamera);
+		displayList.shrink_to_fit();
 
 		//Return out.  No further processing on this key press.
 		return;
@@ -517,9 +528,10 @@ void HandleInput(SDL_Keycode key)
 	{
 		case ORBIT_CAMERA:
 		{
+			std::cout << "Orbit camera" << std::endl;
+			//Orbit camera controls: A-D = Pan.  W-S = Pitch.  Z-C = Zoom
 			switch (key)
 			{
-#pragma region Orbit camera controls: A-D = Pan.  W-S = Pitch.  Z-C = Zoom
 				case SDLK_a:
 				{
 					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, Y_AXIS, origin);
@@ -563,12 +575,15 @@ void HandleInput(SDL_Keycode key)
 					mainCamera->getTransform()->zoom(cameraSpeed, origin);
 					break;
 				}
-#pragma endregion
 			}
+
+			return;
 		}
+
 		case FLYING_CAMERA:
 		{
-#pragma region Flying Camera controls: WASD for movement, mouse to aim.
+			std::cout << "Flying camera" << std::endl;
+			//Flying Camera controls: WASD for movement, mouse to aim.
 #pragma region Tom
 			/*
 			TODO - TOM
@@ -576,18 +591,17 @@ void HandleInput(SDL_Keycode key)
 			*/
 			return;
 #pragma endregion
-#pragma endregion
 		}
 		case FIRST_PERSON_CAMERA:
 		{
-#pragma region First Person Camera controls: WASD movement, mouse to aim (and shoot)
+			std::cout << "fp camera" << std::endl;
+			//First Person Camera controls: WASD movement, mouse to aim (and shoot)
 #pragma region Calum
 			/*
 			TODO - CALUM
 			first person camera when you get around to it.  WASD movement, mouse to aim (and shoot)
 			*/
 			return;
-#pragma endregion
 #pragma endregion
 		}
 
@@ -637,8 +651,8 @@ int main(int argc, char * arg[])
     //Value to hold the event generated by SDL
     SDL_Event event;
 
-	//Update console
-	system("cls");
+	//clear console
+	//system("cls");
 
     //Game Loop
 	while (running)

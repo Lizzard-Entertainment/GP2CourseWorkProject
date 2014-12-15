@@ -7,7 +7,6 @@ Camera::Camera()
 	m_Type = "Camera";
 	m_Up=vec3(0.0f,1.0f,0.0f);
 	m_NearClip=0.1f;
-	m_LookAt = vec3(0.0f, 0.0f, 0.0f);
 	m_FarClip = 1000.0f;
 	m_FOV=45.0f;
 	m_View = mat4();
