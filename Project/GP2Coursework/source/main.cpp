@@ -482,9 +482,17 @@ void ModelDrawCall(std::string modelFile, std::string vertexShaderFile, std::str
 void HandleMouse(Sint32 x, Sint32 y)
 {
 
+	Camera * c = flyingCamera->getCamera();
+	vec3 oldLookAt = c->getLookAt();
+
+	c->setLookAt(oldLookAt.x + (x*0.01), oldLookAt.y + (y*0.01), 0.0f);
+
+
 	/* If the mouse is moving to the left */
 	if (x < 0)
-		std::cout << "moving left " << std::endl;
+	{
+		std::cout << "moving left " << x << std::endl;
+	}
 	/* If the mouse is moving to the right */
 	else if (x > 0)
 		std::cout << "moving right " << std::endl;

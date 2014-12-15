@@ -34,6 +34,12 @@ void Camera::setLookAt(float x, float y, float z)
     m_LookAt = vec3(x, y, z);
 }
 
+vec3 Camera::getLookAt()
+{
+	return m_LookAt;
+}
+
+
 void Camera::setUp(float x, float y, float z)
 {
     m_Up = vec3(x, y, z);

@@ -22,6 +22,8 @@ public:
 	void update();
     
 	void setLookAt(float x, float y, float z);
+	vec3 getLookAt();
+
 	void setUp(float x, float y, float z);
     
     void setNearClip(float near);
