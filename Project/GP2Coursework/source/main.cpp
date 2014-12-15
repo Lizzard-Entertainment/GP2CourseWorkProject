@@ -14,6 +14,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <gl/GLU.h>
+#include <SDL_mouse.h>
 
 //Our headers
 #include "Vertex.h"
@@ -67,7 +68,7 @@ vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 //Main scene game objects
 std::vector<GameObject*> displayList;
-std::vector<GameObject*> camerasVec;  //Vecgor for the camera types.  
+std::vector<GameObject*> camerasVec;  //Vector for the camera types.  
 GameObject * orbitCamera;
 GameObject * flyingCamera;
 GameObject * FPCamera;
@@ -255,15 +256,15 @@ void Initialise()
 	flyingCamera->setName("Flying Camera");
 
 	//Set up debugcamera transform
-	t = new Transform();
-	t->setPosition(0.0f, 0.0f, 10.0f);
-	flyingCamera->setTransform(t);
+	Transform *t2 = new Transform();
+	t2->setPosition(0.0f, 0.0f, 10.0f);
+	flyingCamera->setTransform(t2);
 
 	//Set up debugcamera camera
-	c = new Camera();
-	c->setAspectRatio((float)(WINDOW_WIDTH / WINDOW_HEIGHT));
-	c->setLookAt(0.0f, 0.0f, 0.0f);
-	flyingCamera->setCamera(c);
+	Camera * c2 = new Camera();
+	c2->setAspectRatio((float)(WINDOW_WIDTH / WINDOW_HEIGHT));
+	c2->setLookAt(0.0f, 0.0f, 0.0f);
+	flyingCamera->setCamera(c2);
 
 	//Push to cameras vector
 	camerasVec.push_back(flyingCamera);
@@ -299,7 +300,7 @@ void Initialise()
 
 	//Adds the main camera to the list of game objects, since it's the game object that will be worked on.
 	//The debug and orbit camera act as definitions for the main camera, and are not worked on directly.
-	mainCamera = camerasVec[ORBIT_CAMERA];
+	mainCamera = camerasVec[FLYING_CAMERA];
 	displayList.push_back(mainCamera);
 
 #pragma endregion
@@ -563,18 +564,72 @@ void HandleInput(SDL_Keycode key)
 					mainCamera->getTransform()->zoom(cameraSpeed, origin);
 					break;
 				}
+
+				default:
+					break;
 #pragma endregion
 			}
+			return;
 		}
+
+
+
+
 		case FLYING_CAMERA:
 		{
+
 #pragma region Flying Camera controls: WASD for movement, mouse to aim.
 #pragma region Tom
-			/*
-			TODO - TOM
-			flying/debug camera
-			*/
+
+
+			// ------ TOM
+			switch (key)
+			{
+#pragma region Orbit camera controls: A-D = Pan.  W-S = Pitch.  Z-C = Zoom
+			case SDLK_g:
+			{
+				mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, Y_AXIS, origin);
+				break;
+			}
+
+			case SDLK_j:
+			{
+				mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, Y_AXIS, origin);
+				break;
+			}
+
+			case SDLK_z:
+			{
+				//if (mainCamera->getTransform()->getPosition().y < 7.0f)  LIMITATIONS TEMPORARILY OMITTED DUE TO BUG.
+				//{
+				mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, origin);
+				break;
+				//}
+				//else break;
+			}
+
+			case SDLK_h:
+			{
+				//if (mainCamera->getTransform()->getPosition().y > 1.0f) LIMITATIONS TEMPORARILY OMITTED DUE TO BUG.
+				//{
+				mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, origin);
+				break;
+				//}
+				//else break;
+			}
+
+
+			default:
+				break;
+#pragma endregion
+			}
 			return;
+
+
+// --- TOM
+
+
+			
 #pragma endregion
 #pragma endregion
 		}
