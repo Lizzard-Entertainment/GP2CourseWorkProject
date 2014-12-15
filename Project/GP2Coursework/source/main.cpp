@@ -481,13 +481,17 @@ void ModelDrawCall(std::string modelFile, std::string vertexShaderFile, std::str
 
 void HandleMouse(Sint32 x, Sint32 y)
 {
-	float sensitivity = 0.05f;
+	float sensitivity = 0.025f;
 
 	Camera * c = flyingCamera->getCamera();
 	vec3 oldLookAt = c->getLookAt();
-
+	vec3 newLookAt(0.0f,0.0f,0.0f);
+	newLookAt.x = oldLookAt.x + (x*sensitivity);
+	newLookAt.y = oldLookAt.y + (y*sensitivity);
+	newLookAt.z = 0.0f;
 	c->setLookAt(oldLookAt.x + (x*sensitivity), oldLookAt.y + (y*sensitivity), 0.0f);
 
+	//return newLookAt;
 
 /*	 for DEBUGGING
 	// If the mouse is moving to the left 
@@ -520,6 +524,8 @@ void HandleInput(SDL_Keycode key)
 
 		//If camera index exceeds 2, set to 0.
 		if (cameraIndex > 2) cameraIndex = 0;
+
+		displayList.push_back(mainCamera);
 
 		//Assign main camera to position in cameras vector.
 		mainCamera = camerasVec[cameraIndex];
@@ -616,6 +622,9 @@ void HandleInput(SDL_Keycode key)
 			float Mx = 0.0f;
 			float My = 0.0f;
 
+			Camera * c = flyingCamera->getCamera();
+			vec3 LookAt = c->getLookAt();
+
 			// ------ TOM
 			switch (key)
 			{
@@ -631,20 +640,23 @@ void HandleInput(SDL_Keycode key)
 				{
 					Mx = 1.0f;
 					My = 0.0f;
-					break;
-				}
-
-				case SDLK_z:
-				{
-					My = (-1.0f);
-					Mx = 0.0f;
+					
 					break;
 				}
 
 				case SDLK_h:
 				{
-					My = 1.0f;
-					Mx = 0.0f;
+					//My = (-1.0f);
+					//Mx = 0.0f;
+					mainCamera->getTransform()->zoom(1.0f, LookAt);
+					break;
+				}
+
+				case SDLK_z:
+				{
+					//My = 1.0f;
+					//Mx = 0.0f;
+					mainCamera->getTransform()->zoom(-1.0f, LookAt);
 					break;
 				}
 
