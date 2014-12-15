@@ -57,14 +57,29 @@ void Transform::setPosition(float x,float y,float z)
     m_Position=vec3(x,y,z);
 }
 
+void Transform::setPosition(vec3 xyz)
+{
+	m_Position = xyz;
+}
+
 void Transform::setRotation(float x,float y,float z)
 {
     m_Rotation=vec3(x,y,z);
 }
 
+void Transform::setRotation(vec3 xyz)
+{
+	m_Rotation = xyz;
+}
+
 void Transform::setScale(float x,float y,float z)
 {
     m_Scale=vec3(x,y,z);
+}
+
+void Transform::setScale(vec3 xyz)
+{
+	m_Scale = xyz;
 }
 
 vec3& Transform::getPosition()
