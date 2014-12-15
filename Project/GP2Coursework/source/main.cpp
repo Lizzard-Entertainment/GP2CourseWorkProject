@@ -476,6 +476,29 @@ void ModelDrawCall(std::string modelFile, std::string vertexShaderFile, std::str
 	displayList.push_back(go);
 }
 
+
+//-- TOM
+
+void HandleMouse(Sint32 x, Sint32 y)
+{
+
+	/* If the mouse is moving to the left */
+	if (x < 0)
+		std::cout << "moving left " << std::endl;
+	/* If the mouse is moving to the right */
+	else if (x > 0)
+		std::cout << "moving right " << std::endl;
+	/* If the mouse is moving up */
+	else if (y < 0)
+		std::cout << "moving up " << std::endl;
+	/* If the mouse is moving down */
+	else if (y > 0)
+		std::cout << "moving down " << std::endl;
+
+}
+
+//--TOM
+
 void HandleInput(SDL_Keycode key)
 {
 	float cameraSpeed = 1.0f;
@@ -716,20 +739,8 @@ int main(int argc, char * arg[])
 
 			if (event.type == SDL_MOUSEMOTION)
 			{
+				HandleMouse(event.motion.xrel, event.motion.yrel);
 
-				
-				/* If the mouse is moving to the left */
-				if (event.motion.xrel < 0)
-					std::cout << "moving left " << std::endl;
-				/* If the mouse is moving to the right */
-				else if (event.motion.xrel > 0)
-					std::cout << "moving right " << std::endl;
-				/* If the mouse is moving up */
-				else if (event.motion.yrel < 0)
-					std::cout << "moving up " << std::endl;
-				/* If the mouse is moving down */
-				else if (event.motion.yrel > 0)
-					std::cout << "moving down " << std::endl;
 			}
 
 
