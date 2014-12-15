@@ -49,7 +49,6 @@ void Mesh::init()
 #pragma endregion
 }
 
-
 void Mesh::destroy()
 {
 	glDeleteBuffers(1, &m_VBO);
