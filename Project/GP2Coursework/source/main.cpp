@@ -481,28 +481,28 @@ void ModelDrawCall(std::string modelFile, std::string vertexShaderFile, std::str
 
 void HandleMouse(Sint32 x, Sint32 y)
 {
+	float sensitivity = 0.05f;
 
 	Camera * c = flyingCamera->getCamera();
 	vec3 oldLookAt = c->getLookAt();
 
-	c->setLookAt(oldLookAt.x + (x*0.01f), oldLookAt.y + (y*0.01f), 0.0f);
+	c->setLookAt(oldLookAt.x + (x*sensitivity), oldLookAt.y + (y*sensitivity), 0.0f);
 
 
-	/* If the mouse is moving to the left */
+/*	 for DEBUGGING
+	// If the mouse is moving to the left 
 	if (x < 0)
-	{
 		std::cout << "moving left " << x << std::endl;
-	}
-	/* If the mouse is moving to the right */
+	// If the mouse is moving to the right 
 	else if (x > 0)
 		std::cout << "moving right " << std::endl;
-	/* If the mouse is moving up */
+	// If the mouse is moving up 
 	else if (y < 0)
 		std::cout << "moving up " << std::endl;
-	/* If the mouse is moving down */
+	// If the mouse is moving down 
 	else if (y > 0)
 		std::cout << "moving down " << std::endl;
-
+	*/
 }
 
 //--TOM
@@ -549,6 +549,7 @@ void HandleInput(SDL_Keycode key)
 	{
 		case ORBIT_CAMERA:
 		{
+			/*
 			switch (key)
 			{
 #pragma region Orbit camera controls: A-D = Pan.  W-S = Pitch.  Z-C = Zoom
@@ -599,7 +600,7 @@ void HandleInput(SDL_Keycode key)
 				default:
 					break;
 #pragma endregion
-			}
+			}*/
 			return;
 		}
 
@@ -612,8 +613,8 @@ void HandleInput(SDL_Keycode key)
 #pragma region Flying Camera controls: WASD for movement, mouse to aim.
 #pragma region Tom
 
-			float Mx;
-			float My;
+			float Mx = 0.0f;
+			float My = 0.0f;
 
 			// ------ TOM
 			switch (key)
@@ -621,27 +622,30 @@ void HandleInput(SDL_Keycode key)
 
 				case SDLK_g:
 				{
-					Mx = cameraSpeed*(-1);
-					My = 0;
+					Mx = (-1.0f);
+					My = 0.0f;
 					break;
 				}
 
 				case SDLK_j:
 				{
-					Mx = cameraSpeed*1;
-					My = 0;
+					Mx = 1.0f;
+					My = 0.0f;
+					break;
 				}
 
 				case SDLK_z:
 				{
-					My = cameraSpeed*(-1);
-					Mx = 0;
+					My = (-1.0f);
+					Mx = 0.0f;
+					break;
 				}
 
 				case SDLK_h:
 				{
-					My = cameraSpeed*1;
-					Mx = 0;
+					My = 1.0f;
+					Mx = 0.0f;
+					break;
 				}
 
 
@@ -652,6 +656,10 @@ void HandleInput(SDL_Keycode key)
 
 			vec3 oldMinCamPos = mainCamera->getTransform()->getPosition();
 			mainCamera->getTransform()->setPosition(oldMinCamPos.x + Mx, oldMinCamPos.y + My, oldMinCamPos.z);
+
+			// --DEBUG--
+			std::cout << "old pos: " << oldMinCamPos.x << " , " << oldMinCamPos.y << " , " << oldMinCamPos.z << std::endl;
+			std::cout << "new pos: " << oldMinCamPos.x + Mx << " , " << oldMinCamPos.y + My << " , " << oldMinCamPos.z << std::endl << std::endl;
 
 			return;
 
