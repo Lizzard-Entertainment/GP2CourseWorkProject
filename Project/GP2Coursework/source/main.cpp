@@ -713,6 +713,26 @@ int main(int argc, char * arg[])
 				//Handle keyboard inputs
 				HandleInput(event.key.keysym.sym);
 			}
+
+			if (event.type == SDL_MOUSEMOTION)
+			{
+
+				
+				/* If the mouse is moving to the left */
+				if (event.motion.xrel < 0)
+					std::cout << "moving left " << std::endl;
+				/* If the mouse is moving to the right */
+				else if (event.motion.xrel > 0)
+					std::cout << "moving right " << std::endl;
+				/* If the mouse is moving up */
+				else if (event.motion.yrel < 0)
+					std::cout << "moving up " << std::endl;
+				/* If the mouse is moving down */
+				else if (event.motion.yrel > 0)
+					std::cout << "moving down " << std::endl;
+			}
+
+
         }
 
 		//Update and render all game objects
