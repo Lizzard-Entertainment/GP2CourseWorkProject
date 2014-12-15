@@ -263,21 +263,15 @@ void Initialise()
 	flyingCamera->setName("Flying Camera");
 
 	//Set up debugcamera transform
-<<<<<<< HEAD
-	Transform *t2 = new Transform();
-	t2->setPosition(0.0f, 0.0f, 10.0f);
-	flyingCamera->setTransform(t2);
-=======
 	t = new Transform();
 	t->setPosition(0.0f, 2.0f, 10.0f);
 	flyingCamera->setTransform(t);
->>>>>>> origin/master
 
 	//Set up debugcamera camera
-	Camera * c2 = new Camera();
-	c2->setAspectRatio((float)(WINDOW_WIDTH / WINDOW_HEIGHT));
-	c2->setLookAt(0.0f, 0.0f, 0.0f);
-	flyingCamera->setCamera(c2);
+	c = new Camera();
+	c->setAspectRatio((float)(WINDOW_WIDTH / WINDOW_HEIGHT));
+	c->setLookAt(0.0f, 0.0f, 0.0f);
+	flyingCamera->setCamera(c);
 
 	//Push to cameras vector
 	camerasVec.push_back(flyingCamera);
@@ -312,13 +306,8 @@ void Initialise()
 #pragma region Main Camera
 
 	//Adds the main camera to the list of game objects, since it's the game object that will be worked on.
-<<<<<<< HEAD
-	//The debug and orbit camera act as definitions for the main camera, and are not worked on directly.
-	mainCamera = camerasVec[FLYING_CAMERA];
-=======
 	//The cameras act as definitions for the main camera, and are not worked on directly.
 	mainCamera = camerasVec[ORBIT_CAMERA];
->>>>>>> origin/master
 	displayList.push_back(mainCamera);
 
 #pragma endregion
@@ -498,13 +487,9 @@ void ModelDrawCall(std::string modelFile, std::string vertexShaderFile, std::str
 	displayList.push_back(go);
 }
 
-
-//-- TOM
-
+#pragma region Tom
 void HandleMouse(Sint32 x, Sint32 y)
 {
-	if (cameraIndex == FLYING_CAMERA){
-
 		float sensitivity = 0.025f;
 
 		Camera * c = flyingCamera->getCamera();
@@ -514,9 +499,8 @@ void HandleMouse(Sint32 x, Sint32 y)
 		newLookAt.y = oldLookAt.y + (y*sensitivity);
 		newLookAt.z = 0.0f;
 		c->setLookAt(oldLookAt.x + (x*sensitivity), oldLookAt.y + (y*sensitivity), 0.0f);
-	}
 }
-//--TOM
+#pragma endregion
 
 void HandleInput(SDL_Keycode key)
 {
@@ -529,19 +513,16 @@ void HandleInput(SDL_Keycode key)
 		//If camera index exceeds 2, set to 0.
 		if (cameraIndex > 2) cameraIndex = 0;
 
-<<<<<<< HEAD
-		displayList.push_back(mainCamera);
-
-		//Assign main camera to position in cameras vector.
-=======
 		//Assign main camera to position in cameras vector. 
->>>>>>> origin/master
 		mainCamera = camerasVec[cameraIndex];
 
 		//Remove the first element in display list (maincamera), then re-add the main camera at the front - one before the beginning, then clean up the vector.		
 		displayList.erase(displayList.begin());
 		displayList.insert(displayList.begin(), mainCamera);
 		displayList.shrink_to_fit();
+
+		//Debug
+		std::cout << mainCamera->getName() << std::endl;
 
 		//Return out.  No further processing on this key press.
 		return;
@@ -566,12 +547,7 @@ void HandleInput(SDL_Keycode key)
 	{
 		case ORBIT_CAMERA:
 		{
-<<<<<<< HEAD
-			/*
-=======
-			std::cout << "Orbit camera" << std::endl;
 			//Orbit camera controls: A-D = Pan.  W-S = Pitch.  Z-C = Zoom
->>>>>>> origin/master
 			switch (key)
 			{
 				case SDLK_a:
@@ -617,33 +593,16 @@ void HandleInput(SDL_Keycode key)
 					mainCamera->getTransform()->zoom(cameraSpeed, origin);
 					break;
 				}
-<<<<<<< HEAD
 
 				default:
 					break;
-#pragma endregion
-			}*/
-			return;
-		}
-
-
-
-
-		case FLYING_CAMERA:
-		{
-
-#pragma region Flying Camera controls: WASD for movement, mouse to aim.
-=======
 			}
-
 			return;
 		}
 
 		case FLYING_CAMERA:
 		{
-			std::cout << "Flying camera" << std::endl;
 			//Flying Camera controls: WASD for movement, mouse to aim.
->>>>>>> origin/master
 #pragma region Tom
 
 			float Mx = 0.0f;
@@ -652,10 +611,8 @@ void HandleInput(SDL_Keycode key)
 			Camera * c = flyingCamera->getCamera();
 			vec3 LookAt = c->getLookAt();
 
-			// ------ TOM
 			switch (key)
 			{
-
 				case SDLK_a:
 				{
 					Mx = (-1.0f);
@@ -696,19 +653,12 @@ void HandleInput(SDL_Keycode key)
 			std::cout << "old pos: " << oldMinCamPos.x << " , " << oldMinCamPos.y << " , " << oldMinCamPos.z << std::endl;
 			std::cout << "new pos: " << oldMinCamPos.x + Mx << " , " << oldMinCamPos.y + My << " , " << oldMinCamPos.z << std::endl << std::endl;
 
-			return;
-
-
-// --- TOM
-
-
-			
+			return;		
 #pragma endregion
+
 		}
 		case FIRST_PERSON_CAMERA:
 		{
-			std::cout << "fp camera" << std::endl;
-			//First Person Camera controls: WASD movement, mouse to aim (and shoot)
 #pragma region Calum
 			/*
 			TODO - CALUM
