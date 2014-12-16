@@ -64,7 +64,7 @@ const int WINDOW_HEIGHT = 480;
 bool running = true;
 
 //Scene bare light colour
-vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+vec4 ambientLightColour = vec4(0.1f, 0.5f, 1.0f, 0.5f);
 
 //Main scene game objects
 std::vector<GameObject*> displayList;
@@ -95,6 +95,9 @@ int PPindex = 0;
 float cameraSpeed = 1.0f;
 vec3 origin = vec3(0.0f, 0.0f, 0.0f);
 
+//Texture
+GLuint fontTexture = 0;
+
 void CheckForErrors()
 {
     GLenum error;
@@ -116,6 +119,13 @@ void InitWindow(int width, int height, bool fullscreen)
 		height,                        // height, in pixels
 		SDL_WINDOW_OPENGL           // flags
 	);
+}
+
+//font texture
+void createFontTexture()
+{
+	std::string fontPath = ASSET_PATH + FONT_PATH + "OratorStd.otf";
+	fontTexture = loadTextureFromFont(fontPath, 64, "Hello");
 }
 
 void CleanUp()
@@ -459,6 +469,8 @@ void render()
 	{
 		renderGameObject((*iter));
 	}
+
+	createFontTexture();
 
 	//now switch to normal framebuffer
 	postProcessor.draw();

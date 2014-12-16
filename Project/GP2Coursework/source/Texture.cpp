@@ -74,7 +74,7 @@ GLuint loadTextureFromFont(const std::string& fontFilename, int pointSize, const
         return textureID;
 	}
 
-	SDL_Surface *textSurface = TTF_RenderText_Blended(font, text.c_str(), { 255, 255, 255 });
+	SDL_Surface *textSurface = TTF_RenderText_Blended(font, text.c_str(), { 128, 128, 128 });
 
 	textureID=convertSDLSurfaceToGLTexture(textSurface);
 
