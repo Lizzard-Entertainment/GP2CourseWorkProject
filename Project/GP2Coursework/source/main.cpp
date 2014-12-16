@@ -482,8 +482,8 @@ void ModelDrawCall(std::string modelFile, std::string vertexShaderFile, std::str
 		if (heightFile != "") material->loadHeightMap(ASSET_PATH + TEXTURE_PATH + heightFile);  //BUMP MAPPING DOESN'T USE A HEIGHT MAP.  IF THIS IS NULL, SKIP OVER.
 		go->getChild(i)->setMaterial(material);
 	}
-	go->getTransform()->setPosition(position.x, position.y, position.z);
-	go->getTransform()->setRotation(rotation.x, rotation.y, rotation.z);
+	go->getTransform()->setPosition(position);
+	go->getTransform()->setRotation(rotation);
 	displayList.push_back(go);
 }
 
