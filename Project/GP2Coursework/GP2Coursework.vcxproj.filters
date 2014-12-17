@@ -60,6 +60,9 @@
     <ClCompile Include="source\PostProcessing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\PPFilterType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\Camera.h">
@@ -98,7 +101,10 @@
     <ClInclude Include="headers\PostProcessing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\CameraTypeEnum.h">
+    <ClInclude Include="headers\PPFilterType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\CameraType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -137,6 +143,9 @@
       <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
     <None Include="assets\shaders\PostProcessing\NonePPFS.glsl">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
+    </None>
+    <None Include="assets\shaders\PostProcessing\ColourFilterPPFS.glsl">
       <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
   </ItemGroup>

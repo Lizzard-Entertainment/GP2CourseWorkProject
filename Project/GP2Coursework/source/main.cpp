@@ -1,6 +1,3 @@
-//TO DO
-//FIX SHADER ERROR.  NOT SURE WHERE TO START.
-
 //Headers
 #include <iostream>
 #include <stdlib.h>
@@ -28,7 +25,8 @@
 #include "Light.h"
 #include "FBXLoader.h"
 #include "PostProcessing.h"
-#include "CameraTypeEnum.h"
+#include "CameraType.h"
+#include "PPFilterType.h"
 
 //Using statements
 using glm::mat4;
@@ -76,6 +74,7 @@ GameObject * mainCamera;  //This is switched out with the orbit or debug camera,
 GameObject * mainLight;
 PostProcessing postProcessor;
 
+/*OLD SHADER STUFF.  
 //Post Processing array.   {Path, Name}
 std::string PostProcessingArray[6][2]
 {
@@ -86,9 +85,9 @@ std::string PostProcessingArray[6][2]
 	{ "PolaroidPPFS.glsl", "POLAROID" },
 	{ "InvertedPPFS.glsl" , "INVERTED" }
 };
-
 //Post processing index
-int PPindex = 0;
+int PPindex = 1;
+*/
 
 
 //Input globals
@@ -225,8 +224,12 @@ void Initialise()
 		std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation);
 
 	//Set shader paths
-	std::string vsPath = ASSET_PATH + POSTP_SHADER_PATH + "passThroughVS.glsl";
+	std::string vsPath = ASSET_PATH + POSTP_SHADER_PATH + "passThroughVS.glsl";	
+	std::string fsPath = ASSET_PATH + POSTP_SHADER_PATH + "ColourFilterPPFS.glsl";
+
+	/*OLD SHADER STUFF
 	std::string fsPath = ASSET_PATH + POSTP_SHADER_PATH + PostProcessingArray[PPindex][0];
+	*/
 
 	//Initialise post-processor
 	postProcessor.init(WINDOW_WIDTH, WINDOW_HEIGHT, vsPath, fsPath);
@@ -256,7 +259,7 @@ void Initialise()
 #pragma endregion
 
 #pragma region Tom
-#pragma region Debug camera - TODO: NOT IMPLEMENTED.  IDENTICAL TO ORBIT FOR THE TIME BEING.
+#pragma region Flying camera 
 
 	//Set up debugcamera gameobject
 	flyingCamera = new GameObject();
@@ -432,8 +435,7 @@ void renderGameObject(GameObject * pObject)
 	}
 
 	for (int i = 0; i < pObject->getChildCount(); i++)
-	{
-		//SHADER TABBING SEEMS TO BREAK HERE - 4th iteration.
+	{		
 		renderGameObject(pObject->getChild(i));
 	}
 }
@@ -461,7 +463,16 @@ void render()
 	}
 
 	//now switch to normal framebuffer
+	postProcessor.preDraw();
+
+	//Grab stuff from shader
+	GLint colourFilterLocation = postProcessor.getUniformVariableLocation("colourFilter");
+	glUniformMatrix4fv(colourFilterLocation, 1, GL_FALSE, glm::value_ptr(getShader()));
+
+	//Post processor draw
 	postProcessor.draw();
+
+	//Swap buffers and draw to scene.
     SDL_GL_SwapWindow(window);
 }
 
@@ -528,17 +539,24 @@ void HandleInput(SDL_Keycode key)
 		return;
 	}
 
-	//Switch shaders - BROKEN AT THE MOMENT DUE TO BRAIN'S AMD/INTEL FIX. 
+	//Switch shaders
 	if (key == SDLK_TAB)
 	{
+		//Increment shader index
+		nextShader();
+
+		/*Older Shader Stuff
 		//Increment PPS index.  If the index exceeds the capacity of the array, set index to 0.
-		PPindex++;
-		if (PPindex >= (sizeof(PostProcessingArray) / sizeof(*PostProcessingArray)))
-			PPindex = 0;
+		//PPindex++;
+		//if (PPindex >= (sizeof(PostProcessingArray) / sizeof(*PostProcessingArray)))
+		//	PPindex = 0;
 
 		//Change post processing shader
-		postProcessor.changeFragmentShaderFilename(PostProcessingArray[PPindex][0], ASSET_PATH + POSTP_SHADER_PATH);
-		std::cout << "Debug - Current Post Processing Shader: " << PostProcessingArray[PPindex][1] << std::endl << std::endl;
+		//postProcessor.changeFragmentShaderFilename(PostProcessingArray[PPindex][0], ASSET_PATH + POSTP_SHADER_PATH);
+		*/
+		
+		//Debug
+		std::cout << "Debug - Current Post Processing Shader: " << getShaderName() << ", Number: " << std::to_string(shaderIndex) << std::endl << std::endl;
 		return;
 	}
 
@@ -715,7 +733,7 @@ int main(int argc, char * arg[])
     SDL_Event event;
 
 	//clear console
-	//system("cls");
+	system("cls");
 
     //Game Loop
 	while (running)
@@ -738,11 +756,10 @@ int main(int argc, char * arg[])
 
 			if (event.type == SDL_MOUSEMOTION)
 			{
+				//Handle mouse input
 				HandleMouse(event.motion.xrel, event.motion.yrel);
 
 			}
-
-
         }
 
 		//Update and render all game objects

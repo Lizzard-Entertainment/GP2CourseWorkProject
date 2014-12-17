@@ -5,12 +5,14 @@ in vec2 textureCoords;
 
 uniform sampler2D texture0;
 
-uniform mat3 colourFilter = mat3(.393, .769, .189,
-	.349, .686, .168,
-	.272, .534, .131);
+uniform mat4 colourFilter = mat4(0.393, 0.769, 0.189, 0,
+	0.349, 0.686, 0.168, 0,
+	0.272, 0.534, 0.131, 0,
+	0, 0, 0, 1);
+
 void main()
 {
-	vec3 colour = texture(texture0, textureCoords).xyz;
+	vec4 colour = texture(texture0, textureCoords);
 	colour = colour*colourFilter;
-	FragColor = vec4(colour, 1.0);
+	FragColor = vec4(colour);
 }

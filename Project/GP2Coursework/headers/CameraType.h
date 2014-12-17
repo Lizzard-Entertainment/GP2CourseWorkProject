@@ -1,5 +1,7 @@
-#ifndef CameraTypeEnum_h
-#define CamearTypeEnum_h
+#pragma region Euan
+
+#ifndef CameraType_h
+#define CamearType_h
 
 enum CameraTypeEnum
 {
@@ -11,3 +13,5 @@ enum CameraTypeEnum
 int cameraIndex = 0;
 
 #endif // !CameraTypeEnum_H
+
+#pragma endregion

@@ -77,13 +77,14 @@
     <ClCompile Include="source\Material.cpp" />
     <ClCompile Include="source\Mesh.cpp" />
     <ClCompile Include="source\PostProcessing.cpp" />
+    <ClCompile Include="source\PPFilterType.cpp" />
     <ClCompile Include="source\Shader.cpp" />
     <ClCompile Include="source\Texture.cpp" />
     <ClCompile Include="source\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\Camera.h" />
-    <ClInclude Include="headers\CameraTypeEnum.h" />
+    <ClInclude Include="headers\CameraType.h" />
     <ClInclude Include="headers\Component.h" />
     <ClInclude Include="headers\FBXLoader.h" />
     <ClInclude Include="headers\GameObject.h" />
@@ -91,6 +92,7 @@
     <ClInclude Include="headers\Material.h" />
     <ClInclude Include="headers\Mesh.h" />
     <ClInclude Include="headers\PostProcessing.h" />
+    <ClInclude Include="headers\PPFilterType.h" />
     <ClInclude Include="headers\Shader.h" />
     <ClInclude Include="headers\Texture.h" />
     <ClInclude Include="headers\Transform.h" />
@@ -103,6 +105,7 @@
     <None Include="assets\shaders\Drawing\ParallaxMappingVS.glsl" />
     <None Include="assets\shaders\PostProcessing\BlurFilterPPFS.glsl" />
     <None Include="assets\shaders\PostProcessing\BWPPFS.glsl" />
+    <None Include="assets\shaders\PostProcessing\ColourFilterPPFS.glsl" />
     <None Include="assets\shaders\PostProcessing\InvertedPPFS.glsl" />
     <None Include="assets\shaders\PostProcessing\MidnightPPFS.glsl" />
     <None Include="assets\shaders\PostProcessing\passThroughVS.glsl" />
