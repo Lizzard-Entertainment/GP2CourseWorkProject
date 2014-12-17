@@ -3,6 +3,7 @@
 
 //Headers
 #include <iostream>
+#include <time.h>
 #include <stdlib.h>
 #include <vector>
 #include <GL/glew.h>
@@ -62,6 +63,38 @@ const int WINDOW_HEIGHT = 480;
 
 //Flag for game's running state. 
 bool running = true;
+
+//Custom timer
+int timer[] = {0,0}; //virtual hours/mins
+clock_t clicks;
+int dT = 0;
+
+//Daylight-System
+int ColorTemp[24][3] = {
+	{ 60, 60, 60 },
+	{ 60, 60, 60 },
+	{ 60, 60, 60 },
+	{ 60, 60, 60 },
+	{ 84, 51, 134 },
+	{ 78, 110, 168 },
+	{ 97, 174, 178 },
+	{ 109, 210, 217 },
+	{ 170, 242, 241 },
+	{ 117, 228, 244 },
+	{ 133, 228, 232 },
+	{ 170, 242, 241 },
+	{ 175, 239, 238 },
+	{ 190, 248, 247 },
+	{ 205, 255, 254 },
+	{ 170, 242, 241 },
+	{ 218, 232, 196 },
+	{ 238, 214, 118 },
+	{ 248, 202, 130 },
+	{ 237, 119, 74 },
+	{ 220, 152, 187 },
+	{ 122, 68, 83 },
+	{ 60, 60, 60 } };
+
 
 //Scene bare light colour
 vec4 ambientLightColour = vec4(0.1f, 0.5f, 1.0f, 0.5f);
@@ -345,7 +378,9 @@ void Initialise()
     {
         (*iter)->init();
     }
-    
+
+
+
 #pragma region Calum
 	/*TODO: Calum
 	Place models and stuff
@@ -359,16 +394,74 @@ void Initialise()
 		"armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f));
 }
 
+
+#pragma region Tom - mess around with the lights (daylightsystem)
+
+void DayLightChange()
+{
+	int hours = timer[1];
+	float conversion = 0.00390625;
+
+	Light * light = new Light();
+	light = mainLight->getLight();
+
+	//get the color of the hour
+	
+	light->setDiffuseColour((ColorTemp[hours][0] * conversion), (ColorTemp[hours][1] * conversion), (ColorTemp[hours][2] * conversion), 1.0f);
+
+}
+
+
+
+
+void Timer()
+{
+	clicks = clock();
+	if ((clicks-dT) > 24){ // 24 real sec -> 24 virtual hours
+
+		timer[0]++; //mins
+		timer[1]; //hours
+
+		if (timer[0] == 60)
+		{
+			DayLightChange();
+			timer[1]++;
+			timer[0] = 0;
+			
+		}
+		if (timer[1] == 24)
+		{
+			timer[1] = 0;
+		}
+		dT = clicks;
+
+	//DEBUG
+		std::cout << "Time: " << timer[1] << ":" << timer[0] << std::endl << std::endl;
+	}
+}
+
+#pragma endregion
+
 //Function to update the game state
 void update()
 {
-    //Update all game objects.
+    
+	
+	//Update all game objects.
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
     {
 		//Shader breaking - 4th iteration
         (*iter)->update();
     }
+
+	Timer();
+
 }
+
+
+
+
+
 
 void renderGameObject(GameObject * pObject)
 {
@@ -511,6 +604,8 @@ void HandleMouse(Sint32 x, Sint32 y)
 		newLookAt.y = oldLookAt.y + (y*sensitivity);
 		newLookAt.z = 0.0f;
 		c->setLookAt(oldLookAt.x + (x*sensitivity), oldLookAt.y + (y*sensitivity), 0.0f);
+
+
 }
 #pragma endregion
 

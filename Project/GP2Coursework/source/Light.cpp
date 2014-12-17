@@ -2,9 +2,9 @@
 
 Light::Light()
 {
-	m_DiffuseColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	m_DiffuseColour = vec4(0.4f, 0.4f, 0.4f, 1.0f);
 	m_SpecularColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	m_LightDirection = vec3(0.0f, 0.5f, 0.5f);
+	m_LightDirection = vec3(1.0f, 0.5f, 0.5f);
 	m_Type = "Light";
 }
 
