@@ -37,6 +37,12 @@ static const mat4 INVERTED = mat4(-1, 0, 0, 1,
 	0, 0, -1, 1,
 	1, 1, 1, 1);  //Perhaps swap out the last 1 for a 0.  Background still draws black but rest of the scene "looks" inverted.
 
+//Polaroid colour filter
+static const mat4 POLAROID = mat4(1.438, -0.062, -0.062, 0,
+	0.122, 1.378, -0.122, 0,
+	-0.016, -0.016, 1.483, 0,
+	-0.03, 0.05, -0.02, 1);
+
 //Shader index.
 static int shaderIndex = 0;
 
@@ -44,6 +50,7 @@ static int shaderIndex = 0;
 mat4 getShader();
 std::string getShaderName();
 void nextShader();
+int getShaderIndex();
 
 #endif
 

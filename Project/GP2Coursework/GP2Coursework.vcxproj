@@ -79,6 +79,7 @@
     <ClCompile Include="source\PostProcessing.cpp" />
     <ClCompile Include="source\PPFilterType.cpp" />
     <ClCompile Include="source\Shader.cpp" />
+    <ClCompile Include="source\SkyboxMaterial.cpp" />
     <ClCompile Include="source\Texture.cpp" />
     <ClCompile Include="source\Transform.cpp" />
   </ItemGroup>
@@ -94,24 +95,20 @@
     <ClInclude Include="headers\PostProcessing.h" />
     <ClInclude Include="headers\PPFilterType.h" />
     <ClInclude Include="headers\Shader.h" />
+    <ClInclude Include="headers\SkyboxMaterial.h" />
     <ClInclude Include="headers\Texture.h" />
     <ClInclude Include="headers\Transform.h" />
     <ClInclude Include="headers\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\Drawing\BumpmappingFS.glsl" />
-    <None Include="assets\shaders\Drawing\BumpmappingVS.glsl" />
-    <None Include="assets\shaders\Drawing\ParallaxMappingFS.glsl" />
-    <None Include="assets\shaders\Drawing\ParallaxMappingVS.glsl" />
-    <None Include="assets\shaders\PostProcessing\BlurFilterPPFS.glsl" />
-    <None Include="assets\shaders\PostProcessing\BWPPFS.glsl" />
-    <None Include="assets\shaders\PostProcessing\ColourFilterPPFS.glsl" />
-    <None Include="assets\shaders\PostProcessing\InvertedPPFS.glsl" />
-    <None Include="assets\shaders\PostProcessing\MidnightPPFS.glsl" />
-    <None Include="assets\shaders\PostProcessing\passThroughVS.glsl" />
-    <None Include="assets\shaders\PostProcessing\PolaroidPPFS.glsl" />
-    <None Include="assets\shaders\PostProcessing\SepiaPPFS.glsl" />
-    <None Include="assets\shaders\PostProcessing\NonePPFS.glsl" />
+    <None Include="assets\shaders\BumpmappingFS.glsl" />
+    <None Include="assets\shaders\BumpmappingVS.glsl" />
+    <None Include="assets\shaders\ColourFilterPPFS.glsl" />
+    <None Include="assets\shaders\passThroughVS.glsl" />
+    <None Include="assets\shaders\skyboxFS.glsl" />
+    <None Include="assets\shaders\skyboxVS.glsl" />
+    <None Include="assets\shaders\textureFS.glsl" />
+    <None Include="assets\shaders\textureVS.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

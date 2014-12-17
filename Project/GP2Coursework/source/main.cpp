@@ -25,6 +25,7 @@
 #include "Light.h"
 #include "FBXLoader.h"
 #include "PostProcessing.h"
+#include "SkyboxMaterial.h"
 #include "CameraType.h"
 #include "PPFilterType.h"
 
@@ -35,11 +36,11 @@ using glm::vec3;
 
 //Paths
 const std::string ASSET_PATH = "assets/";
-const std::string DRAWING_SHADER_PATH = "shaders/drawing/";
-const std::string POSTP_SHADER_PATH = "shaders/postprocessing/";
-const std::string TEXTURE_PATH = "textures/";
 const std::string FONT_PATH = "fonts/";
 const std::string MODEL_PATH = "models/";
+const std::string SHADER_PATH = "shaders/";
+const std::string MODEL_TEXTURE_PATH = "textures/models/";
+const std::string SKYBOX_TEXTURE_PATH = "textures/skybox/";
 
 //Constant vectors
 const vec3 X_AXIS = vec3(1, 0, 0);
@@ -72,23 +73,8 @@ GameObject * flyingCamera;
 GameObject * FPCamera;
 GameObject * mainCamera;  //This is switched out with the orbit or debug camera, and is used in any calculations etc.
 GameObject * mainLight;
+GameObject * skyBox = NULL;
 PostProcessing postProcessor;
-
-/*OLD SHADER STUFF.  
-//Post Processing array.   {Path, Name}
-std::string PostProcessingArray[6][2]
-{
-	{ "NonePPFS.glsl" , "NONE"},
-	{ "BlurFilterPPFS.glsl" , "BLUR"},
-	{ "BWPPFS.glsl" , "BLACK AND WHITE" },
-	{ "SepiaPPFS.glsl", "SEPIA" },
-	{ "PolaroidPPFS.glsl", "POLAROID" },
-	{ "InvertedPPFS.glsl" , "INVERTED" }
-};
-//Post processing index
-int PPindex = 1;
-*/
-
 
 //Input globals
 float cameraSpeed = 1.0f;
@@ -120,6 +106,14 @@ void InitWindow(int width, int height, bool fullscreen)
 void CleanUp()
 {
 	// clean up in reverse
+
+	//Clean up skybox
+	if (skyBox)
+	{
+		skyBox->destroy();
+		delete skyBox;
+		skyBox = NULL;
+	}
 
 	//Clean up game objects
     auto iter=displayList.begin();
@@ -216,20 +210,100 @@ void setViewport( int width, int height )
     glViewport( 0, 0, ( GLsizei )width, ( GLsizei )height );
 }
 
+void createSkyBox()
+{
+	Vertex triangleData[] = {
+			{ vec3(-10.0f, 10.0f, 10.0f) },// Top Left
+			{ vec3(-10.0f, -10.0f, 10.0f) },// Bottom Left
+			{ vec3(10.0f, -10.0f, 10.0f) }, //Bottom Right
+			{ vec3(10.0f, 10.0f, 10.0f) },// Top Right
+
+
+			//back
+			{ vec3(-10.0f, 10.0f, -10.0f) },// Top Left
+			{ vec3(-10.0f, -10.0f, -10.0f) },// Bottom Left
+			{ vec3(10.0, -10.0f, -10.0f) }, //Bottom Right
+			{ vec3(10.0f, 10.0f, -10.0f) }// Top Right
+	};
+
+
+	GLuint indices[] = {
+		//front
+		0, 1, 2,
+		0, 3, 2,
+
+		//left
+		4, 5, 1,
+		4, 1, 0,
+
+		//right
+		3, 7, 2,
+		7, 6, 2,
+
+		//bottom
+		1, 5, 2,
+		6, 2, 1,
+
+		//top
+		5, 0, 7,
+		5, 7, 3,
+
+		//back
+		4, 5, 6,
+		4, 7, 6
+	};
+
+	//creat mesh and copy in
+
+	Mesh * pMesh = new Mesh();
+	pMesh->init();
+
+	pMesh->copyVertexData(8, sizeof(Vertex), (void**)triangleData);
+	pMesh->copyIndexData(36, sizeof(int), (void**)indices);
+
+	Transform *t = new Transform();
+	t->setPosition(0.0f, 0.0f, 0.0f);
+	//load textures and skybox material + Shaders
+	SkyBoxMaterial *material = new SkyBoxMaterial();
+	material->init();
+
+	std::string vsPath = ASSET_PATH + SHADER_PATH + "skyboxVS.glsl";
+	std::string fsPath = ASSET_PATH + SHADER_PATH + "skyboxFS.glsl";
+	material->loadShader(vsPath, fsPath);
+
+	std::string posZTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysFront2048.png";
+	std::string negZTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysBack2048.png";
+	std::string posXTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysLeft2048.png";
+	std::string negXTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysRight2048.png";
+	std::string posYTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysUp2048.png";
+	std::string negYTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysDown2048.png";
+
+	material->loadCubeTexture(posZTexturename, negZTexturename, posXTexturename, negXTexturename, posYTexturename, negYTexturename);
+	
+	//create gameobject but don't add to queue!
+	skyBox = new GameObject();
+	skyBox->setMaterial(material);
+	skyBox->setTransform(t);
+	skyBox->setMesh(pMesh);
+
+	CheckForErrors();
+}
+
 
 void Initialise()
 {
-	//Forward declare modeldrawcall
-	void ModelDrawCall(std::string modelFile, std::string vertexShaderFile, std::string fragmentShaderFile,
+	//Forward declare draw methods
+	void DrawParallaxModel(std::string modelFile, std::string vertexShaderFile, std::string fragmentShaderFile,
 		std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation);
 
-	//Set shader paths
-	std::string vsPath = ASSET_PATH + POSTP_SHADER_PATH + "passThroughVS.glsl";	
-	std::string fsPath = ASSET_PATH + POSTP_SHADER_PATH + "ColourFilterPPFS.glsl";
+	void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::string bumpFile, vec3 position, vec3 rotation, vec3 scale);
 
-	/*OLD SHADER STUFF
-	std::string fsPath = ASSET_PATH + POSTP_SHADER_PATH + PostProcessingArray[PPindex][0];
-	*/
+	//Create Skybox
+	createSkyBox();
+
+	//Set shader paths
+	std::string vsPath = ASSET_PATH + SHADER_PATH + "passThroughVS.glsl";
+	std::string fsPath = ASSET_PATH + SHADER_PATH + "ColourFilterPPFS.glsl";
 
 	//Initialise post-processor
 	postProcessor.init(WINDOW_WIDTH, WINDOW_HEIGHT, vsPath, fsPath);
@@ -323,7 +397,7 @@ void Initialise()
 
 	//Set up main light transform.
 	t = new Transform();
-	t->setPosition(0.0f, 0.0f, 0.0f);
+	t->setPosition(0.0f, 10.0f, 0.0f);
 	mainLight->setTransform(t);
 
 	//Main light light
@@ -345,16 +419,23 @@ void Initialise()
 	*/
 #pragma endregion
 
-	ModelDrawCall("armoredrecon.fbx", "BumpmappingVS.glsl", "BumpmappingFS.glsl",
-		"armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f));
+	//DrawParallaxModel("armoredrecon.fbx", "BumpmappingVS.glsl", "BumpmappingFS.glsl",
+	//	"armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f));
 
-	ModelDrawCall("armoredrecon.fbx", "ParallaxMappingVS.glsl", "ParallaxMappingFS.glsl", 
-		"armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f));
+	//DrawParallaxModel("armoredrecon.fbx", "ParallaxMappingVS.glsl", "ParallaxMappingFS.glsl",
+	//	"armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f));	
+
+	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f));
+
+	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f));
+
 }
 
 //Function to update the game state
 void update()
 {
+	skyBox->update();
+
     //Update all game objects.
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
     {
@@ -372,7 +453,7 @@ void renderGameObject(GameObject * pObject)
 
 	Mesh * currentMesh = pObject->getMesh();
 	Transform * currentTransform = pObject->getTransform();
-	Material * currentMaterial = pObject->getMaterial();
+	Material * currentMaterial = (Material*)pObject->getMaterial();  //We know it'll be a standard material.
 
 	if (currentMesh && currentMaterial && currentTransform)
 	{
@@ -432,12 +513,44 @@ void renderGameObject(GameObject * pObject)
 		glUniform1i(heightTextureLocation, 3);
 
 		glDrawElements(GL_TRIANGLES, currentMesh->getIndexCount(), GL_UNSIGNED_INT, 0);
+
+		currentMaterial->unbind();
 	}
 
 	for (int i = 0; i < pObject->getChildCount(); i++)
 	{		
 		renderGameObject(pObject->getChild(i));
 	}
+}
+
+void renderSkyBox()
+{
+	skyBox->render();
+
+	Mesh * currentMesh = skyBox->getMesh();
+	SkyBoxMaterial * currentMaterial = (SkyBoxMaterial*)skyBox->getMaterial();
+	if (currentMesh && currentMaterial)
+	{
+		Camera * cam = mainCamera->getCamera();
+
+		currentMaterial->bind();
+		currentMesh->bind();
+
+		GLint cameraLocation = currentMaterial->getUniformLocation("cameraPos");
+		GLint viewLocation = currentMaterial->getUniformLocation("view");
+		GLint projectionLocation = currentMaterial->getUniformLocation("projection");
+		GLint cubeTextureLocation = currentMaterial->getUniformLocation("cubeTexture");
+
+		glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(cam->getProjection()));
+		glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(cam->getView()));
+		glUniform4fv(cameraLocation, 1, glm::value_ptr(mainCamera->getTransform()->getPosition()));
+		glUniform1i(cubeTextureLocation, 0);
+
+		glDrawElements(GL_TRIANGLES, currentMesh->getIndexCount(), GL_UNSIGNED_INT, 0);
+
+		currentMaterial->unbind();
+	}
+	CheckForErrors();
 }
 
 //Function to render(aka draw)
@@ -455,6 +568,9 @@ void render()
     
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//render skybox
+	renderSkyBox();
 
     //alternative sytanx
 	for (auto iter = displayList.begin(); iter != displayList.end(); iter++)
@@ -478,7 +594,7 @@ void render()
 
 #pragma region Euan
 
-void ModelDrawCall(std::string modelFile, std::string vertexShaderFile, std::string fragmentShaderFile, 
+void DrawParallaxModel(std::string modelFile, std::string vertexShaderFile, std::string fragmentShaderFile, 
 	std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation)
 {
 	GameObject * go = loadFBXFromFile(ASSET_PATH + MODEL_PATH + modelFile);
@@ -486,15 +602,41 @@ void ModelDrawCall(std::string modelFile, std::string vertexShaderFile, std::str
 	{
 		Material * material = new Material();
 		material->init();
-		material->loadShader(ASSET_PATH + DRAWING_SHADER_PATH + vertexShaderFile, ASSET_PATH + DRAWING_SHADER_PATH + fragmentShaderFile);
-		material->loadDiffuseMap(ASSET_PATH + TEXTURE_PATH + diffuseFile);
-		material->loadSpecularMap(ASSET_PATH + TEXTURE_PATH + specularFile);
-		material->loadBumpMap(ASSET_PATH + TEXTURE_PATH + normalFile);
-		if (heightFile != "") material->loadHeightMap(ASSET_PATH + TEXTURE_PATH + heightFile);  //BUMP MAPPING DOESN'T USE A HEIGHT MAP.  IF THIS IS NULL, SKIP OVER.
+		material->loadShader(ASSET_PATH + SHADER_PATH + vertexShaderFile, ASSET_PATH + SHADER_PATH + fragmentShaderFile);
+		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + diffuseFile);
+		material->loadSpecularMap(ASSET_PATH + MODEL_TEXTURE_PATH + specularFile);
+		material->loadBumpMap(ASSET_PATH + MODEL_TEXTURE_PATH + normalFile);
+		if (heightFile != "") material->loadHeightMap(ASSET_PATH + MODEL_TEXTURE_PATH + heightFile);  //BUMP MAPPING DOESN'T USE A HEIGHT MAP.  IF THIS IS NULL, SKIP OVER.
 		go->getChild(i)->setMaterial(material);
 	}
 	go->getTransform()->setPosition(position);
 	go->getTransform()->setRotation(rotation);
+	displayList.push_back(go);
+}
+
+void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::string bumpFile, vec3 position, vec3 rotation, vec3 scale)
+{
+	GameObject * go = loadFBXFromFile(ASSET_PATH + MODEL_PATH + modelFile);
+
+	for (int i = 0; i < go->getChildCount(); i++)
+	{
+		Material * material = new Material();
+		material->init();
+		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + diffuseFile);
+		material->loadBumpMap(ASSET_PATH + MODEL_TEXTURE_PATH + bumpFile);
+		//std::string vsPath = ASSET_PATH + SHADER_PATH + "textureVS.glsl";
+		//std::string fsPath = ASSET_PATH + SHADER_PATH + "textureFS.glsl";
+
+		std::string vsPath = ASSET_PATH + SHADER_PATH + "bumpmappingVS.glsl";
+		std::string fsPath = ASSET_PATH + SHADER_PATH + "bumpmappingFS.glsl";
+
+		material->loadShader(vsPath, fsPath);
+
+		go->getChild(i)->setMaterial(material);
+	}
+	go->getTransform()->setPosition(position);
+	go->getTransform()->setRotation(rotation);
+	go->getTransform()->setScale(scale);
 	displayList.push_back(go);
 }
 
@@ -545,18 +687,8 @@ void HandleInput(SDL_Keycode key)
 		//Increment shader index
 		nextShader();
 
-		/*Older Shader Stuff
-		//Increment PPS index.  If the index exceeds the capacity of the array, set index to 0.
-		//PPindex++;
-		//if (PPindex >= (sizeof(PostProcessingArray) / sizeof(*PostProcessingArray)))
-		//	PPindex = 0;
-
-		//Change post processing shader
-		//postProcessor.changeFragmentShaderFilename(PostProcessingArray[PPindex][0], ASSET_PATH + POSTP_SHADER_PATH);
-		*/
-		
 		//Debug
-		std::cout << "Debug - Current Post Processing Shader: " << getShaderName() << ", Number: " << std::to_string(shaderIndex) << std::endl << std::endl;
+		std::cout << "Debug - Current Post Processing Shader: " << getShaderName() << std::endl << "Debug - Shader Index: " << std::to_string(getShaderIndex()) << std::endl << std::endl;
 		return;
 	}
 
