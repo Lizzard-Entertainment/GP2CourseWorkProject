@@ -43,11 +43,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)\headers;$(ProjectDir)\libraries\glew\include;$(ProjectDir)\libraries\glm;$(ProjectDir)\libraries\SDL2\SDL2_ttf-2.0.12\include;$(ProjectDir)\libraries\SDL2\SDL2_image-2.0.0\include;$(ProjectDir)\libraries\SDL2\SDL2-2.0.3\include;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\headers;$(ProjectDir)\libraries\glew\include\gl;$(ProjectDir)\libraries\glew\include;$(ProjectDir)\libraries\glm;$(ProjectDir)\libraries\SDL2\SDL2_ttf-2.0.12\include;$(ProjectDir)\libraries\SDL2\SDL2_image-2.0.0\include;$(ProjectDir)\libraries\SDL2\SDL2-2.0.3\include;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)\libraries\glew\lib\Release\Win32;$(ProjectDir)\libraries\SDL2\SDL2_ttf-2.0.12\lib\x86;$(ProjectDir)\libraries\SDL2\SDL2_image-2.0.0\lib\x86;$(ProjectDir)\libraries\SDL2\SDL2-2.0.3\lib\x86;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\lib\vs2013\x86\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\dll\;$(ProjectDir)\libraries\glew\lib\Release MX\Win32;$(ProjectDir)\libraries\glew\lib\Release\Win32;$(ProjectDir)\libraries\SDL2\SDL2_ttf-2.0.12\lib\x86;$(ProjectDir)\libraries\SDL2\SDL2_image-2.0.0\lib\x86;$(ProjectDir)\libraries\SDL2\SDL2-2.0.3\lib\x86;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\lib\vs2013\x86\debug</AdditionalLibraryDirectories>
       <AdditionalDependencies>sdl2.lib;sdl2main.lib;opengl32.lib;glu32.lib;glew32.lib;SDL2_image.lib;SDL2_ttf.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
@@ -77,12 +77,15 @@
     <ClCompile Include="source\Material.cpp" />
     <ClCompile Include="source\Mesh.cpp" />
     <ClCompile Include="source\PostProcessing.cpp" />
+    <ClCompile Include="source\PPFilterType.cpp" />
     <ClCompile Include="source\Shader.cpp" />
+    <ClCompile Include="source\SkyboxMaterial.cpp" />
     <ClCompile Include="source\Texture.cpp" />
     <ClCompile Include="source\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\Camera.h" />
+    <ClInclude Include="headers\CameraType.h" />
     <ClInclude Include="headers\Component.h" />
     <ClInclude Include="headers\FBXLoader.h" />
     <ClInclude Include="headers\GameObject.h" />
@@ -90,37 +93,24 @@
     <ClInclude Include="headers\Material.h" />
     <ClInclude Include="headers\Mesh.h" />
     <ClInclude Include="headers\PostProcessing.h" />
+    <ClInclude Include="headers\PPFilterType.h" />
     <ClInclude Include="headers\Shader.h" />
+    <ClInclude Include="headers\SkyboxMaterial.h" />
     <ClInclude Include="headers\Texture.h" />
     <ClInclude Include="headers\Transform.h" />
     <ClInclude Include="headers\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\ambientFS.glsl" />
-    <None Include="assets\shaders\ambientVS.glsl" />
-    <None Include="assets\shaders\BumpmappingFS.glsl" />
-    <None Include="assets\shaders\BumpmappingVS.glsl" />
-    <None Include="assets\shaders\colourFilterPostFS.glsl" />
-    <None Include="assets\shaders\diffuseFS.glsl" />
-    <None Include="assets\shaders\diffuseVS.glsl" />
-    <None Include="assets\shaders\DirectionalLightTextureFS.glsl" />
-    <None Include="assets\shaders\DirectionalLightTextureVS.glsl" />
-    <None Include="assets\shaders\ParallaxMappingFS.glsl" />
-    <None Include="assets\shaders\ParallaxMappingVS.glsl" />
-    <None Include="assets\shaders\passThroughVS.glsl" />
-    <None Include="assets\shaders\simpleFS.glsl" />
-    <None Include="assets\shaders\simplePostProcessFS.glsl" />
-    <None Include="assets\shaders\simpleVS.glsl" />
-    <None Include="assets\shaders\specularFS.glsl" />
-    <None Include="assets\shaders\specularFSPerPixel.glsl" />
-    <None Include="assets\shaders\specularVS.glsl" />
-    <None Include="assets\shaders\specularVSPerPixel.glsl" />
-    <None Include="assets\shaders\textureFS.glsl" />
-    <None Include="assets\shaders\textureVS.glsl" />
-    <None Include="assets\shaders\vertexColourFS.glsl" />
-    <None Include="assets\shaders\vertexColourTextureFS.glsl" />
-    <None Include="assets\shaders\vertexColourTextureVS.glsl" />
-    <None Include="assets\shaders\vertexColourVS.glsl" />
+    <None Include="assets\shaders\Models\BumpmappingFS.glsl" />
+    <None Include="assets\shaders\Models\BumpmappingVS.glsl" />
+    <None Include="assets\shaders\Models\ParallaxMappingFS.glsl" />
+    <None Include="assets\shaders\Models\ParallaxMappingVS.glsl" />
+    <None Include="assets\shaders\Models\textureFS.glsl" />
+    <None Include="assets\shaders\Models\textureVS.glsl" />
+    <None Include="assets\shaders\PostProcessing\ColourFilterPPFS.glsl" />
+    <None Include="assets\shaders\PostProcessing\passThroughVS.glsl" />
+    <None Include="assets\shaders\Skybox\skyFS.glsl" />
+    <None Include="assets\shaders\Skybox\skyVS.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

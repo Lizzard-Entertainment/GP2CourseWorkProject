@@ -16,6 +16,15 @@
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{1543e883-62ab-43c5-956d-7630f18e7015}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\PostProcessing">
+      <UniqueIdentifier>{5b083e70-f0c7-4103-a0d0-a923a24682a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Skybox">
+      <UniqueIdentifier>{6d8e5cd9-bc0e-444c-aaee-fa172da0958b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Models">
+      <UniqueIdentifier>{7af05d55-3c01-4618-bf40-7f3c91134840}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Camera.cpp">
@@ -52,6 +61,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\PostProcessing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\PPFilterType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SkyboxMaterial.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -92,82 +107,46 @@
     <ClInclude Include="headers\PostProcessing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="headers\PPFilterType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\CameraType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\SkyboxMaterial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\vertexColourVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\PostProcessing\passThroughVS.glsl">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
-    <None Include="assets\shaders\vertexColourTextureVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\PostProcessing\ColourFilterPPFS.glsl">
+      <Filter>Resource Files\Shaders\PostProcessing</Filter>
     </None>
-    <None Include="assets\shaders\vertexColourTextureFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\Skybox\skyFS.glsl">
+      <Filter>Resource Files\Skybox</Filter>
     </None>
-    <None Include="assets\shaders\vertexColourFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\Skybox\skyVS.glsl">
+      <Filter>Resource Files\Skybox</Filter>
     </None>
-    <None Include="assets\shaders\textureVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\Models\BumpmappingFS.glsl">
+      <Filter>Resource Files\Shaders\Models</Filter>
     </None>
-    <None Include="assets\shaders\textureFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\Models\BumpmappingVS.glsl">
+      <Filter>Resource Files\Shaders\Models</Filter>
     </None>
-    <None Include="assets\shaders\specularVSPerPixel.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\Models\ParallaxMappingFS.glsl">
+      <Filter>Resource Files\Shaders\Models</Filter>
     </None>
-    <None Include="assets\shaders\specularVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\Models\ParallaxMappingVS.glsl">
+      <Filter>Resource Files\Shaders\Models</Filter>
     </None>
-    <None Include="assets\shaders\specularFSPerPixel.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\Models\textureFS.glsl">
+      <Filter>Resource Files\Shaders\Models</Filter>
     </None>
-    <None Include="assets\shaders\specularFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\simpleVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\simplePostProcessFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\simpleFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\passThroughVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\ParallaxMappingVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\ParallaxMappingFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\DirectionalLightTextureVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\DirectionalLightTextureFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\diffuseVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\diffuseFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\colourFilterPostFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\BumpmappingVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\BumpmappingFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\ambientVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\ambientFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="assets\shaders\Models\textureVS.glsl">
+      <Filter>Resource Files\Shaders\Models</Filter>
     </None>
   </ItemGroup>
 </Project>

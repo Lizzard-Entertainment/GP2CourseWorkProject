@@ -11,6 +11,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <gl/GLU.h>
+#include <SDL_mouse.h>
 
 //Our headers
 #include "Vertex.h"
@@ -24,6 +25,9 @@
 #include "Light.h"
 #include "FBXLoader.h"
 #include "PostProcessing.h"
+#include "SkyboxMaterial.h"
+#include "CameraType.h"
+#include "PPFilterType.h"
 
 //Using statements
 using glm::mat4;
@@ -31,11 +35,21 @@ using glm::vec4;
 using glm::vec3;
 
 //Paths
+//Root
 const std::string ASSET_PATH = "assets/";
-const std::string SHADER_PATH = "shaders/";
-const std::string TEXTURE_PATH = "textures/";
 const std::string FONT_PATH = "fonts/";
 const std::string MODEL_PATH = "models/";
+
+//Post processing
+const std::string POSTP_SHADER_PATH = "shaders/postprocessing/";
+
+//Models
+const std::string MODEL_TEXTURE_PATH = "textures/models/";
+const std::string MODEL_SHADER_PATH = "shaders/models/";
+
+//Skybox
+const std::string SKYBOX_TEXTURE_PATH = "textures/skybox/";
+const std::string SKYBOX_SHADER_PATH = "shaders/skybox/";
 
 //Constant vectors
 const vec3 X_AXIS = vec3(1, 0, 0);
@@ -62,14 +76,18 @@ vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 //Main scene game objects
 std::vector<GameObject*> displayList;
+std::vector<GameObject*> camerasVec;  //Vector for the camera types.  
 GameObject * orbitCamera;
-GameObject * debugCamera;
+GameObject * flyingCamera;
+GameObject * FPCamera;
 GameObject * mainCamera;  //This is switched out with the orbit or debug camera, and is used in any calculations etc.
 GameObject * mainLight;
+GameObject * skyBox = NULL;
 PostProcessing postProcessor;
 
-//Main camera controls
-bool isDebugCam = false; //When true, the camera can be controlled freely by the player.  When false, the camera orbits the centre of the scene.  Keyboard M
+//Input globals
+float cameraSpeed = 1.0f;
+vec3 origin = vec3(0.0f, 0.0f, 0.0f);
 
 void CheckForErrors()
 {
@@ -83,19 +101,30 @@ void CheckForErrors()
 void InitWindow(int width, int height, bool fullscreen)
 {
 	//Create a window
-	window = SDL_CreateWindow(
+	window = SDL_CreateWindow
+	(
 		"Coursework",             // window title
 		SDL_WINDOWPOS_CENTERED,     // x position, centered
 		SDL_WINDOWPOS_CENTERED,     // y position, centered
 		width,                        // width, in pixels
 		height,                        // height, in pixels
 		SDL_WINDOW_OPENGL           // flags
-		);
+	);
 }
 
 void CleanUp()
 {
+	// clean up in reverse
 
+	//Clean up skybox
+	if (skyBox)
+	{
+		skyBox->destroy();
+		delete skyBox;
+		skyBox = NULL;
+	}
+
+	//Clean up game objects
     auto iter=displayList.begin();
 	while(iter!=displayList.end())
     {
@@ -113,16 +142,33 @@ void CleanUp()
     }
     displayList.clear();
     
-	// clean up in reverse
+	//Clean up post processor
 	postProcessor.destroy();
+
+	//Clean up cameras
+	iter = camerasVec.begin();
+	while (iter != camerasVec.end())
+	{
+		(*iter)->destroy();
+		if ((*iter))
+		{
+			delete (*iter);
+			(*iter) = NULL;
+			iter = camerasVec.erase(iter);
+		}
+		else
+		{
+			iter++;
+		}
+	}
+	camerasVec.clear();
+
 	SDL_GL_DeleteContext(glcontext);
 	SDL_DestroyWindow(window);
 	IMG_Quit();
 	TTF_Quit();
 	SDL_Quit();
 }
-
-
 
 //Function to initialise OpenGL
 void initOpenGL()
@@ -173,20 +219,111 @@ void setViewport( int width, int height )
     glViewport( 0, 0, ( GLsizei )width, ( GLsizei )height );
 }
 
+void createSkyBox()
+{
+	Vertex triangleData[] = {
+			{ vec3(-10.0f, 10.0f, 10.0f) },// Top Left
+			{ vec3(-10.0f, -10.0f, 10.0f) },// Bottom Left
+			{ vec3(10.0f, -10.0f, 10.0f) }, //Bottom Right
+			{ vec3(10.0f, 10.0f, 10.0f) },// Top Right
+
+
+			//back
+			{ vec3(-10.0f, 10.0f, -10.0f) },// Top Left
+			{ vec3(-10.0f, -10.0f, -10.0f) },// Bottom Left
+			{ vec3(10.0, -10.0f, -10.0f) }, //Bottom Right
+			{ vec3(10.0f, 10.0f, -10.0f) }// Top Right
+	};
+
+
+	GLuint indices[] = {
+		//front
+		0, 1, 2,
+		0, 3, 2,
+
+		//left
+		4, 5, 1,
+		4, 1, 0,
+
+		//right
+		3, 7, 2,
+		7, 6, 2,
+
+		//bottom
+		1, 5, 2,
+		6, 2, 1,
+
+		//top
+		5, 0, 7,
+		5, 7, 3,
+
+		//back
+		4, 5, 6,
+		4, 7, 6
+	};
+
+	//creat mesh and copy in
+
+	Mesh * pMesh = new Mesh();
+	pMesh->init();
+
+	pMesh->copyVertexData(8, sizeof(Vertex), (void**)triangleData);
+	pMesh->copyIndexData(36, sizeof(int), (void**)indices);
+
+	Transform *t = new Transform();
+	t->setPosition(0.0f, 0.0f, 0.0f);
+	//load textures and skybox material + Shaders
+	SkyBoxMaterial *material = new SkyBoxMaterial();
+	material->init();
+
+	std::string vsPath = ASSET_PATH + SKYBOX_SHADER_PATH + "/skyVS.glsl";
+	std::string fsPath = ASSET_PATH + SKYBOX_SHADER_PATH + "/skyFS.glsl";
+	material->loadShader(vsPath, fsPath);
+
+	std::string posZTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysFront2048.png";
+	std::string negZTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysBack2048.png";
+	std::string posXTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysLeft2048.png";
+	std::string negXTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysRight2048.png";
+	std::string posYTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysUp2048.png";
+	std::string negYTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysDown2048.png";
+
+	material->loadCubeTexture(posZTexturename, negZTexturename, posXTexturename, negXTexturename, posYTexturename, negYTexturename);
+	
+	//create gameobject but don't add to queue!
+	skyBox = new GameObject();
+	skyBox->setMaterial(material);
+	skyBox->setTransform(t);
+	skyBox->setMesh(pMesh);
+
+	CheckForErrors();
+}
+
+
 void Initialise()
 {
+	//Forward declare draw methods
+	void DrawParallaxModel(std::string modelFile, std::string vertexShaderFile, std::string fragmentShaderFile,
+		std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation);
+
+	void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::string bumpFile, vec3 position, vec3 rotation, vec3 scale);
+
+	//Create Skybox
+	createSkyBox();
+
 	//Set shader paths
-	std::string vsPath = ASSET_PATH + SHADER_PATH + "/passThroughVS.glsl";
-	std::string fsPath = ASSET_PATH + SHADER_PATH + "/SimplePostProcessFS.glsl";
+	std::string vsPath = ASSET_PATH + POSTP_SHADER_PATH + "passThroughVS.glsl";	
+	std::string fsPath = ASSET_PATH + POSTP_SHADER_PATH + "ColourFilterPPFS.glsl";
 
 	//Initialise post-processor
 	postProcessor.init(WINDOW_WIDTH, WINDOW_HEIGHT, vsPath, fsPath);
+
+#pragma region Euan
 
 #pragma region Orbit Camera
 
 	//Set up orbitcamera gameobject - this will be the initial camera
 	orbitCamera = new GameObject();
-	orbitCamera->setName("OrbitCamera");
+	orbitCamera->setName("Orbit Camera");
     
 	//Set up orbitcamera transform
 	Transform *t = new Transform();
@@ -199,37 +336,69 @@ void Initialise()
 	c->setLookAt(0.0f, 0.0f, 0.0f);
 	orbitCamera->setCamera(c);
 
+	//Push to cameras vector
+	camerasVec.push_back(orbitCamera);
+
 #pragma endregion
 
-#pragma region Debug camera
+#pragma region Tom
+#pragma region Flying camera 
 
 	//Set up debugcamera gameobject
-	debugCamera = new GameObject();
-	debugCamera->setName("DebugCamera");
+	flyingCamera = new GameObject();
+	flyingCamera->setName("Flying Camera");
 
 	//Set up debugcamera transform
 	t = new Transform();
-	t->setPosition(0.0f, 0.0f, 10.0f);
-	debugCamera->setTransform(t);
+	t->setPosition(0.0f, 2.0f, 10.0f);
+	flyingCamera->setTransform(t);
 
 	//Set up debugcamera camera
 	c = new Camera();
 	c->setAspectRatio((float)(WINDOW_WIDTH / WINDOW_HEIGHT));
 	c->setLookAt(0.0f, 0.0f, 0.0f);
-	debugCamera->setCamera(c);
+	flyingCamera->setCamera(c);
 
+	//Push to cameras vector
+	camerasVec.push_back(flyingCamera);
+
+#pragma endregion
+#pragma endregion
+
+#pragma region Calum
+#pragma region First Person camera - TODO: NOT IMPLEMENTED.  IDENTICAL TO ORBIT FOR THE TIME BEING.
+
+	//Equate to orbit for the time being.
+	FPCamera = new GameObject();
+	FPCamera->setName("First Person Camera");
+
+	//Set up debugcamera transform
+	t = new Transform();
+	t->setPosition(0.0f, 5.0f, 10.0f);
+	FPCamera->setTransform(t);
+
+	//Set up debugcamera camera
+	c = new Camera();
+	c->setAspectRatio((float)(WINDOW_WIDTH / WINDOW_HEIGHT));
+	c->setLookAt(0.0f, 0.0f, 0.0f);
+	FPCamera->setCamera(c);
+
+	//Push to cameras vector
+	camerasVec.push_back(FPCamera);
+
+#pragma endregion
 #pragma endregion
 
 #pragma region Main Camera
 
 	//Adds the main camera to the list of game objects, since it's the game object that will be worked on.
-	//The debug and orbit camera act as definitions for the main camera, and are not worked on directly.
-	mainCamera = orbitCamera;
+	//The cameras act as definitions for the main camera, and are not worked on directly.
+	mainCamera = camerasVec[ORBIT_CAMERA];
 	displayList.push_back(mainCamera);
 
 #pragma endregion
 
-#pragma region Main Light
+#pragma endregion
 
 	//Set up main light game object
 	mainLight = new GameObject();
@@ -247,79 +416,59 @@ void Initialise()
 	//Add main light to game object list.
 	displayList.push_back(mainLight);
 
-#pragma endregion
-
-	//Set main camera
-	mainCamera = orbitCamera;
-
-    //Initialise all  game objects
+    //Initialise all other game objects
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
     {
         (*iter)->init();
     }
     
-	//Load and place model with bump mapping.
-	std::string modelPath = ASSET_PATH + MODEL_PATH + "armoredrecon.fbx";
-	GameObject * go = loadFBXFromFile(modelPath);
-	for (int i = 0; i < go->getChildCount(); i++)
-	{
-		Material * material = new Material();
-		material->init();
-		std::string vsPath = ASSET_PATH + SHADER_PATH + "/BumpmappingVS.glsl";
-		std::string fsPath = ASSET_PATH + SHADER_PATH + "/BumpmappingFS.glsl";
-		material->loadShader(vsPath, fsPath);
+#pragma region Calum
+	/*TODO: Calum
+	Place models and stuff
+	*/
+#pragma endregion
 
-		std::string diffTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_diff.png";
-		material->loadDiffuseMap(diffTexturePath);
 
-		std::string specTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_spec.png";
-		material->loadSpecularMap(specTexturePath);
+	//
+	//DrawParallaxModel("armoredrecon.fbx", "BumpmappingVS.glsl", "BumpmappingFS.glsl",
+	//	"armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f));
 
-		std::string bumpTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_N.png";
-		material->loadBumpMap(bumpTexturePath);
+	//DrawParallaxModel("armoredrecon.fbx", "ParallaxMappingVS.glsl", "ParallaxMappingFS.glsl",
+	//	"armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f));	
+	// Draw Ground
+	DrawBumpmapModel("Ground.fbx", "Ground.png", "Ground.png", vec3(0.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f,1.0f,1.0f));
+	// Draw Tanks
+	DrawBumpmapModel("Tank.fbx", "Tank.png", "Tank.png", vec3(-30.0f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f));
+	DrawBumpmapModel("Tank.fbx", "Tank.png", "Tank.png", vec3(-12.5f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f));
+	// Draw Building
+	DrawBumpmapModel("Building1.fbx", "building.png", "building.png", vec3(-12.5f, 4.5f, -20.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1));
+	//Draw Tents
+	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f));
+	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(60.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f));
+	DrawBumpmapModel("Tent.fbx","Camo.png", "Camo.png", vec3(110.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f));
+	DrawBumpmapModel("Tent.fbx","Camo.png", "Camo.png", vec3(140.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f));
+	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png",  vec3(140.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f));
+	DrawBumpmapModel("Tent.fbx","Camo.png", "Camo.png", vec3(165.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f));
+	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png",vec3(190.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f));
+	// Flag and helipad broken
+	//DrawBumpmapModel("Flag.fbx", "flag.png", "flag.png", vec3(190.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f));
 
-		go->getChild(i)->setMaterial(material);
-	}
-	go->getTransform()->setPosition(2.0f, 0.0f, 0.0f);
-	go->getTransform()->setRotation(0.0f, -40.0f, 0.0f);
-	displayList.push_back(go);
 
-	//Load and place model with parallex mapping.
-	go = loadFBXFromFile(modelPath);
-	for (int i = 0; i < go->getChildCount(); i++)
-	{
-		Material * material = new Material();
-		material->init();
-		std::string vsPath = ASSET_PATH + SHADER_PATH + "/ParallaxMappingVS.glsl";
-		std::string fsPath = ASSET_PATH + SHADER_PATH + "/ParallaxMappingFS.glsl";
-		material->loadShader(vsPath, fsPath);
+	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f));
 
-		std::string diffTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_diff.png";
-		material->loadDiffuseMap(diffTexturePath);
+	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f));
 
-		std::string specTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_spec.png";
-		material->loadSpecularMap(specTexturePath);
-
-		std::string bumpTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_N.png";
-		material->loadBumpMap(bumpTexturePath);
-
-		std::string heightTexturePath = ASSET_PATH + TEXTURE_PATH + "/armoredrecon_Height.png";
-		material->loadHeightMap(heightTexturePath);
-
-		go->getChild(i)->setMaterial(material);
-	}
-	go->getTransform()->setPosition(-2.0f, 0.0f, 0.0f);
-	go->getTransform()->setRotation(0.0f, -40.0f, 0.0f);
-	displayList.push_back(go);
 }
-
 
 //Function to update the game state
 void update()
 {
+	//skyBox->update();
+
     //Update all game objects.
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
     {
+		//Shader breaking - 4th iteration
         (*iter)->update();
     }
 }
@@ -333,7 +482,7 @@ void renderGameObject(GameObject * pObject)
 
 	Mesh * currentMesh = pObject->getMesh();
 	Transform * currentTransform = pObject->getTransform();
-	Material * currentMaterial = pObject->getMaterial();
+	Material * currentMaterial = (Material*)pObject->getMaterial();  //We know it'll be a standard material.
 
 	if (currentMesh && currentMaterial && currentTransform)
 	{
@@ -393,12 +542,44 @@ void renderGameObject(GameObject * pObject)
 		glUniform1i(heightTextureLocation, 3);
 
 		glDrawElements(GL_TRIANGLES, currentMesh->getIndexCount(), GL_UNSIGNED_INT, 0);
+
+		currentMaterial->unbind();
 	}
 
 	for (int i = 0; i < pObject->getChildCount(); i++)
-	{
+	{		
 		renderGameObject(pObject->getChild(i));
 	}
+}
+
+void renderSkyBox()
+{
+	skyBox->render();
+
+	Mesh * currentMesh = skyBox->getMesh();
+	SkyBoxMaterial * currentMaterial = (SkyBoxMaterial*)skyBox->getMaterial();
+	if (currentMesh && currentMaterial)
+	{
+		Camera * cam = mainCamera->getCamera();
+
+		currentMaterial->bind();
+		currentMesh->bind();
+
+		GLint cameraLocation = currentMaterial->getUniformLocation("cameraPos");
+		GLint viewLocation = currentMaterial->getUniformLocation("view");
+		GLint projectionLocation = currentMaterial->getUniformLocation("projection");
+		GLint cubeTextureLocation = currentMaterial->getUniformLocation("cubeTexture");
+
+		glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(cam->getProjection()));
+		glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(cam->getView()));
+		glUniform4fv(cameraLocation, 1, glm::value_ptr(mainCamera->getTransform()->getPosition()));
+		glUniform1i(cubeTextureLocation, 0);
+
+		glDrawElements(GL_TRIANGLES, currentMesh->getIndexCount(), GL_UNSIGNED_INT, 0);
+
+		currentMaterial->unbind();
+	}
+	CheckForErrors();
 }
 
 //Function to render(aka draw)
@@ -407,11 +588,16 @@ void render()
 	//Bind Framebuffer
 	postProcessor.bind();
 
+	//Clear
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
 	glClearDepth(1.0f);
+
     //clear the colour and depth buffer
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     //alternative sytanx
 	for (auto iter = displayList.begin(); iter != displayList.end(); iter++)
 	{
@@ -419,95 +605,247 @@ void render()
 	}
 
 	//now switch to normal framebuffer
+	postProcessor.preDraw();
+
+	//Grab stuff from shader
+	GLint colourFilterLocation = postProcessor.getUniformVariableLocation("colourFilter");
+	glUniformMatrix4fv(colourFilterLocation, 1, GL_FALSE, glm::value_ptr(getShader()));
+
+	//Post processor draw
 	postProcessor.draw();
+
+	//Swap buffers and draw to scene.
     SDL_GL_SwapWindow(window);
 }
 
+#pragma region Euan
+
+void DrawParallaxModel(std::string modelFile, std::string vertexShaderFile, std::string fragmentShaderFile, 
+	std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation)
+{
+	GameObject * go = loadFBXFromFile(ASSET_PATH + MODEL_PATH + modelFile);
+	for (int i = 0; i < go->getChildCount(); i++)
+	{
+		Material * material = new Material();
+		material->init();
+		material->loadShader(ASSET_PATH + MODEL_SHADER_PATH + vertexShaderFile, ASSET_PATH + MODEL_SHADER_PATH + fragmentShaderFile);
+		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + diffuseFile);
+		material->loadSpecularMap(ASSET_PATH + MODEL_TEXTURE_PATH + specularFile);
+		material->loadBumpMap(ASSET_PATH + MODEL_TEXTURE_PATH + normalFile);
+		if (heightFile != "") material->loadHeightMap(ASSET_PATH + MODEL_TEXTURE_PATH + heightFile);  //BUMP MAPPING DOESN'T USE A HEIGHT MAP.  IF THIS IS NULL, SKIP OVER.
+		go->getChild(i)->setMaterial(material);
+	}
+	go->getTransform()->setPosition(position);
+	go->getTransform()->setRotation(rotation);
+	displayList.push_back(go);
+}
+
+void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::string bumpFile, vec3 position, vec3 rotation, vec3 scale)
+{
+	GameObject * go = loadFBXFromFile(ASSET_PATH + MODEL_PATH + modelFile);
+
+	for (int i = 0; i < go->getChildCount(); i++)
+	{
+		Material * material = new Material();
+		material->init();
+		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + diffuseFile);
+		//material->loadBumpMap(ASSET_PATH + MODEL_TEXTURE_PATH + bumpFile);
+		std::string vsPath = ASSET_PATH + MODEL_SHADER_PATH + "textureVS.glsl";
+		std::string fsPath = ASSET_PATH + MODEL_SHADER_PATH + "textureFS.glsl";
+		material->loadShader(vsPath, fsPath);
+
+		go->getChild(i)->setMaterial(material);
+	}
+	go->getTransform()->setPosition(position);
+	go->getTransform()->setRotation(rotation);
+	go->getTransform()->setScale(scale);
+	displayList.push_back(go);
+}
+
+#pragma region Tom
+void HandleMouse(Sint32 x, Sint32 y)
+{
+		float sensitivity = 0.025f;
+
+		Camera * c = flyingCamera->getCamera();
+		vec3 oldLookAt = c->getLookAt();
+		vec3 newLookAt(0.0f, 0.0f, 0.0f);
+		newLookAt.x = oldLookAt.x + (x*sensitivity);
+		newLookAt.y = oldLookAt.y + (y*sensitivity);
+		newLookAt.z = 0.0f;
+		c->setLookAt(oldLookAt.x + (x*sensitivity), oldLookAt.y + (y*sensitivity), 0.0f);
+}
+#pragma endregion
+
 void HandleInput(SDL_Keycode key)
 {
-	float cameraSpeed = 1.0f;
-	vec3 origin = vec3(0.0f, 0.0f, 0.0f);
-	
-	//Toggle debug cam and return out of the method.
+	//Switch main camera and return out of the method.
 	if (key == SDLK_m)
 	{
-		//Switch between cameras.
-		if (mainCamera->getName() == "OrbitCamera")
-		{
-			mainCamera = debugCamera;
-			isDebugCam = true;
-		}
-		else
-		{
-			mainCamera = orbitCamera;
-			isDebugCam = false;
-		}
+		//Increment camera index.
+		cameraIndex++;
 
-		std::cout << "Main camera: " << mainCamera->getName() << std::endl;
+		//If camera index exceeds 2, set to 0.
+		if (cameraIndex > 2) cameraIndex = 0;
+
+		//Assign main camera to position in cameras vector. 
+		mainCamera = camerasVec[cameraIndex];
+
+		//Remove the first element in display list (maincamera), then re-add the main camera at the front - one before the beginning, then clean up the vector.		
+		displayList.erase(displayList.begin());
+		displayList.insert(displayList.begin(), mainCamera);
+		displayList.shrink_to_fit();
+
+		//Debug
+		std::cout << mainCamera->getName() << std::endl;
 
 		//Return out.  No further processing on this key press.
 		return;
 	}
 
-	if (isDebugCam)
+	//Switch shaders
+	if (key == SDLK_TAB)
 	{
-		/*
-		TODO - TOM
-		flying/debug controls.  WASD for movement, mouse to aim.
-		*/
+		//Increment shader index
+		nextShader();
+
+		//Debug
+		std::cout << "Debug - Current Post Processing Shader: " << getShaderName() << std::endl << "Debug - Shader Index: " << std::to_string(getShaderIndex()) << std::endl << std::endl;
 		return;
 	}
-	else
+
+	//Camera movement.
+	switch (cameraIndex)
 	{
-		switch (key)
+		case ORBIT_CAMERA:
 		{
-			case SDLK_a:
+			//Orbit camera controls: A-D = Pan.  W-S = Pitch.  Z-C = Zoom
+			switch (key)
 			{
-				mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, Y_AXIS, origin);
-				break;
-			}
-
-			case SDLK_d:
-			{
-				mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, Y_AXIS, origin);
-				break;
-			}
-
-			case SDLK_w:
-			{
-				if (mainCamera->getTransform()->getPosition().y < 7.0f)
+				case SDLK_a:
 				{
+					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, Y_AXIS, origin);
+					break;
+				}
+
+				case SDLK_d:
+				{
+					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, Y_AXIS, origin);
+					break;
+				}
+
+				case SDLK_w:
+				{
+					//if (mainCamera->getTransform()->getPosition().y < 7.0f)  LIMITATIONS TEMPORARILY OMITTED DUE TO BUG.
+					//{
 					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, origin);
 					break;
+					//}
+					//else break;
 				}
-				else break;
-			}
 
-			case SDLK_s:
-			{
-				if (mainCamera->getTransform()->getPosition().y > 1.0f)
+				case SDLK_s:
 				{
+					//if (mainCamera->getTransform()->getPosition().y > 1.0f) LIMITATIONS TEMPORARILY OMITTED DUE TO BUG.
+					//{
 					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, origin);
 					break;
+					//}
+					//else break;
 				}
-				else break;
-			}
 
-			case SDLK_z:
-			{
-				//if (mainCamera->getTransform()->getPosition().z > 1.0f)
-				mainCamera->getTransform()->zoom(-cameraSpeed);
-				break;
-			}
+				case SDLK_z:
+				{
+					mainCamera->getTransform()->zoom(-cameraSpeed, origin);
+					break;
+				}
 
-			case SDLK_c:
-			{
-				mainCamera->getTransform()->zoom(cameraSpeed);
-				break;
+				case SDLK_c:
+				{
+					mainCamera->getTransform()->zoom(cameraSpeed, origin);
+					break;
+				}
+
+				default:
+					break;
 			}
+			return;
 		}
+
+		case FLYING_CAMERA:
+		{
+			//Flying Camera controls: WASD for movement, mouse to aim.
+#pragma region Tom
+
+			float Mx = 0.0f;
+			float My = 0.0f;
+
+			Camera * c = flyingCamera->getCamera();
+			vec3 LookAt = c->getLookAt();
+
+			switch (key)
+			{
+				case SDLK_a:
+				{
+					Mx = (-1.0f);
+					My = 0.0f;
+					break;
+				}
+
+				case SDLK_d:
+				{
+					Mx = 1.0f;
+					My = 0.0f;
+					
+					break;
+				}
+
+				case SDLK_s:
+				{
+					mainCamera->getTransform()->zoom(1.0f, LookAt);
+					break;
+				}
+
+				case SDLK_w:
+				{
+					mainCamera->getTransform()->zoom(-1.0f, LookAt);
+					break;
+				}
+
+
+				default:
+					break;
+
+			}
+
+			vec3 oldMinCamPos = mainCamera->getTransform()->getPosition();
+			mainCamera->getTransform()->setPosition(oldMinCamPos.x + Mx, oldMinCamPos.y + My, oldMinCamPos.z);
+
+			// --DEBUG--
+			std::cout << "old pos: " << oldMinCamPos.x << " , " << oldMinCamPos.y << " , " << oldMinCamPos.z << std::endl;
+			std::cout << "new pos: " << oldMinCamPos.x + Mx << " , " << oldMinCamPos.y + My << " , " << oldMinCamPos.z << std::endl << std::endl;
+
+			return;		
+#pragma endregion
+
+		}
+		case FIRST_PERSON_CAMERA:
+		{
+#pragma region Calum
+			/*
+			TODO - CALUM
+			first person camera when you get around to it.  WASD movement, mouse to aim (and shoot)
+			*/
+			return;
+#pragma endregion
+		}
+
+		default:
+			break;
 	}
 }
+#pragma endregion
+
 
 //Main Method
 int main(int argc, char * arg[])
@@ -548,8 +886,8 @@ int main(int argc, char * arg[])
     //Value to hold the event generated by SDL
     SDL_Event event;
 
-	//Clear the screen
-	system("cls");
+	//clear console
+	//system("cls");
 
     //Game Loop
 	while (running)
@@ -569,6 +907,13 @@ int main(int argc, char * arg[])
 				//Handle keyboard inputs
 				HandleInput(event.key.keysym.sym);
 			}
+
+			if (event.type == SDL_MOUSEMOTION)
+			{
+				//Handle mouse input
+				HandleMouse(event.motion.xrel, event.motion.yrel);
+
+			}
         }
 
 		//Update and render all game objects
@@ -580,6 +925,3 @@ int main(int argc, char * arg[])
 	CleanUp();    
     return 0;
 }
-
-
-//std::cout << "Neat debugging statement!" << std::to_string(valueToString) << std::endl;
