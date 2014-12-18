@@ -397,17 +397,23 @@ void Initialise()
 
 #pragma region Tom - mess around with the lights (daylightsystem)
 
-void DayLightChange()
+void DayLightChange(int hours, int mins)
 {
-	int hours = timer[1];
 	float conversion = 0.00390625;
+	int HoursF = hours + 1;
+	if (HoursF == 24) HoursF = 0;
+
+	float R = (ColorTemp[HoursF][0] - ColorTemp[hours][0]); 
+	R = ((R / 59) * mins) + ColorTemp[hours][0];
+	float G = (ColorTemp[HoursF][1] - ColorTemp[hours][1]);
+	G = ((G/ 59) * mins) + ColorTemp[hours][1];
+	float B = (ColorTemp[HoursF][2] - ColorTemp[hours][2]);
+	B = ((B/ 59) * mins) + ColorTemp[hours][2];
 
 	Light * light = new Light();
 	light = mainLight->getLight();
 
-	//get the color of the hour
-	
-	light->setDiffuseColour((ColorTemp[hours][0] * conversion), (ColorTemp[hours][1] * conversion), (ColorTemp[hours][2] * conversion), 1.0f);
+	light->setDiffuseColour((R * conversion), (G * conversion), (B * conversion), 1.0f);
 
 }
 
@@ -422,17 +428,17 @@ void Timer()
 		timer[0]++; //mins
 		timer[1]; //hours
 
+		
 		if (timer[0] == 60)
 		{
-			DayLightChange();
 			timer[1]++;
 			timer[0] = 0;
-			
 		}
 		if (timer[1] == 24)
 		{
 			timer[1] = 0;
 		}
+		DayLightChange(timer[1], timer[0]);
 		dT = clicks;
 
 	//DEBUG
