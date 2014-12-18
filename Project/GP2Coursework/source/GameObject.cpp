@@ -119,6 +119,16 @@ const std::string& GameObject::getName()
     return m_Name;
 }
 
+void GameObject::setTag(const std::string& name)
+{
+	m_Tag = name;
+}
+
+const std::string& GameObject::getTag()
+{
+	return m_Tag;
+}
+
 void GameObject::setTransform(Transform * transform)
 {
     m_Transform=transform;
@@ -131,9 +141,9 @@ void GameObject::setMesh(Mesh * mesh)
     addComponent(mesh);
 }
 
-void GameObject::setMaterial(Material * material)
+void GameObject::setMaterial(BaseMaterial * material)
 {
-    m_Material=material;
+    m_Material = material;
     addComponent(material);
 }
 
@@ -159,7 +169,7 @@ Mesh * GameObject::getMesh()
     return m_Mesh;
 }
 
-Material * GameObject::getMaterial()
+BaseMaterial * GameObject::getMaterial()
 {
     return m_Material;
 }

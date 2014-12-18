@@ -27,7 +27,7 @@ void Material::destroy()
 	glDeleteTextures(1, &m_DiffuseMap);
 	glDeleteTextures(1, &m_SpecularMap);
 	glDeleteTextures(1, &m_BumpMap);
-	glDeleteTextures(2, &m_HeightMap);
+	glDeleteTextures(1, &m_HeightMap);
 }
 
 void Material::bind()
@@ -44,8 +44,6 @@ void Material::bind()
 
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, m_HeightMap);
-
-#pragma region Brians mesh fix.  Breaks shader tabbing.
 
 	GLint vertexPosLocation = glGetAttribLocation(m_ShaderProgram, "vertexPosition");
 	GLint vertexNormalLocation = glGetAttribLocation(m_ShaderProgram, "vertexNormals");
@@ -74,11 +72,9 @@ void Material::bind()
 	glVertexAttribPointer(vertexTangentLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec3) + sizeof(vec2) + sizeof(vec4)));
 	glEnableVertexAttribArray(vertexBinormalLocation);
 	glVertexAttribPointer(vertexBinormalLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec3) + sizeof(vec2) + sizeof(vec4) + sizeof(vec3)));
-
-#pragma endregion
 }
 
-bool Material::loadShader(const std::string& vsFilename, const std::string& fsFilename)
+bool BaseMaterial::loadShader(const std::string& vsFilename, const std::string& fsFilename)
 {
 	GLuint vertexShaderProgram = 0;
 	vertexShaderProgram = loadShaderFromFile(const_cast<std::string&>(vsFilename), VERTEX_SHADER);
@@ -99,7 +95,7 @@ bool Material::loadShader(const std::string& vsFilename, const std::string& fsFi
 	return true;
 }
 
-GLint Material::getUniformLocation(const std::string& name)
+GLint BaseMaterial::getUniformLocation(const std::string& name)
 {
 	return glGetUniformLocation(m_ShaderProgram, name.c_str());
 }

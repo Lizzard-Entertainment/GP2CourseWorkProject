@@ -9,7 +9,7 @@
 class Component;
 class Transform;
 class Mesh;
-class Material;
+class BaseMaterial;
 class Camera;
 class Light;
 
@@ -30,10 +30,13 @@ public:
     void addComponent(Component * component);
     void setName(const std::string& name);
     const std::string& getName();
+
+	void setTag(const std::string& tag);
+	const std::string& getTag();
     
     void setTransform(Transform * transform);
     void setMesh(Mesh * mesh);
-    void setMaterial(Material * material);
+	void setMaterial(BaseMaterial * material);
     void setCamera(Camera * camera);
 	void setLight(Light * light);
 
@@ -44,7 +47,7 @@ public:
 
 	Transform * getTransform();
     Mesh *getMesh();
-    Material *getMaterial();
+	BaseMaterial *getMaterial();
     Camera * getCamera();
 	Light* getLight();
 
@@ -56,10 +59,11 @@ private:
     std::vector<Component*> m_Components;
 	std::vector<GameObject*> m_Children;
 	std::string m_Name;
+	std::string m_Tag;
     
     Transform *m_Transform;
     Mesh *m_Mesh;
-    Material *m_Material;
+	BaseMaterial *m_Material;
     Camera *m_Camera;
 	Light *m_Light;
 

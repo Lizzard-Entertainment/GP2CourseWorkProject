@@ -57,9 +57,7 @@ GLuint loadTextureFromFile(const std::string& filename)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	
+	glGenerateMipmap(GL_TEXTURE_2D);	
 
 	return textureID;
 }
@@ -86,4 +84,39 @@ GLuint loadTextureFromFont(const std::string& fontFilename, int pointSize, const
 	TTF_CloseFont(font);
 
 	return textureID;
+}
+
+void loadCubeMapSide(const std::string& filename, GLenum cubeSide)
+{
+	SDL_Surface *imageSurface = IMG_Load(filename.c_str());
+
+	GLint  nOfColors = imageSurface->format->BytesPerPixel;
+	GLenum texture_format = GL_RGB;
+	GLenum internalFormat = GL_RGB8;
+	if (nOfColors == 4)     // contains an alpha channel
+	{
+		if (imageSurface->format->Rmask == 0x000000ff){
+			texture_format = GL_RGBA;
+			internalFormat = GL_RGBA8;
+		}
+		else{
+			texture_format = GL_BGRA;
+			internalFormat = GL_RGBA8;
+		}
+	}
+	else if (nOfColors == 3)     // no alpha channel
+	{
+		if (imageSurface->format->Rmask == 0x000000ff){
+			texture_format = GL_RGB;
+			internalFormat = GL_RGB8;
+		}
+		else
+		{
+			texture_format = GL_BGR;
+			internalFormat = GL_RGB8;
+		}
+	}
+	glTexImage2D(cubeSide, 0, internalFormat, imageSurface->w, imageSurface->h, 0, texture_format, GL_UNSIGNED_BYTE, imageSurface->pixels);
+
+	SDL_FreeSurface(imageSurface);
 }

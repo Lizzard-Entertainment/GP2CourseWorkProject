@@ -16,12 +16,6 @@
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{1543e883-62ab-43c5-956d-7630f18e7015}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Shaders\PostProcessing">
-      <UniqueIdentifier>{5b083e70-f0c7-4103-a0d0-a923a24682a3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\Shaders\Drawing">
-      <UniqueIdentifier>{7af05d55-3c01-4618-bf40-7f3c91134840}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Camera.cpp">
@@ -58,6 +52,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\PostProcessing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\PPFilterType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SkyboxMaterial.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -98,46 +98,40 @@
     <ClInclude Include="headers\PostProcessing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\CameraTypeEnum.h">
+    <ClInclude Include="headers\PPFilterType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\CameraType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\SkyboxMaterial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\PostProcessing\BlurFilterPPFS.glsl">
-      <Filter>Resource Files\Shaders\PostProcessing</Filter>
+    <None Include="assets\shaders\BumpmappingFS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="assets\shaders\PostProcessing\BWPPFS.glsl">
-      <Filter>Resource Files\Shaders\PostProcessing</Filter>
+    <None Include="assets\shaders\BumpmappingVS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="assets\shaders\PostProcessing\MidnightPPFS.glsl">
-      <Filter>Resource Files\Shaders\PostProcessing</Filter>
+    <None Include="assets\shaders\ColourFilterPPFS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="assets\shaders\PostProcessing\passThroughVS.glsl">
-      <Filter>Resource Files\Shaders\PostProcessing</Filter>
+    <None Include="assets\shaders\passThroughVS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="assets\shaders\PostProcessing\SepiaPPFS.glsl">
-      <Filter>Resource Files\Shaders\PostProcessing</Filter>
+    <None Include="assets\shaders\skyboxFS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="assets\shaders\Drawing\BumpmappingFS.glsl">
-      <Filter>Resource Files\Shaders\Drawing</Filter>
+    <None Include="assets\shaders\skyboxVS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="assets\shaders\Drawing\BumpmappingVS.glsl">
-      <Filter>Resource Files\Shaders\Drawing</Filter>
+    <None Include="assets\shaders\textureFS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="assets\shaders\Drawing\ParallaxMappingFS.glsl">
-      <Filter>Resource Files\Shaders\Drawing</Filter>
-    </None>
-    <None Include="assets\shaders\Drawing\ParallaxMappingVS.glsl">
-      <Filter>Resource Files\Shaders\Drawing</Filter>
-    </None>
-    <None Include="assets\shaders\PostProcessing\InvertedPPFS.glsl">
-      <Filter>Resource Files\Shaders\PostProcessing</Filter>
-    </None>
-    <None Include="assets\shaders\PostProcessing\PolaroidPPFS.glsl">
-      <Filter>Resource Files\Shaders\PostProcessing</Filter>
-    </None>
-    <None Include="assets\shaders\PostProcessing\NonePPFS.glsl">
-      <Filter>Resource Files\Shaders\PostProcessing</Filter>
+    <None Include="assets\shaders\textureVS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
