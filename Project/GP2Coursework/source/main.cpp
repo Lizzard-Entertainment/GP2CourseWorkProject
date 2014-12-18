@@ -63,10 +63,10 @@ SDL_Window * window = NULL;
 SDL_GLContext glcontext = NULL;
 
 //Window Width
-const int WINDOW_WIDTH = 640;
+const int WINDOW_WIDTH = 1280;
 
 //Window Height
-const int WINDOW_HEIGHT = 480;
+const int WINDOW_HEIGHT = 800;
 
 //Flag for game's running state. 
 bool running = true;
@@ -441,17 +441,30 @@ void Initialise()
 	DrawBumpmapModel("Tank.fbx", "Tank.png", "Tank.png", vec3(-30.0f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f));
 	DrawBumpmapModel("Tank.fbx", "Tank.png", "Tank.png", vec3(-12.5f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f));
 	// Draw Building
-	DrawBumpmapModel("Building1.fbx", "building.png", "building.png", vec3(-12.5f, 4.5f, -20.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1));
+	DrawBumpmapModel("Building1.fbx", "building.png", "building.png", vec3(-12.5f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1));
+
+	DrawBumpmapModel("Building1.fbx", "building.png", "building.png", vec3(-40.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1));
+
+	DrawBumpmapModel("Building1.fbx", "building.png", "building.png", vec3(190.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1));
+
 	//Draw Tents
 	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f));
 	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(60.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f));
+
+	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(30.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f));
+	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(60.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f));
+
 	DrawBumpmapModel("Tent.fbx","Camo.png", "Camo.png", vec3(110.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f));
 	DrawBumpmapModel("Tent.fbx","Camo.png", "Camo.png", vec3(140.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f));
+
+	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(110.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f));
+	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(140.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f));
+
 	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png",  vec3(140.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f));
 	DrawBumpmapModel("Tent.fbx","Camo.png", "Camo.png", vec3(165.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f));
 	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png",vec3(190.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f));
-	// Flag and helipad broken
-	//DrawBumpmapModel("Flag.fbx", "flag.png", "flag.png", vec3(190.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f));
+
+
 
 
 	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f));
