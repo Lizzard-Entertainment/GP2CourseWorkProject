@@ -27,7 +27,7 @@ void Material::destroy()
 	glDeleteTextures(1, &m_DiffuseMap);
 	glDeleteTextures(1, &m_SpecularMap);
 	glDeleteTextures(1, &m_BumpMap);
-	glDeleteTextures(2, &m_HeightMap);
+	glDeleteTextures(1, &m_HeightMap);
 }
 
 void Material::bind()

@@ -124,9 +124,9 @@ void CleanUp()
     {
         (*iter)->destroy();
         if ((*iter))
-        {
-            delete (*iter);
+        {            
             (*iter)=NULL;
+			delete (*iter);
             iter=displayList.erase(iter);
         }
         else
@@ -143,8 +143,8 @@ void CleanUp()
 		(*iter)->destroy();
 		if ((*iter))
 		{
-			delete (*iter);
 			(*iter) = NULL;
+			delete (*iter);			
 			iter = camerasVec.erase(iter);
 		}
 		else
@@ -299,7 +299,7 @@ void Initialise()
 	void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::string bumpFile, vec3 position, vec3 rotation, vec3 scale);
 
 	//Create Skybox
-	//createSkyBox();
+	createSkyBox();
 
 	//Set shader paths
 	std::string vsPath = ASSET_PATH + SHADER_PATH + "passThroughVS.glsl";
@@ -431,7 +431,7 @@ void Initialise()
 //Function to update the game state
 void update()
 {
-	//skyBox->update();
+	skyBox->update();
 
     //Update all game objects.
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
@@ -567,7 +567,7 @@ void render()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//render skybox
-	//renderSkyBox();
+	renderSkyBox();
 
     //alternative sytanx
 	for (auto iter = displayList.begin(); iter != displayList.end(); iter++)
@@ -711,28 +711,32 @@ void HandleInput(SDL_Keycode key)
 
 				case SDLK_w:
 				{
-					//if (mainCamera->getTransform()->getPosition().y < 7.0f)  LIMITATIONS TEMPORARILY OMITTED DUE TO BUG.
-					//{
-					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, origin);
-					break;
-					//}
-					//else break;
+					if (mainCamera->getTransform()->getPosition().y < 7.0f)
+					{
+						mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, origin);
+						break;
+					}
+					else break;
 				}
 
 				case SDLK_s:
 				{
-					//if (mainCamera->getTransform()->getPosition().y > 1.0f) LIMITATIONS TEMPORARILY OMITTED DUE TO BUG.
-					//{
-					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, origin);
-					break;
-					//}
-					//else break;
+					if (mainCamera->getTransform()->getPosition().y > 1.0f) 
+					{
+						mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, origin);
+						break;
+					}
+					else break;
 				}
 
 				case SDLK_z:
 				{
-					mainCamera->getTransform()->zoom(-cameraSpeed, origin);
-					break;
+					if (mainCamera->getTransform()->getPosition().z > 2.0f)
+					{
+						mainCamera->getTransform()->zoom(-cameraSpeed, origin);
+						break;
+					}
+					else break;
 				}
 
 				case SDLK_c:
@@ -806,13 +810,10 @@ void HandleInput(SDL_Keycode key)
 		}
 		case FIRST_PERSON_CAMERA:
 		{
-#pragma region Calum
 			/*
-			TODO - CALUM
-			first person camera when you get around to it.  WASD movement, mouse to aim (and shoot)
+			THIS WAS ABANDONED.
 			*/
 			return;
-#pragma endregion
 		}
 
 		default:
