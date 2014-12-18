@@ -620,8 +620,8 @@ void HandleMouse(Sint32 x, Sint32 y)
 		vec3 oldLookAt = c->getLookAt();
 		vec3 newLookAt(0.0f, 0.0f, 0.0f);
 		newLookAt.x = oldLookAt.x + (x*sensitivity);
-		newLookAt.y = oldLookAt.y + (y*sensitivity);
-		c->setLookAt(oldLookAt.x + (x*sensitivity), oldLookAt.y + (y*sensitivity), oldLookAt.z);
+		newLookAt.y = oldLookAt.y - (y*sensitivity);
+		c->setLookAt(newLookAt.x, newLookAt.y, oldLookAt.z);
 
 
 }
