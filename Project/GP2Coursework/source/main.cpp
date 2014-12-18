@@ -54,10 +54,10 @@ SDL_Window * window = NULL;
 SDL_GLContext glcontext = NULL;
 
 //Window Width
-const int WINDOW_WIDTH = 640;
+const int WINDOW_WIDTH = 1280;
 
 //Window Height
-const int WINDOW_HEIGHT = 480;
+const int WINDOW_HEIGHT = 800;
 
 //Flag for game's running state. 
 bool running = true;
@@ -115,6 +115,9 @@ void CleanUp()
 		skyBox = NULL;
 	}
 
+	//Clean up post processor
+	postProcessor.destroy();
+
 	//Clean up game objects
     auto iter=displayList.begin();
 	while(iter!=displayList.end())
@@ -133,9 +136,6 @@ void CleanUp()
     }
     displayList.clear();
     
-	//Clean up post processor
-	postProcessor.destroy();
-
 	//Clean up cameras
 	iter = camerasVec.begin();
 	while (iter != camerasVec.end())
@@ -299,7 +299,7 @@ void Initialise()
 	void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::string bumpFile, vec3 position, vec3 rotation, vec3 scale);
 
 	//Create Skybox
-	createSkyBox();
+	//createSkyBox();
 
 	//Set shader paths
 	std::string vsPath = ASSET_PATH + SHADER_PATH + "passThroughVS.glsl";
@@ -434,7 +434,7 @@ void Initialise()
 //Function to update the game state
 void update()
 {
-	skyBox->update();
+	//skyBox->update();
 
     //Update all game objects.
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
@@ -570,7 +570,7 @@ void render()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//render skybox
-	renderSkyBox();
+	//renderSkyBox();
 
     //alternative sytanx
 	for (auto iter = displayList.begin(); iter != displayList.end(); iter++)
@@ -624,11 +624,11 @@ void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::strin
 		material->init();
 		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + diffuseFile);
 		material->loadBumpMap(ASSET_PATH + MODEL_TEXTURE_PATH + bumpFile);
-		//std::string vsPath = ASSET_PATH + SHADER_PATH + "textureVS.glsl";
-		//std::string fsPath = ASSET_PATH + SHADER_PATH + "textureFS.glsl";
+		std::string vsPath = ASSET_PATH + SHADER_PATH + "textureVS.glsl";
+		std::string fsPath = ASSET_PATH + SHADER_PATH + "textureFS.glsl";
 
-		std::string vsPath = ASSET_PATH + SHADER_PATH + "bumpmappingVS.glsl";
-		std::string fsPath = ASSET_PATH + SHADER_PATH + "bumpmappingFS.glsl";
+		//std::string vsPath = ASSET_PATH + SHADER_PATH + "bumpmappingVS.glsl";
+		//std::string fsPath = ASSET_PATH + SHADER_PATH + "bumpmappingFS.glsl";
 
 		material->loadShader(vsPath, fsPath);
 

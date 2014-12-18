@@ -11,6 +11,7 @@ Camera::Camera()
 	m_FOV=45.0f;
 	m_View = mat4();
 	m_Projection = mat4();
+	m_AspectRatio = 16.0f / 10.0f;
 }
 
 Camera::~Camera()
