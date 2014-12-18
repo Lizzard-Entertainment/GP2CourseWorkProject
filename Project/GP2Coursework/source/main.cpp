@@ -49,6 +49,7 @@ const vec3 X_AXIS = vec3(1, 0, 0);
 const vec3 Y_AXIS = vec3(0, 1, 0);
 const vec3 Z_AXIS = vec3(0, 0, 1);
 
+
 //SDL Window
 SDL_Window * window = NULL;
 
@@ -150,8 +151,12 @@ void InitWindow(int width, int height, bool fullscreen)
 		SDL_WINDOWPOS_CENTERED,     // y position, centered
 		width,                        // width, in pixels
 		height,                        // height, in pixels
-		SDL_WINDOW_OPENGL           // flags
+										// flags
+		SDL_WINDOW_OPENGL	
+
 	);
+
+
 }
 
 //font texture
@@ -263,6 +268,14 @@ void setViewport( int width, int height )
 
 void Initialise()
 {
+	int temp;
+	//trap the cursor inside the window - not really needed
+	//SDL_SetWindowGrab(window, SDL_TRUE);
+	//grab mouse
+	temp = SDL_SetRelativeMouseMode(SDL_TRUE);
+
+
+
 	//Forward declare modeldrawcall
 	void ModelDrawCall(std::string modelFile, std::string vertexShaderFile, std::string fragmentShaderFile,
 		std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation);
@@ -839,11 +852,14 @@ int main(int argc, char * arg[])
     SDL_Event event;
 
 	//clear console
-	//system("cls");
+	system("cls");
 
     //Game Loop
 	while (running)
     {
+
+
+
         //While we still have events in the queue
         while (SDL_PollEvent(&event)) 
 		{
