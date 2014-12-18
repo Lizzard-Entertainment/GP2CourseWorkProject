@@ -107,7 +107,7 @@ GameObject * flyingCamera;
 GameObject * FPCamera;
 GameObject * mainCamera;  //This is switched out with the orbit or debug camera, and is used in any calculations etc.
 GameObject * mainLight;
-GameObject * skyBox = NULL;
+GameObject * skyBox;
 PostProcessing postProcessor;
 
 //Input globals
@@ -142,10 +142,7 @@ void InitWindow(int width, int height, bool fullscreen)
 		height,                        // height, in pixels
 										// flags
 		SDL_WINDOW_OPENGL	
-
 	);
-
-
 }
 
 //font texture
@@ -349,13 +346,12 @@ void Initialise()
 	//trap the cursor inside the window - not really needed
 		//SDL_SetWindowGrab(window, SDL_TRUE);
 	//grab mouse
-	MouseTrapVar = SDL_SetRelativeMouseMode(SDL_TRUE);
+	//MouseTrapVar = SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	//Forward declare draw methods
-	void DrawParallaxModel(std::string modelFile, std::string vertexShaderFile, std::string fragmentShaderFile,
-		std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation);
+	void ComplexDraw(std::string modelFile, std::string shaderType, std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation, vec3 scale, std::string name, std::string tag);
 
-	void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::string bumpFile, vec3 position, vec3 rotation, vec3 scale, const std::string& name, const std::string& tag);
+	void BasicDraw(std::string modelFile, std::string diffuseFile, vec3 position, vec3 rotation, vec3 scale, std::string name, std::string tag);
 
 	//Create Skybox
 	createSkyBox();
@@ -472,56 +468,50 @@ void Initialise()
 
 
 #pragma region Calum
-	/*TODO: Calum
-	Place models and stuff
-	*/
-#pragma endregion
+
+	ComplexDraw("armoredrecon.fbx", "bump", "armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "BumpJeep", "Focusable");
+
+	ComplexDraw("armoredrecon.fbx", "bump", "armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "BumpJeep", "Focusable");
 
 
-	//
-	//DrawParallaxModel("armoredrecon.fbx", "BumpmappingVS.glsl", "BumpmappingFS.glsl",
-	//	"armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f));
-
-	//DrawParallaxModel("armoredrecon.fbx", "ParallaxMappingVS.glsl", "ParallaxMappingFS.glsl",
-	//	"armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f));	
 	// Draw Ground
-	DrawBumpmapModel("Ground.fbx", "Ground.png", "Ground.png", vec3(0.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), "Ground","Focusable");
+	BasicDraw("Ground.fbx", "Ground.png", vec3(0.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), "Ground", "Focusable");
 	// Draw Tanks
-	DrawBumpmapModel("Tank.fbx", "Tank.png", "Tank.png", vec3(-30.0f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f),"Tank", "Focusable");
-	DrawBumpmapModel("Tank.fbx", "Tank.png", "Tank.png", vec3(-12.5f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f),"Tank", "Focusable");
+	BasicDraw("Tank.fbx", "Tank.png", vec3(-30.0f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f), "Tank", "Focusable");
+	BasicDraw("Tank.fbx", "Tank.png", vec3(-12.5f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f), "Tank", "Focusable");
 	// Draw Building
-	DrawBumpmapModel("Building1.fbx", "building.png", "building.png", vec3(-12.5f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1),"Building", "Focusable");
+	BasicDraw("Building1.fbx", "building.png", vec3(-12.5f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building", "Focusable");
 
-	DrawBumpmapModel("Building1.fbx", "building.png", "building.png", vec3(-40.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1),"Building", "Focusable");
+	BasicDraw("Building1.fbx", "building.png", vec3(-40.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building", "Focusable");
 
-	DrawBumpmapModel("Building1.fbx", "building.png", "building.png", vec3(190.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1),"Building", "Focusable");
+	BasicDraw("Building1.fbx", "building.png", vec3(190.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building", "Focusable");
 
 	//Draw Tents
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(60.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(60.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
 
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(30.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(60.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(30.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(60.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
 
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(110.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(140.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(110.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(140.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
 
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(110.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(140.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(110.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(140.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
 
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(140.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(165.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(190.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-
-
+	BasicDraw("Tent.fbx", "Camo.png", vec3(140.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(165.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(190.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
 
 
-	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(20.0f, 0.0f, 60.0f), vec3(0.0f, 140.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), "Car", "Focusable");
 
-	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(5.0f, 0.0f, 60.0f), vec3(0.0f, 170.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), "Car", "Focusable");
 
-	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(-10.0f, -1000000.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Car", "Focusable");
+	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(20.0f, 0.0f, 60.0f), vec3(0.0f, 140.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), "Car", "Focusable");
 
+	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(5.0f, 0.0f, 60.0f), vec3(0.0f, 170.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), "Car", "Focusable");
+
+	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(-10.0f, -1000000.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Car", "Focusable");
+#pragma endregion
 }
 
 
@@ -586,11 +576,6 @@ void update()
 
 	Timer();
 }
-
-
-
-
-
 
 void renderGameObject(GameObject * pObject)
 {
@@ -718,7 +703,7 @@ void render()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//render skybox
-	renderSkyBox();
+	//renderSkyBox();
 
     //alternative sytanx
 	for (auto iter = displayList.begin(); iter != displayList.end(); iter++)
@@ -744,15 +729,33 @@ void render()
 
 #pragma region Euan
 
-void DrawParallaxModel(std::string modelFile, std::string vertexShaderFile, std::string fragmentShaderFile, 
-	std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation)
+void ComplexDraw(std::string modelFile, std::string shaderType, std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation, vec3 scale, std::string name, std::string tag)
 {
 	GameObject * go = loadFBXFromFile(ASSET_PATH + MODEL_PATH + modelFile);
+	std::string VSPath, FSPath;
+
+	if (shaderType == "parallax")
+	{
+		VSPath = ASSET_PATH + SHADER_PATH + "ParallaxMappingVS.glsl";
+		FSPath = ASSET_PATH + SHADER_PATH + "ParallaxMappingFS.glsl";
+	}
+	else if (shaderType == "bump")
+	{
+		VSPath = ASSET_PATH + SHADER_PATH + "ParallaxMappingVS.glsl";
+		FSPath = ASSET_PATH + SHADER_PATH + "ParallaxMappingFS.glsl";
+	}
+	else
+	{
+		std::cout << "Invalid shader type: " << shaderType << std::endl;
+		return;
+	}
+
+
 	for (int i = 0; i < go->getChildCount(); i++)
 	{
 		Material * material = new Material();
 		material->init();
-		material->loadShader(ASSET_PATH + SHADER_PATH + vertexShaderFile, ASSET_PATH + SHADER_PATH + fragmentShaderFile);
+		material->loadShader(VSPath, FSPath);
 		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + diffuseFile);
 		material->loadSpecularMap(ASSET_PATH + MODEL_TEXTURE_PATH + specularFile);
 		material->loadBumpMap(ASSET_PATH + MODEL_TEXTURE_PATH + normalFile);
@@ -761,10 +764,11 @@ void DrawParallaxModel(std::string modelFile, std::string vertexShaderFile, std:
 	}
 	go->getTransform()->setPosition(position);
 	go->getTransform()->setRotation(rotation);
+	go->getTransform()->setScale(scale);
 	displayList.push_back(go);
 }
 
-void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::string bumpFile, vec3 position, vec3 rotation, vec3 scale, const std::string& name, const std::string& tag)
+void BasicDraw(std::string modelFile, std::string diffuseFile, vec3 position, vec3 rotation, vec3 scale, std::string name, std::string tag)
 {
 	GameObject * go = loadFBXFromFile(ASSET_PATH + MODEL_PATH + modelFile);
 
@@ -773,15 +777,7 @@ void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::strin
 		Material * material = new Material();
 		material->init();
 		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + diffuseFile);
-		material->loadBumpMap(ASSET_PATH + MODEL_TEXTURE_PATH + bumpFile);
-		std::string vsPath = ASSET_PATH + SHADER_PATH + "textureVS.glsl";
-		std::string fsPath = ASSET_PATH + SHADER_PATH + "textureFS.glsl";
-
-		//std::string vsPath = ASSET_PATH + SHADER_PATH + "bumpmappingVS.glsl";
-		//std::string fsPath = ASSET_PATH + SHADER_PATH + "bumpmappingFS.glsl";
-
-		material->loadShader(vsPath, fsPath);
-
+		material->loadShader(ASSET_PATH + SHADER_PATH + "textureVS.glsl", ASSET_PATH + SHADER_PATH + "textureFS.glsl");
 		go->getChild(i)->setMaterial(material);
 	}
 	go->getTransform()->setPosition(position);
