@@ -608,8 +608,7 @@ void HandleMouse(Sint32 x, Sint32 y)
 		vec3 newLookAt(0.0f, 0.0f, 0.0f);
 		newLookAt.x = oldLookAt.x + (x*sensitivity);
 		newLookAt.y = oldLookAt.y + (y*sensitivity);
-		newLookAt.z = 0.0f;
-		c->setLookAt(oldLookAt.x + (x*sensitivity), oldLookAt.y + (y*sensitivity), 0.0f);
+		c->setLookAt(oldLookAt.x + (x*sensitivity), oldLookAt.y + (y*sensitivity), oldLookAt.z);
 
 
 }
@@ -743,13 +742,25 @@ void HandleInput(SDL_Keycode key)
 
 				case SDLK_s:
 				{
-					mainCamera->getTransform()->zoom(1.0f, LookAt);
+					//vec3 DirectionToFocus = glm::normalize(mainCamera->getTransform()->getPosition() - LookAt);
+
+					mainCamera->getTransform()->forwardT(1.0f, LookAt);
+				//	LookAt.z = mainCamera->getTransform()->getPosition().z+28.0f;
+
+					
+
+					c->setLookAt(LookAt.x, LookAt.y, mainCamera->getTransform()->getPosition().z - 1.0f);
+
 					break;
 				}
 
 				case SDLK_w:
 				{
-					mainCamera->getTransform()->zoom(-1.0f, LookAt);
+					mainCamera->getTransform()->forwardT(-1.0f, LookAt);
+
+					c->setLookAt(LookAt.x, LookAt.y, mainCamera->getTransform()->getPosition().z - 1.0f);
+
+
 					break;
 				}
 

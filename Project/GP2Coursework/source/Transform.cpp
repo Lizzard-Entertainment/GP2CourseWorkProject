@@ -139,6 +139,20 @@ void Transform::zoom(float zoomSpeed, vec3 focus)
 	DEBUGShowCoords();
 }
 
+void Transform::forwardT(float zoomSpeed, vec3 focus)
+{
+	/*
+	Get direction of the focus point from the camera's position.
+	glm::normalize converts a vector into a unit vector, making it a direction.
+	*/
+	vec3 DirectionToFocus = glm::normalize(m_Position - focus);
+
+	//Move along directionToFocus direction by zoomspeed
+	m_Position += DirectionToFocus * zoomSpeed;
+
+	//DEBUGShowCoords();
+}
+
 void Transform::DEBUGShowCoords()
 {
 	//Prints the XYZ of the camera out to the console.
