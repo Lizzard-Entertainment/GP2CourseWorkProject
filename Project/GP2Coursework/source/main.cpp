@@ -222,17 +222,17 @@ void setViewport( int width, int height )
 void createSkyBox()
 {
 	Vertex triangleData[] = {
-			{ vec3(-10.0f, 10.0f, 10.0f) },// Top Left
-			{ vec3(-10.0f, -10.0f, 10.0f) },// Bottom Left
-			{ vec3(10.0f, -10.0f, 10.0f) }, //Bottom Right
-			{ vec3(10.0f, 10.0f, 10.0f) },// Top Right
+			{ vec3(-1000.0f, 1000.0f, 1000.0f) },// Top Left
+			{ vec3(-1000.0f, -1000.0f, 1000.0f) },// Bottom Left
+			{ vec3(1000.0f, -1000.0f, 1000.0f) }, //Bottom Right
+			{ vec3(1000.0f, 1000.0f, 1000.0f) },// Top Right
 
 
 			//back
-			{ vec3(-10.0f, 10.0f, -10.0f) },// Top Left
-			{ vec3(-10.0f, -10.0f, -10.0f) },// Bottom Left
-			{ vec3(10.0, -10.0f, -10.0f) }, //Bottom Right
-			{ vec3(10.0f, 10.0f, -10.0f) }// Top Right
+			{ vec3(-1000.0f, 1000.0f, -1000.0f) },// Top Left
+			{ vec3(-1000.0f, -1000.0f, -1000.0f) },// Bottom Left
+			{ vec3(1000.0f, -1000.0f, -1000.0f) }, //Bottom Right
+			{ vec3(1000.0f, 1000.0f, -1000.0f) }// Top Right
 	};
 
 
@@ -467,16 +467,18 @@ void Initialise()
 
 
 
-	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f));
+	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(20.0f, 0.0f, 60.0f), vec3(0.0f, 140.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f));
 
-	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f));
+	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(5.0f, 0.0f, 60.0f), vec3(0.0f, 170.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f));
+
+	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(-10.0f, -1000000.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f));
 
 }
 
 //Function to update the game state
 void update()
 {
-	//skyBox->update();
+	skyBox->update();
 
     //Update all game objects.
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
@@ -611,6 +613,7 @@ void render()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	renderSkyBox();
     //alternative sytanx
 	for (auto iter = displayList.begin(); iter != displayList.end(); iter++)
 	{
