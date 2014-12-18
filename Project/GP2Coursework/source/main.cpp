@@ -29,6 +29,11 @@
 #include "SkyboxMaterial.h"
 #include "CameraType.h"
 #include "PPFilterType.h"
+#include "FontRenderer.h"
+
+
+
+
 
 //Using statements
 using glm::mat4;
@@ -109,6 +114,7 @@ GameObject * mainCamera;  //This is switched out with the orbit or debug camera,
 GameObject * mainLight;
 GameObject * skyBox = NULL;
 PostProcessing postProcessor;
+FontRenderer fontRenderer;
 
 //Input globals
 float cameraSpeed = 1.0f;
@@ -345,6 +351,7 @@ void createSkyBox()
 
 void Initialise()
 {
+	fontRenderer.init(WINDOW_WIDTH, WINDOW_HEIGHT);
 	int MouseTrapVar;
 	//trap the cursor inside the window - not really needed
 		//SDL_SetWindowGrab(window, SDL_TRUE);
@@ -497,7 +504,7 @@ void Initialise()
 	DrawBumpmapModel("Building1.fbx", "building.png", "building.png", vec3(190.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1),"Building", "Focusable");
 
 	//Draw Tents
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
+	DrawBumpmapModel("Tent.fbx", "TentUV2.png", "TentUV2.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
 	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(60.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
 
 	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(30.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
@@ -515,11 +522,8 @@ void Initialise()
 
 
 
-
 	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(20.0f, 0.0f, 60.0f), vec3(0.0f, 140.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), "Car", "Focusable");
-
 	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(5.0f, 0.0f, 60.0f), vec3(0.0f, 170.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), "Car", "Focusable");
-
 	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(-10.0f, -1000000.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Car", "Focusable");
 
 }
@@ -737,6 +741,8 @@ void render()
 
 	//Post processor draw
 	postProcessor.draw();
+
+	fontRenderer.drawString(0, 0, "FONT TEST");
 
 	//Swap buffers and draw to scene.
     SDL_GL_SwapWindow(window);

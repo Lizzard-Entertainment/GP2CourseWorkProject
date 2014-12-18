@@ -71,6 +71,8 @@
     <ClCompile Include="source\Camera.cpp" />
     <ClCompile Include="source\Component.cpp" />
     <ClCompile Include="source\FBXLoader.cpp" />
+    <ClCompile Include="source\Font.cpp" />
+    <ClCompile Include="source\FontRenderer.cpp" />
     <ClCompile Include="source\GameObject.cpp" />
     <ClCompile Include="source\Light.cpp" />
     <ClCompile Include="source\main.cpp" />
@@ -88,6 +90,8 @@
     <ClInclude Include="headers\CameraType.h" />
     <ClInclude Include="headers\Component.h" />
     <ClInclude Include="headers\FBXLoader.h" />
+    <ClInclude Include="headers\Font.h" />
+    <ClInclude Include="headers\FontRenderer.h" />
     <ClInclude Include="headers\GameObject.h" />
     <ClInclude Include="headers\Light.h" />
     <ClInclude Include="headers\Material.h" />
