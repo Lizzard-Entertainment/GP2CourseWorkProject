@@ -323,7 +323,6 @@ void Initialise()
     
 	//Set up orbitcamera camera
 	Camera * c = new Camera();
-	c->setAspectRatio((float)(WINDOW_WIDTH / WINDOW_HEIGHT));
 	c->setLookAt(0.0f, 0.0f, 0.0f);
 	orbitCamera->setCamera(c);
 
@@ -346,7 +345,6 @@ void Initialise()
 
 	//Set up debugcamera camera
 	c = new Camera();
-	c->setAspectRatio((float)(WINDOW_WIDTH / WINDOW_HEIGHT));
 	c->setLookAt(0.0f, 0.0f, 0.0f);
 	flyingCamera->setCamera(c);
 
@@ -370,7 +368,6 @@ void Initialise()
 
 	//Set up debugcamera camera
 	c = new Camera();
-	c->setAspectRatio((float)(WINDOW_WIDTH / WINDOW_HEIGHT));
 	c->setLookAt(0.0f, 0.0f, 0.0f);
 	FPCamera->setCamera(c);
 
