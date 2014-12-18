@@ -142,6 +142,6 @@ void Transform::zoom(float zoomSpeed, vec3 focus)
 void Transform::DEBUGShowCoords()
 {
 	//Prints the XYZ of the camera out to the console.
-	std::cout << "Debug - Position: " << std::to_string(m_Position.x) << " , " << std::to_string((m_Position.y)) << " , " << std::to_string((m_Position.z)) << std::endl << std::endl;
+	std::cout << "Debug - Orbit Position: " << std::to_string(m_Position.x) << " , " << std::to_string((m_Position.y)) << " , " << std::to_string((m_Position.z)) << std::endl << std::endl;
 }
 #pragma endregion

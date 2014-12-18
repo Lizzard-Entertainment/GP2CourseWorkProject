@@ -641,6 +641,11 @@ void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::strin
 	displayList.push_back(go);
 }
 
+vec3 switchObjectFocus(int direction)
+{
+
+}
+
 #pragma region Tom
 void HandleMouse(Sint32 x, Sint32 y)
 {
@@ -751,7 +756,8 @@ void HandleInput(SDL_Keycode key)
 
 				case SDLK_RIGHT:
 				{
-
+					//Iterate through display list, checking if the element has a transform, material, mesh, and is not a skybox.
+					//If so, set focus to it's position and return out.  If not, use continue after increment index.
 				}
 
 				case SDLK_LEFT:
@@ -818,7 +824,7 @@ void HandleInput(SDL_Keycode key)
 			std::cout << "old pos: " << oldMinCamPos.x << " , " << oldMinCamPos.y << " , " << oldMinCamPos.z << std::endl;
 			std::cout << "new pos: " << oldMinCamPos.x + Mx << " , " << oldMinCamPos.y + My << " , " << oldMinCamPos.z << std::endl << std::endl;
 
-			return;		
+			return;
 #pragma endregion
 
 		}
