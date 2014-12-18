@@ -3,6 +3,7 @@
 
 //Headers
 #include <iostream>
+#include <time.h>
 #include <stdlib.h>
 #include <vector>
 #include <GL/glew.h>
@@ -48,6 +49,7 @@ const vec3 X_AXIS = vec3(1, 0, 0);
 const vec3 Y_AXIS = vec3(0, 1, 0);
 const vec3 Z_AXIS = vec3(0, 0, 1);
 
+
 //SDL Window
 SDL_Window * window = NULL;
 
@@ -63,8 +65,40 @@ const int WINDOW_HEIGHT = 480;
 //Flag for game's running state. 
 bool running = true;
 
+//Custom timer
+int timer[] = {0,0}; //virtual hours/mins
+clock_t clicks;
+int dT = 0;
+
+//Daylight-System
+int ColorTemp[24][3] = {
+	{ 60, 60, 60 },
+	{ 60, 60, 60 },
+	{ 60, 60, 60 },
+	{ 60, 60, 60 },
+	{ 84, 51, 134 },
+	{ 78, 110, 168 },
+	{ 97, 174, 178 },
+	{ 109, 210, 217 },
+	{ 170, 242, 241 },
+	{ 117, 228, 244 },
+	{ 133, 228, 232 },
+	{ 170, 242, 241 },
+	{ 175, 239, 238 },
+	{ 190, 248, 247 },
+	{ 205, 255, 254 },
+	{ 170, 242, 241 },
+	{ 218, 232, 196 },
+	{ 238, 214, 118 },
+	{ 248, 202, 130 },
+	{ 237, 119, 74 },
+	{ 220, 152, 187 },
+	{ 122, 68, 83 },
+	{ 60, 60, 60 } };
+
+
 //Scene bare light colour
-vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+vec4 ambientLightColour = vec4(0.1f, 0.5f, 1.0f, 0.5f);
 
 //Main scene game objects
 std::vector<GameObject*> displayList;
@@ -95,6 +129,9 @@ int PPindex = 0;
 float cameraSpeed = 1.0f;
 vec3 origin = vec3(0.0f, 0.0f, 0.0f);
 
+//Texture
+GLuint fontTexture = 0;
+
 void CheckForErrors()
 {
     GLenum error;
@@ -114,8 +151,19 @@ void InitWindow(int width, int height, bool fullscreen)
 		SDL_WINDOWPOS_CENTERED,     // y position, centered
 		width,                        // width, in pixels
 		height,                        // height, in pixels
-		SDL_WINDOW_OPENGL           // flags
+										// flags
+		SDL_WINDOW_OPENGL	
+
 	);
+
+
+}
+
+//font texture
+void createFontTexture()
+{
+	std::string fontPath = ASSET_PATH + FONT_PATH + "OratorStd.otf";
+	fontTexture = loadTextureFromFont(fontPath, 64, "Hello");
 }
 
 void CleanUp()
@@ -220,6 +268,14 @@ void setViewport( int width, int height )
 
 void Initialise()
 {
+	int temp;
+	//trap the cursor inside the window - not really needed
+		//SDL_SetWindowGrab(window, SDL_TRUE);
+	//grab mouse
+	temp = SDL_SetRelativeMouseMode(SDL_TRUE);
+
+
+
 	//Forward declare modeldrawcall
 	void ModelDrawCall(std::string modelFile, std::string vertexShaderFile, std::string fragmentShaderFile,
 		std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation);
@@ -335,7 +391,9 @@ void Initialise()
     {
         (*iter)->init();
     }
-    
+
+
+
 #pragma region Calum
 	/*TODO: Calum
 	Place models and stuff
@@ -349,16 +407,80 @@ void Initialise()
 		"armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f));
 }
 
+
+#pragma region Tom - messing around with the lights (daylightsystem)
+
+void DayLightChange(int hours, int mins)
+{
+	float conversion = 0.00390625;
+	int HoursF = hours + 1;
+	if (HoursF == 24) HoursF = 0;
+
+	float R = (ColorTemp[HoursF][0] - ColorTemp[hours][0]); 
+	R = ((R / 59) * mins) + ColorTemp[hours][0];
+	float G = (ColorTemp[HoursF][1] - ColorTemp[hours][1]);
+	G = ((G/ 59) * mins) + ColorTemp[hours][1];
+	float B = (ColorTemp[HoursF][2] - ColorTemp[hours][2]);
+	B = ((B/ 59) * mins) + ColorTemp[hours][2];
+
+	Light * light = new Light();
+	light = mainLight->getLight();
+
+	light->setDiffuseColour((R * conversion), (G * conversion), (B * conversion), 1.0f);
+
+}
+
+
+
+
+void Timer()
+{
+	clicks = clock();
+	if ((clicks-dT) > 24){ // 24 real sec -> 24 virtual hours
+
+		timer[0]++; //mins
+		timer[1]; //hours
+
+		
+		if (timer[0] == 60)
+		{
+			timer[1]++;
+			timer[0] = 0;
+		}
+		if (timer[1] == 24)
+		{
+			timer[1] = 0;
+		}
+		DayLightChange(timer[1], timer[0]);
+		dT = clicks;
+
+	//DEBUG
+	//	std::cout << "Time: " << timer[1] << ":" << timer[0] << std::endl << std::endl;
+	}
+}
+
+#pragma endregion
+
 //Function to update the game state
 void update()
 {
-    //Update all game objects.
+    
+	
+	//Update all game objects.
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
     {
 		//Shader breaking - 4th iteration
         (*iter)->update();
     }
+
+	Timer();
+
 }
+
+
+
+
+
 
 void renderGameObject(GameObject * pObject)
 {
@@ -460,6 +582,8 @@ void render()
 		renderGameObject((*iter));
 	}
 
+	createFontTexture();
+
 	//now switch to normal framebuffer
 	postProcessor.draw();
     SDL_GL_SwapWindow(window);
@@ -496,9 +620,10 @@ void HandleMouse(Sint32 x, Sint32 y)
 		vec3 oldLookAt = c->getLookAt();
 		vec3 newLookAt(0.0f, 0.0f, 0.0f);
 		newLookAt.x = oldLookAt.x + (x*sensitivity);
-		newLookAt.y = oldLookAt.y + (y*sensitivity);
-		newLookAt.z = 0.0f;
-		c->setLookAt(oldLookAt.x + (x*sensitivity), oldLookAt.y + (y*sensitivity), 0.0f);
+		newLookAt.y = oldLookAt.y - (y*sensitivity);
+		c->setLookAt(newLookAt.x, newLookAt.y, oldLookAt.z);
+
+
 }
 #pragma endregion
 
@@ -541,6 +666,16 @@ void HandleInput(SDL_Keycode key)
 		std::cout << "Debug - Current Post Processing Shader: " << PostProcessingArray[PPindex][1] << std::endl << std::endl;
 		return;
 	}
+
+	//exits the program when pressing ESC, since the cursor is trapped 
+	if (key == SDLK_ESCAPE)
+	{
+		running = false;
+	
+	}
+
+	
+
 
 	//Camera movement.
 	switch (cameraIndex)
@@ -630,13 +765,25 @@ void HandleInput(SDL_Keycode key)
 
 				case SDLK_s:
 				{
-					mainCamera->getTransform()->zoom(1.0f, LookAt);
+					//vec3 DirectionToFocus = glm::normalize(mainCamera->getTransform()->getPosition() - LookAt);
+
+					mainCamera->getTransform()->forwardT(1.0f, LookAt);
+				//	LookAt.z = mainCamera->getTransform()->getPosition().z+28.0f;
+
+					
+
+					c->setLookAt(LookAt.x, LookAt.y, mainCamera->getTransform()->getPosition().z - 1.0f);
+
 					break;
 				}
 
 				case SDLK_w:
 				{
-					mainCamera->getTransform()->zoom(-1.0f, LookAt);
+					mainCamera->getTransform()->forwardT(-1.0f, LookAt);
+
+					c->setLookAt(LookAt.x, LookAt.y, mainCamera->getTransform()->getPosition().z - 1.0f);
+
+
 					break;
 				}
 
@@ -715,11 +862,14 @@ int main(int argc, char * arg[])
     SDL_Event event;
 
 	//clear console
-	//system("cls");
+	system("cls");
 
     //Game Loop
 	while (running)
     {
+
+
+
         //While we still have events in the queue
         while (SDL_PollEvent(&event)) 
 		{
