@@ -119,6 +119,16 @@ const std::string& GameObject::getName()
     return m_Name;
 }
 
+void GameObject::setTag(const std::string& name)
+{
+	m_Tag = name;
+}
+
+const std::string& GameObject::getTag()
+{
+	return m_Tag;
+}
+
 void GameObject::setTransform(Transform * transform)
 {
     m_Transform=transform;

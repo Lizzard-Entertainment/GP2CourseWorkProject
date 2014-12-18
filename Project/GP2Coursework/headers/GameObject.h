@@ -30,6 +30,9 @@ public:
     void addComponent(Component * component);
     void setName(const std::string& name);
     const std::string& getName();
+
+	void setTag(const std::string& tag);
+	const std::string& getTag();
     
     void setTransform(Transform * transform);
     void setMesh(Mesh * mesh);
@@ -56,6 +59,7 @@ private:
     std::vector<Component*> m_Components;
 	std::vector<GameObject*> m_Children;
 	std::string m_Name;
+	std::string m_Tag;
     
     Transform *m_Transform;
     Mesh *m_Mesh;

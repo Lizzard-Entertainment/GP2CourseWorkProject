@@ -301,7 +301,7 @@ void Initialise()
 	void DrawParallaxModel(std::string modelFile, std::string vertexShaderFile, std::string fragmentShaderFile,
 		std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation);
 
-	void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::string bumpFile, vec3 position, vec3 rotation, vec3 scale);
+	void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::string bumpFile, vec3 position, vec3 rotation, vec3 scale, const std::string& name, const std::string& tag);
 
 	//Create Skybox
 	createSkyBox();
@@ -427,9 +427,9 @@ void Initialise()
 	//DrawParallaxModel("armoredrecon.fbx", "ParallaxMappingVS.glsl", "ParallaxMappingFS.glsl",
 	//	"armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f));	
 
-	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f));
+	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "Jeep1", "Focusable");
 
-	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f));
+	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Jeep2", "Focusable");
 
 }
 
@@ -616,7 +616,7 @@ void DrawParallaxModel(std::string modelFile, std::string vertexShaderFile, std:
 	displayList.push_back(go);
 }
 
-void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::string bumpFile, vec3 position, vec3 rotation, vec3 scale)
+void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::string bumpFile, vec3 position, vec3 rotation, vec3 scale, const std::string& name, const std::string& tag)
 {
 	GameObject * go = loadFBXFromFile(ASSET_PATH + MODEL_PATH + modelFile);
 
@@ -639,6 +639,10 @@ void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::strin
 	go->getTransform()->setPosition(position);
 	go->getTransform()->setRotation(rotation);
 	go->getTransform()->setScale(scale);
+
+	go->setName(name);
+	go->setTag(tag);
+
 	displayList.push_back(go);
 }
 
@@ -658,33 +662,48 @@ vec3 switchObjectFocus(int direction)
 	GameObject * nextObject;
 
 	//Check whether the index has reached the end of the loop.
-	bool hasRelooped = false;
+	bool shouldIncrement = false;
+
+	//--
+	//Check current object then if it fails to meet criteria, loop until one does.
+	//---
 
 	while (!sentinal)
 	{
 		//increment index value
-		if (!hasRelooped) newIndexValue = gameObjectIndex + increment;
+		if (!shouldIncrement)
+			newIndexValue = gameObjectIndex + increment;
+
+		//Reset relooped variable
+		shouldIncrement = false;
 
 		//If adding the increment to the index keeps the index within the bounds of the displaylist, continue.
 		if (newIndexValue < displayList.capacity() && newIndexValue >= 0)
 		{
 			//We need to "peek" at the next object to check if it meets the requirements.  Otherwise we skip it.
-			nextObject = displayList[gameObjectIndex + increment];
+			nextObject = displayList[newIndexValue];
 
-			if (nextObject->getMesh() && nextObject->getMaterial() && nextObject->getTransform() && nextObject->getName() != "Skybox")
+			if (nextObject->getTag() == "Focusable")
 			{
-				std::cout << "GameObject in focus!" << std::endl;
+				std::cout << "Focused on: " << nextObject->getName() << std::endl;
 				returnVector = nextObject->getTransform()->getPosition();
 				sentinal = true;
 			}
+			
+			//Object does not meet requirements
+			else 
+				gameObjectIndex++;
 		}
 
 		//index out of bounds
 		else
 		{
 			newIndexValue = 0;
-			hasRelooped = true;
+			shouldIncrement = true;
 		}
+
+		std::cout << std::to_string(gameObjectIndex) << std::endl;
+		std::cout << std::to_string(newIndexValue) << std::endl;
 			
 	}
 
@@ -801,12 +820,14 @@ void HandleInput(SDL_Keycode key)
 
 				case SDLK_RIGHT:
 				{
+					gameObjectIndex++;
 					switchObjectFocus(1);
 					break;
 				}
 
 				case SDLK_LEFT:
 				{
+					gameObjectIndex--;
 					switchObjectFocus(-1);
 					break;
 				}
