@@ -286,6 +286,7 @@ void createSkyBox()
 	
 	//create gameobject but don't add to queue!
 	skyBox = new GameObject();
+	skyBox->setName("Skybox");
 	skyBox->setMaterial(material);
 	skyBox->setTransform(t);
 	skyBox->setMesh(pMesh);
@@ -643,7 +644,51 @@ void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::strin
 
 vec3 switchObjectFocus(int direction)
 {
+	//Direction should be 1 or -1.  This will control whether we get the next or the previous object.
+	int increment = 1 * direction; 
+	int newIndexValue;
 
+	//Output vector
+	vec3 returnVector;
+
+	//loop break.	
+	bool sentinal = false;
+
+	//Declate nextObject
+	GameObject * nextObject;
+
+	//Check whether the index has reached the end of the loop.
+	bool hasRelooped = false;
+
+	while (!sentinal)
+	{
+		//increment index value
+		if (!hasRelooped) newIndexValue = gameObjectIndex + increment;
+
+		//If adding the increment to the index keeps the index within the bounds of the displaylist, continue.
+		if (newIndexValue < displayList.capacity() && newIndexValue >= 0)
+		{
+			//We need to "peek" at the next object to check if it meets the requirements.  Otherwise we skip it.
+			nextObject = displayList[gameObjectIndex + increment];
+
+			if (nextObject->getMesh() && nextObject->getMaterial() && nextObject->getTransform() && nextObject->getName() != "Skybox")
+			{
+				std::cout << "GameObject in focus!" << std::endl;
+				returnVector = nextObject->getTransform()->getPosition();
+				sentinal = true;
+			}
+		}
+
+		//index out of bounds
+		else
+		{
+			newIndexValue = 0;
+			hasRelooped = true;
+		}
+			
+	}
+
+	return returnVector;
 }
 
 #pragma region Tom
@@ -756,13 +801,14 @@ void HandleInput(SDL_Keycode key)
 
 				case SDLK_RIGHT:
 				{
-					//Iterate through display list, checking if the element has a transform, material, mesh, and is not a skybox.
-					//If so, set focus to it's position and return out.  If not, use continue after increment index.
+					switchObjectFocus(1);
+					break;
 				}
 
 				case SDLK_LEFT:
 				{
-
+					switchObjectFocus(-1);
+					break;
 				}
 
 				default:
