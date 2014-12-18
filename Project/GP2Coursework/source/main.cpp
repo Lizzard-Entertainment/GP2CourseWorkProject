@@ -270,7 +270,7 @@ void Initialise()
 {
 	int temp;
 	//trap the cursor inside the window - not really needed
-	//SDL_SetWindowGrab(window, SDL_TRUE);
+		//SDL_SetWindowGrab(window, SDL_TRUE);
 	//grab mouse
 	temp = SDL_SetRelativeMouseMode(SDL_TRUE);
 
@@ -666,6 +666,16 @@ void HandleInput(SDL_Keycode key)
 		std::cout << "Debug - Current Post Processing Shader: " << PostProcessingArray[PPindex][1] << std::endl << std::endl;
 		return;
 	}
+
+	//exits the program when pressing ESC, since the cursor is trapped 
+	if (key == SDLK_ESCAPE)
+	{
+		running = false;
+	
+	}
+
+	
+
 
 	//Camera movement.
 	switch (cameraIndex)
