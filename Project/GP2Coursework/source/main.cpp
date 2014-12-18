@@ -395,7 +395,7 @@ void Initialise()
 }
 
 
-#pragma region Tom - mess around with the lights (daylightsystem)
+#pragma region Tom - messing around with the lights (daylightsystem)
 
 void DayLightChange(int hours, int mins)
 {
@@ -442,7 +442,7 @@ void Timer()
 		dT = clicks;
 
 	//DEBUG
-		std::cout << "Time: " << timer[1] << ":" << timer[0] << std::endl << std::endl;
+	//	std::cout << "Time: " << timer[1] << ":" << timer[0] << std::endl << std::endl;
 	}
 }
 
