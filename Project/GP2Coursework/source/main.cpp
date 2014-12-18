@@ -78,7 +78,11 @@ PostProcessing postProcessor;
 
 //Input globals
 float cameraSpeed = 1.0f;
-vec3 origin = vec3(0.0f, 0.0f, 0.0f);
+
+//Orbit camera tracking globals
+vec3 focus = vec3(0.0f, 0.0f, 0.0f);
+int gameObjectIndex = 0;
+
 
 void CheckForErrors()
 {
@@ -699,13 +703,13 @@ void HandleInput(SDL_Keycode key)
 			{
 				case SDLK_a:
 				{
-					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, Y_AXIS, origin);
+					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, Y_AXIS, focus);
 					break;
 				}
 
 				case SDLK_d:
 				{
-					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, Y_AXIS, origin);
+					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, Y_AXIS, focus);
 					break;
 				}
 
@@ -713,7 +717,7 @@ void HandleInput(SDL_Keycode key)
 				{
 					if (mainCamera->getTransform()->getPosition().y < 7.0f)
 					{
-						mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, origin);
+						mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, focus);
 						break;
 					}
 					else break;
@@ -723,7 +727,7 @@ void HandleInput(SDL_Keycode key)
 				{
 					if (mainCamera->getTransform()->getPosition().y > 1.0f) 
 					{
-						mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, origin);
+						mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, focus);
 						break;
 					}
 					else break;
@@ -733,7 +737,7 @@ void HandleInput(SDL_Keycode key)
 				{
 					if (mainCamera->getTransform()->getPosition().z > 2.0f)
 					{
-						mainCamera->getTransform()->zoom(-cameraSpeed, origin);
+						mainCamera->getTransform()->zoom(-cameraSpeed, focus);
 						break;
 					}
 					else break;
@@ -741,8 +745,18 @@ void HandleInput(SDL_Keycode key)
 
 				case SDLK_c:
 				{
-					mainCamera->getTransform()->zoom(cameraSpeed, origin);
+					mainCamera->getTransform()->zoom(cameraSpeed, focus);
 					break;
+				}
+
+				case SDLK_RIGHT:
+				{
+
+				}
+
+				case SDLK_LEFT:
+				{
+
 				}
 
 				default:
