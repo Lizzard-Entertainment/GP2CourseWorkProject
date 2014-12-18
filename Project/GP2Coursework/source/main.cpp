@@ -465,13 +465,11 @@ void Initialise()
         (*iter)->init();
     }
 
-
-
 #pragma region Calum
 
-	ComplexDraw("armoredrecon.fbx", "bump", "armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "BumpJeep", "Focusable");
+	ComplexDraw("armoredrecon.fbx", "parallax", "ar_diff_TEST.png", "ar_spec_TEST.png", "ar_norm_TEST.png", "ar_height_TEST.png", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "BumpJeep", "Focusable");
 
-	ComplexDraw("armoredrecon.fbx", "bump", "armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "BumpJeep", "Focusable");
+	ComplexDraw("armoredrecon.fbx", "parallax", "ar_diff_TEST.png", "ar_spec_TEST.png", "ar_norm_TEST2.png", "ar_height_TEST2.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "BumpJeep", "Focusable");
 
 
 	// Draw Ground
@@ -502,9 +500,6 @@ void Initialise()
 	BasicDraw("Tent.fbx", "Camo.png", vec3(140.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
 	BasicDraw("Tent.fbx", "Camo.png", vec3(165.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
 	BasicDraw("Tent.fbx", "Camo.png", vec3(190.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-
-
-
 
 	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(20.0f, 0.0f, 60.0f), vec3(0.0f, 140.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), "Car", "Focusable");
 
@@ -741,8 +736,8 @@ void ComplexDraw(std::string modelFile, std::string shaderType, std::string diff
 	}
 	else if (shaderType == "bump")
 	{
-		VSPath = ASSET_PATH + SHADER_PATH + "ParallaxMappingVS.glsl";
-		FSPath = ASSET_PATH + SHADER_PATH + "ParallaxMappingFS.glsl";
+		VSPath = ASSET_PATH + SHADER_PATH + "bumpmappingVS.glsl";
+		FSPath = ASSET_PATH + SHADER_PATH + "bumpmappingFS.glsl";
 	}
 	else
 	{
