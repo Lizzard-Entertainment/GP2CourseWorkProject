@@ -646,20 +646,17 @@ void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::strin
 	displayList.push_back(go);
 }
 
-vec3 switchObjectFocus(int direction)
+vec3 switchObjectFocus(int direction) //NOT FULLY FUNTIONAL.
 {
 	//Direction should be 1 or -1.  This will control whether we get the next or the previous object.
 	int increment = 1 * direction; 
 	int newIndexValue = gameObjectIndex + increment;
 
 	//Output vector
-	vec3 returnVector = vec3(0.0f);
+	vec3 defaultReturn = vec3(0.0f);
 
-	//Declate nextObject
-	GameObject * nextObject;
-
-	//Check whether the index has reached the end of the loop.
-	bool shouldIncrement = false;
+	//Stops potential infinite loops.
+	int loopAttempts = 0; 
 
 	//--
 	//Check current object then if it fails to meet criteria, loop until one does.
@@ -668,51 +665,32 @@ vec3 switchObjectFocus(int direction)
 	//Current object complies, set transform as focus
 	if (displayList[newIndexValue]->getTag() == "Focusable")
 	{
-		std::cout << "Focused on: " << nextObject->getName() << std::endl;
-		returnVector = nextObject->getTransform()->getPosition();
-		return returnVector;
+		std::cout << "Focused on: " << displayList[newIndexValue]->getName() << std::endl;
+		return displayList[newIndexValue]->getTransform()->getPosition();
 	}
 	else
 	{
-		while (returnVector == vec3(0.0f))
+		while (loopAttempts < 5 && gameObjectIndex < displayList.size() && gameObjectIndex > 0)
 		{
 			//Increment value again
 			newIndexValue = gameObjectIndex + increment;
 
-			//Check if it complies
-
-			//If adding the increment to the index keeps the index within the bounds of the displaylist, continue.
-			if (newIndexValue < displayList.capacity() && newIndexValue >= 0)
+			//Current object complies, set transform as focus
+			if (displayList[newIndexValue]->getTag() == "Focusable")
 			{
-				//We need to "peek" at the next object to check if it meets the requirements.  Otherwise we skip it.
-				nextObject = displayList[newIndexValue];
-
-				if (nextObject->getTag() == "Focusable")
-				{
-					std::cout << "Focused on: " << nextObject->getName() << std::endl;
-					returnVector = nextObject->getTransform()->getPosition();
-					sentinal = true;
-				}
-
-				//Object does not meet requirements
-				else
-					gameObjectIndex++;
-			}
-
-			//index out of bounds
-			else
-			{
-				newIndexValue = 0;
-				shouldIncrement = true;
+				std::cout << "Focused on: " << displayList[newIndexValue]->getName() << std::endl;
+				return displayList[newIndexValue]->getTransform()->getPosition();
 			}
 
 			std::cout << std::to_string(gameObjectIndex) << std::endl;
 			std::cout << std::to_string(newIndexValue) << std::endl;
-
+			std::cout << std::to_string(loopAttempts) << std::endl;
+			loopAttempts++;
 		}
 	}
 
-	return returnVector;
+	std::cout << "After " << std::to_string(loopAttempts) << " attempts, the loop terminated early." << std::endl;
+	return defaultReturn;
 }
 
 #pragma region Tom
