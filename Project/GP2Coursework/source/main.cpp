@@ -650,13 +650,10 @@ vec3 switchObjectFocus(int direction)
 {
 	//Direction should be 1 or -1.  This will control whether we get the next or the previous object.
 	int increment = 1 * direction; 
-	int newIndexValue;
+	int newIndexValue = gameObjectIndex + increment;
 
 	//Output vector
-	vec3 returnVector;
-
-	//loop break.	
-	bool sentinal = false;
+	vec3 returnVector = vec3(0.0f);
 
 	//Declate nextObject
 	GameObject * nextObject;
@@ -668,43 +665,51 @@ vec3 switchObjectFocus(int direction)
 	//Check current object then if it fails to meet criteria, loop until one does.
 	//---
 
-	while (!sentinal)
+	//Current object complies, set transform as focus
+	if (displayList[newIndexValue]->getTag() == "Focusable")
 	{
-		//increment index value
-		if (!shouldIncrement)
+		std::cout << "Focused on: " << nextObject->getName() << std::endl;
+		returnVector = nextObject->getTransform()->getPosition();
+		return returnVector;
+	}
+	else
+	{
+		while (returnVector == vec3(0.0f))
+		{
+			//Increment value again
 			newIndexValue = gameObjectIndex + increment;
 
-		//Reset relooped variable
-		shouldIncrement = false;
+			//Check if it complies
 
-		//If adding the increment to the index keeps the index within the bounds of the displaylist, continue.
-		if (newIndexValue < displayList.capacity() && newIndexValue >= 0)
-		{
-			//We need to "peek" at the next object to check if it meets the requirements.  Otherwise we skip it.
-			nextObject = displayList[newIndexValue];
-
-			if (nextObject->getTag() == "Focusable")
+			//If adding the increment to the index keeps the index within the bounds of the displaylist, continue.
+			if (newIndexValue < displayList.capacity() && newIndexValue >= 0)
 			{
-				std::cout << "Focused on: " << nextObject->getName() << std::endl;
-				returnVector = nextObject->getTransform()->getPosition();
-				sentinal = true;
+				//We need to "peek" at the next object to check if it meets the requirements.  Otherwise we skip it.
+				nextObject = displayList[newIndexValue];
+
+				if (nextObject->getTag() == "Focusable")
+				{
+					std::cout << "Focused on: " << nextObject->getName() << std::endl;
+					returnVector = nextObject->getTransform()->getPosition();
+					sentinal = true;
+				}
+
+				//Object does not meet requirements
+				else
+					gameObjectIndex++;
 			}
-			
-			//Object does not meet requirements
-			else 
-				gameObjectIndex++;
-		}
 
-		//index out of bounds
-		else
-		{
-			newIndexValue = 0;
-			shouldIncrement = true;
-		}
+			//index out of bounds
+			else
+			{
+				newIndexValue = 0;
+				shouldIncrement = true;
+			}
 
-		std::cout << std::to_string(gameObjectIndex) << std::endl;
-		std::cout << std::to_string(newIndexValue) << std::endl;
-			
+			std::cout << std::to_string(gameObjectIndex) << std::endl;
+			std::cout << std::to_string(newIndexValue) << std::endl;
+
+		}
 	}
 
 	return returnVector;
@@ -820,14 +825,22 @@ void HandleInput(SDL_Keycode key)
 
 				case SDLK_RIGHT:
 				{
-					gameObjectIndex++;
+					//Check that the index will not exceed the array
+					if (gameObjectIndex < displayList.size())
+						gameObjectIndex++;
+
+					//swtich forward.
 					switchObjectFocus(1);
 					break;
 				}
 
 				case SDLK_LEFT:
 				{
-					gameObjectIndex--;
+					//check that the index will not be below 0.
+					if (gameObjectIndex > 0)
+						gameObjectIndex--;
+
+					//Switch back.
 					switchObjectFocus(-1);
 					break;
 				}
