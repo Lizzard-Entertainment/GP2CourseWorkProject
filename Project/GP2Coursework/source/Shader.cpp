@@ -3,9 +3,6 @@
 //Load Shader from File
 GLuint loadShaderFromFile(std::string& filename, SHADER_TYPE shaderType)
 {
-#ifdef __APPLE__
-    filename=filename.substr(filename.rfind('/')+1);
-#endif
 	std::string fileContents;
 	std::ifstream file;
 	file.open(filename.c_str(), std::ios::in);
@@ -14,6 +11,7 @@ GLuint loadShaderFromFile(std::string& filename, SHADER_TYPE shaderType)
         std::cout<<"File not found at this path"<<std::endl;
 		return 0;
 	}
+
 	//calculate file size
 	if (file.good())
 	{

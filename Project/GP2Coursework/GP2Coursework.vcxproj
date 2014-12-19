@@ -105,9 +105,9 @@
     <ClInclude Include="headers\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\BumpmappingFS.glsl" />
-    <None Include="assets\shaders\BumpmappingVS.glsl" />
     <None Include="assets\shaders\ColourFilterPPFS.glsl" />
+    <None Include="assets\shaders\ParallaxMappingFS.glsl" />
+    <None Include="assets\shaders\ParallaxMappingVS.glsl" />
     <None Include="assets\shaders\passThroughVS.glsl" />
     <None Include="assets\shaders\skyboxFS.glsl" />
     <None Include="assets\shaders\skyboxVS.glsl" />

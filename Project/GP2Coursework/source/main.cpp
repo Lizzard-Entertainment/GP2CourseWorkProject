@@ -31,10 +31,6 @@
 #include "PPFilterType.h"
 #include "FontRenderer.h"
 
-
-
-
-
 //Using statements
 using glm::mat4;
 using glm::vec4;
@@ -52,7 +48,6 @@ const std::string SKYBOX_TEXTURE_PATH = "textures/skybox/";
 const vec3 X_AXIS = vec3(1, 0, 0);
 const vec3 Y_AXIS = vec3(0, 1, 0);
 const vec3 Z_AXIS = vec3(0, 0, 1);
-
 
 //SDL Window
 SDL_Window * window = NULL;
@@ -106,23 +101,22 @@ vec4 ambientLightColour = vec4(0.1f, 0.5f, 1.0f, 0.5f);
 
 //Main scene game objects
 std::vector<GameObject*> displayList;
+std::vector<GameObject*> focusableList; //Vector for all focusable game objects.
 std::vector<GameObject*> camerasVec;  //Vector for the camera types.  
 GameObject * orbitCamera;
 GameObject * flyingCamera;
 GameObject * FPCamera;
 GameObject * mainCamera;  //This is switched out with the orbit or debug camera, and is used in any calculations etc.
 GameObject * mainLight;
-GameObject * skyBox = NULL;
+GameObject * skyBox;
 PostProcessing postProcessor;
 FontRenderer fontRenderer;
 
 //Input globals
 float cameraSpeed = 1.0f;
 
-//Orbit camera tracking globals
-vec3 focus = vec3(0.0f, 0.0f, 0.0f);
-int gameObjectIndex = 0;
-
+//Orbit camera tracking list index
+size_t focusableListIndex = 0;
 
 //Texture
 GLuint fontTexture = 0;
@@ -148,10 +142,7 @@ void InitWindow(int width, int height, bool fullscreen)
 		height,                        // height, in pixels
 										// flags
 		SDL_WINDOW_OPENGL	
-
 	);
-
-
 }
 
 //font texture
@@ -164,6 +155,9 @@ void createFontTexture()
 void CleanUp()
 {
 	// clean up in reverse
+
+	//Clean up font renderer
+	fontRenderer.destroy();
 
 	//Clean up skybox
 	if (skyBox)
@@ -351,18 +345,16 @@ void createSkyBox()
 
 void Initialise()
 {
+	//Initialise font renderer
 	fontRenderer.init(WINDOW_WIDTH, WINDOW_HEIGHT);
-	int MouseTrapVar;
-	//trap the cursor inside the window - not really needed
-		//SDL_SetWindowGrab(window, SDL_TRUE);
+
 	//grab mouse
+	int MouseTrapVar;
 	MouseTrapVar = SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	//Forward declare draw methods
-	void DrawParallaxModel(std::string modelFile, std::string vertexShaderFile, std::string fragmentShaderFile,
-		std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation);
-
-	void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::string bumpFile, vec3 position, vec3 rotation, vec3 scale, const std::string& name, const std::string& tag);
+	void ComplexDraw(std::string modelFile, std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation, vec3 scale, std::string name, bool focusable);
+	void BasicDraw(std::string modelFile, std::string diffuseFile, vec3 position, vec3 rotation, vec3 scale, std::string name, bool focusable);
 
 	//Create Skybox
 	createSkyBox();
@@ -374,9 +366,7 @@ void Initialise()
 	//Initialise post-processor
 	postProcessor.init(WINDOW_WIDTH, WINDOW_HEIGHT, vsPath, fsPath);
 
-#pragma region Euan
-
-#pragma region Orbit Camera
+#pragma region Euan - Orbit Camera
 
 	//Set up orbitcamera gameobject - this will be the initial camera
 	orbitCamera = new GameObject();
@@ -397,8 +387,7 @@ void Initialise()
 
 #pragma endregion
 
-#pragma region Tom
-#pragma region Flying camera 
+#pragma region Tom -Flying camera 
 
 	//Set up debugcamera gameobject
 	flyingCamera = new GameObject();
@@ -418,30 +407,7 @@ void Initialise()
 	camerasVec.push_back(flyingCamera);
 
 #pragma endregion
-#pragma endregion
 
-#pragma region Calum
-#pragma region First Person camera - TODO: NOT IMPLEMENTED.  IDENTICAL TO ORBIT FOR THE TIME BEING.
-
-	//Equate to orbit for the time being.
-	FPCamera = new GameObject();
-	FPCamera->setName("First Person Camera");
-
-	//Set up debugcamera transform
-	t = new Transform();
-	t->setPosition(0.0f, 5.0f, 10.0f);
-	FPCamera->setTransform(t);
-
-	//Set up debugcamera camera
-	c = new Camera();
-	c->setLookAt(0.0f, 0.0f, 0.0f);
-	FPCamera->setCamera(c);
-
-	//Push to cameras vector
-	camerasVec.push_back(FPCamera);
-
-#pragma endregion
-#pragma endregion
 
 #pragma region Main Camera
 
@@ -476,56 +442,55 @@ void Initialise()
         (*iter)->init();
     }
 
-
-
 #pragma region Calum
-	/*TODO: Calum
-	Place models and stuff
-	*/
-#pragma endregion
+	
+	//Parallax jeeps
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Jeep1", true);		
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "Jeep2", true);
 
-
-	//
-	//DrawParallaxModel("armoredrecon.fbx", "BumpmappingVS.glsl", "BumpmappingFS.glsl",
-	//	"armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f));
-
-	//DrawParallaxModel("armoredrecon.fbx", "ParallaxMappingVS.glsl", "ParallaxMappingFS.glsl",
-	//	"armoredrecon_diff.png", "armoredrecon_spec.png", "armoredrecon_N.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f));	
 	// Draw Ground
-	DrawBumpmapModel("Ground.fbx", "Ground.png", "Ground.png", vec3(0.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), "Ground","Focusable");
-	// Draw Tanks
-	DrawBumpmapModel("Tank.fbx", "Tank.png", "Tank.png", vec3(-30.0f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f),"Tank", "Focusable");
-	DrawBumpmapModel("Tank.fbx", "Tank.png", "Tank.png", vec3(-12.5f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f),"Tank", "Focusable");
-	// Draw Building
-	DrawBumpmapModel("Building1.fbx", "building.png", "building.png", vec3(-12.5f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1),"Building", "Focusable");
+	BasicDraw("Ground.fbx", "Ground.png", vec3(0.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), "Ground", true);
 
-	DrawBumpmapModel("Building1.fbx", "building.png", "building.png", vec3(-40.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1),"Building", "Focusable");
+	////Draw Tents with UV
+	//DrawBumpmapModel("Tent.fbx", "TentUV2.png", "TentUV2.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
+	//DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(60.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
 
-	DrawBumpmapModel("Building1.fbx", "building.png", "building.png", vec3(190.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1),"Building", "Focusable");
+	//Draw tanks
+	BasicDraw("Tank.fbx", "Tank.png", vec3(-30.0f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f), "Tank", "Focusable");
+	BasicDraw("Tank.fbx", "Tank.png", vec3(-12.5f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f), "Tank", "Focusable");
+	
+	//Draw Building
+	BasicDraw("Building1.fbx", "building.png", vec3(-12.5f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building", "Focusable");
+	BasicDraw("Building1.fbx", "building.png", vec3(-40.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building", "Focusable");
+	BasicDraw("Building1.fbx", "building.png", vec3(190.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building", "Focusable");
 
 	//Draw Tents
-	DrawBumpmapModel("Tent.fbx", "TentUV2.png", "TentUV2.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(60.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(60.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
 
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(30.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(60.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(30.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(60.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
 
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(110.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(140.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(110.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(140.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
 
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(110.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f),"Tent", "Focusable");
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(140.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(110.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(140.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
 
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(140.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(165.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-	DrawBumpmapModel("Tent.fbx", "Camo.png", "Camo.png", vec3(190.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(140.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(165.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	BasicDraw("Tent.fbx", "Camo.png", vec3(190.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
 
+	//Draw armoured cars
+	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(20.0f, 0.0f, 60.0f), vec3(0.0f, 140.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), "Car", "Focusable");
 
+	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(5.0f, 0.0f, 60.0f), vec3(0.0f, 170.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), "Car", "Focusable");
 
-	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(20.0f, 0.0f, 60.0f), vec3(0.0f, 140.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), "Car", "Focusable");
-	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(5.0f, 0.0f, 60.0f), vec3(0.0f, 170.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), "Car", "Focusable");
-	DrawBumpmapModel("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_Height.png", vec3(-10.0f, -1000000.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Car", "Focusable");
+	//We need to draw a last model for some odd reason
 
+	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(-10.0f, -1000000.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Car", false);
+
+#pragma endregion
 }
 
 
@@ -579,7 +544,8 @@ void Timer()
 
 //Function to update the game state
 void update()
-{	skyBox->update();
+{
+	skyBox->update();
 
     //Update all game objects.
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
@@ -590,11 +556,6 @@ void update()
 
 	Timer();
 }
-
-
-
-
-
 
 void renderGameObject(GameObject * pObject)
 {
@@ -612,6 +573,7 @@ void renderGameObject(GameObject * pObject)
 		currentMaterial->bind();
 		currentMesh->bind();
 
+		//Original stuff
 		GLint MVPLocation = currentMaterial->getUniformLocation("MVP");
 		GLint ModelLocation = currentMaterial->getUniformLocation("Model");
 		GLint ambientMatLocation = currentMaterial->getUniformLocation("ambientMaterialColour");
@@ -718,9 +680,6 @@ void render()
     //clear the colour and depth buffer
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	//render skybox
 	renderSkyBox();
 
@@ -742,6 +701,7 @@ void render()
 	//Post processor draw
 	postProcessor.draw();
 
+	//Draw string
 	fontRenderer.drawString(0, 0, "FONT TEST");
 
 	//Swap buffers and draw to scene.
@@ -749,103 +709,58 @@ void render()
 }
 
 #pragma region Euan
-
-void DrawParallaxModel(std::string modelFile, std::string vertexShaderFile, std::string fragmentShaderFile, 
-	std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation)
+void ComplexDraw(std::string modelFile, std::string diffuseFile, std::string normalFile, std::string specularFile, std::string heightFile, vec3 position, vec3 rotation, vec3 scale, std::string name, bool focusable)
 {
 	GameObject * go = loadFBXFromFile(ASSET_PATH + MODEL_PATH + modelFile);
+
 	for (int i = 0; i < go->getChildCount(); i++)
 	{
 		Material * material = new Material();
 		material->init();
-		material->loadShader(ASSET_PATH + SHADER_PATH + vertexShaderFile, ASSET_PATH + SHADER_PATH + fragmentShaderFile);
+		material->loadShader(ASSET_PATH + SHADER_PATH + "ParallaxMappingVS.glsl", ASSET_PATH + SHADER_PATH + "ParallaxMappingFS.glsl");
+		
 		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + diffuseFile);
-		material->loadSpecularMap(ASSET_PATH + MODEL_TEXTURE_PATH + specularFile);
 		material->loadBumpMap(ASSET_PATH + MODEL_TEXTURE_PATH + normalFile);
-		if (heightFile != "") material->loadHeightMap(ASSET_PATH + MODEL_TEXTURE_PATH + heightFile);  //BUMP MAPPING DOESN'T USE A HEIGHT MAP.  IF THIS IS NULL, SKIP OVER.
-		go->getChild(i)->setMaterial(material);
-	}
-	go->getTransform()->setPosition(position);
-	go->getTransform()->setRotation(rotation);
-	displayList.push_back(go);
-}
-
-void DrawBumpmapModel(std::string modelFile, std::string diffuseFile, std::string bumpFile, vec3 position, vec3 rotation, vec3 scale, const std::string& name, const std::string& tag)
-{
-	GameObject * go = loadFBXFromFile(ASSET_PATH + MODEL_PATH + modelFile);
-
-	for (int i = 0; i < go->getChildCount(); i++)
-	{
-		Material * material = new Material();
-		material->init();
-		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + diffuseFile);
-		material->loadBumpMap(ASSET_PATH + MODEL_TEXTURE_PATH + bumpFile);
-		std::string vsPath = ASSET_PATH + SHADER_PATH + "textureVS.glsl";
-		std::string fsPath = ASSET_PATH + SHADER_PATH + "textureFS.glsl";
-
-		//std::string vsPath = ASSET_PATH + SHADER_PATH + "bumpmappingVS.glsl";
-		//std::string fsPath = ASSET_PATH + SHADER_PATH + "bumpmappingFS.glsl";
-
-		material->loadShader(vsPath, fsPath);
-
+		material->loadSpecularMap(ASSET_PATH + MODEL_TEXTURE_PATH + specularFile);		
+		material->loadHeightMap(ASSET_PATH + MODEL_TEXTURE_PATH + heightFile);
 		go->getChild(i)->setMaterial(material);
 	}
 	go->getTransform()->setPosition(position);
 	go->getTransform()->setRotation(rotation);
 	go->getTransform()->setScale(scale);
-
 	go->setName(name);
-	go->setTag(tag);
+	go->setFocusable(focusable);
 
 	displayList.push_back(go);
+
+	if (focusable)
+		focusableList.push_back(go);
 }
 
-vec3 switchObjectFocus(int direction) //NOT FULLY FUNTIONAL.
+void BasicDraw(std::string modelFile, std::string diffuseFile, vec3 position, vec3 rotation, vec3 scale, std::string name, bool focusable)
 {
-	//Direction should be 1 or -1.  This will control whether we get the next or the previous object.
-	int increment = 1 * direction; 
-	int newIndexValue = gameObjectIndex + increment;
+	GameObject * go = loadFBXFromFile(ASSET_PATH + MODEL_PATH + modelFile);
 
-	//Output vector
-	vec3 defaultReturn = vec3(0.0f);
-
-	//Stops potential infinite loops.
-	int loopAttempts = 0; 
-
-	//--
-	//Check current object then if it fails to meet criteria, loop until one does.
-	//---
-
-	//Current object complies, set transform as focus
-	if (displayList[newIndexValue]->getTag() == "Focusable")
+	for (int i = 0; i < go->getChildCount(); i++)
 	{
-		std::cout << "Focused on: " << displayList[newIndexValue]->getName() << std::endl;
-		return displayList[newIndexValue]->getTransform()->getPosition();
+		Material * material = new Material();
+		material->init();
+		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + diffuseFile);
+		material->loadShader(ASSET_PATH + SHADER_PATH + "textureVS.glsl", ASSET_PATH + SHADER_PATH + "textureFS.glsl");
+		go->getChild(i)->setMaterial(material);
 	}
-	else
-	{
-		while (loopAttempts < 5 && gameObjectIndex < displayList.size() && gameObjectIndex > 0)
-		{
-			//Increment value again
-			newIndexValue = gameObjectIndex + increment;
+	go->getTransform()->setPosition(position);
+	go->getTransform()->setRotation(rotation);
+	go->getTransform()->setScale(scale);
+	go->setName(name);
+	go->setFocusable(focusable);
 
-			//Current object complies, set transform as focus
-			if (displayList[newIndexValue]->getTag() == "Focusable")
-			{
-				std::cout << "Focused on: " << displayList[newIndexValue]->getName() << std::endl;
-				return displayList[newIndexValue]->getTransform()->getPosition();
-			}
-
-			std::cout << std::to_string(gameObjectIndex) << std::endl;
-			std::cout << std::to_string(newIndexValue) << std::endl;
-			std::cout << std::to_string(loopAttempts) << std::endl;
-			loopAttempts++;
-		}
-	}
-
-	std::cout << "After " << std::to_string(loopAttempts) << " attempts, the loop terminated early." << std::endl;
-	return defaultReturn;
+	displayList.push_back(go);
+	if (focusable) 
+		focusableList.push_back(go);
 }
+
+#pragma endregion
 
 #pragma region Tom
 void HandleMouse(Sint32 x, Sint32 y)
@@ -861,6 +776,7 @@ void HandleMouse(Sint32 x, Sint32 y)
 }
 #pragma endregion
 
+#pragma region Euan
 void HandleInput(SDL_Keycode key)
 {
 	//Switch main camera and return out of the method.
@@ -870,7 +786,7 @@ void HandleInput(SDL_Keycode key)
 		cameraIndex++;
 
 		//If camera index exceeds 2, set to 0.
-		if (cameraIndex > 2) cameraIndex = 0;
+		if (cameraIndex > 1) cameraIndex = 0;
 
 		//Assign main camera to position in cameras vector. 
 		mainCamera = camerasVec[cameraIndex];
@@ -914,13 +830,13 @@ void HandleInput(SDL_Keycode key)
 			{
 				case SDLK_a:
 				{
-					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, Y_AXIS, focus);
+					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, Y_AXIS, mainCamera->getCamera()->getLookAt());
 					break;
 				}
 
 				case SDLK_d:
 				{
-					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, Y_AXIS, focus);
+					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, Y_AXIS, mainCamera->getCamera()->getLookAt());
 					break;
 				}
 
@@ -928,7 +844,7 @@ void HandleInput(SDL_Keycode key)
 				{
 					if (mainCamera->getTransform()->getPosition().y < 7.0f)
 					{
-						mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, focus);
+						mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, mainCamera->getCamera()->getLookAt());
 						break;
 					}
 					else break;
@@ -938,7 +854,7 @@ void HandleInput(SDL_Keycode key)
 				{
 					if (mainCamera->getTransform()->getPosition().y > 1.0f) 
 					{
-						mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, focus);
+						mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, mainCamera->getCamera()->getLookAt());
 						break;
 					}
 					else break;
@@ -948,7 +864,7 @@ void HandleInput(SDL_Keycode key)
 				{
 					if (mainCamera->getTransform()->getPosition().z > 2.0f)
 					{
-						mainCamera->getTransform()->zoom(-cameraSpeed, focus);
+						mainCamera->getTransform()->zoom(-cameraSpeed, mainCamera->getCamera()->getLookAt());
 						break;
 					}
 					else break;
@@ -956,29 +872,43 @@ void HandleInput(SDL_Keycode key)
 
 				case SDLK_c:
 				{
-					mainCamera->getTransform()->zoom(cameraSpeed, focus);
+					mainCamera->getTransform()->zoom(cameraSpeed, mainCamera->getCamera()->getLookAt());
 					break;
 				}
 
 				case SDLK_RIGHT:
 				{
 					//Check that the index will not exceed the array
-					if (gameObjectIndex < displayList.size())
-						gameObjectIndex++;
+					if (focusableListIndex < (focusableList.size()-1))
+					{
+						focusableListIndex++;
+						mainCamera->getCamera()->setLookAt(focusableList[focusableListIndex]->getTransform()->getPosition());
+						mainCamera->getTransform()->reset(mainCamera->getCamera()->getLookAt());
 
-					//swtich forward.
-					switchObjectFocus(1);
+						//Debug
+						std::cout << "Debug - Focus target: " << focusableList[focusableListIndex]->getName() << std::endl 
+							<< "Location: " << std::to_string(mainCamera->getCamera()->getLookAt().x) << std::to_string(mainCamera->getCamera()->getLookAt().y) 
+							<< std::to_string(mainCamera->getCamera()->getLookAt().z) << std::endl;
+					}
+
 					break;
 				}
 
 				case SDLK_LEFT:
 				{
 					//check that the index will not be below 0.
-					if (gameObjectIndex > 0)
-						gameObjectIndex--;
+					if (focusableListIndex > 0)
+					{
+						focusableListIndex--;
+						mainCamera->getCamera()->setLookAt(focusableList[focusableListIndex]->getTransform()->getPosition());
+						mainCamera->getTransform()->reset(mainCamera->getCamera()->getLookAt());
 
-					//Switch back.
-					switchObjectFocus(-1);
+						//Debug
+						std::cout << "Debug - Focus target: " << focusableList[focusableListIndex]->getName() << std::endl
+							<< "Location: " << std::to_string(mainCamera->getCamera()->getLookAt().x) << std::to_string(mainCamera->getCamera()->getLookAt().y)
+							<< std::to_string(mainCamera->getCamera()->getLookAt().z) << std::endl;
+					}		
+
 					break;
 				}
 
@@ -1022,9 +952,7 @@ void HandleInput(SDL_Keycode key)
 
 					mainCamera->getTransform()->forwardT(1.0f, LookAt);
 				//	LookAt.z = mainCamera->getTransform()->getPosition().z+28.0f;
-
 					
-
 					c->setLookAt(LookAt.x, LookAt.y, mainCamera->getTransform()->getPosition().z - 1.0f);
 
 					break;
@@ -1035,7 +963,6 @@ void HandleInput(SDL_Keycode key)
 					mainCamera->getTransform()->forwardT(-1.0f, LookAt);
 
 					c->setLookAt(LookAt.x, LookAt.y, mainCamera->getTransform()->getPosition().z - 1.0f);
-
 
 					break;
 				}
@@ -1056,13 +983,6 @@ void HandleInput(SDL_Keycode key)
 			return;
 #pragma endregion
 
-		}
-		case FIRST_PERSON_CAMERA:
-		{
-			/*
-			THIS WAS ABANDONED.
-			*/
-			return;
 		}
 
 		default:
@@ -1112,7 +1032,7 @@ int main(int argc, char * arg[])
     SDL_Event event;
 
 	//clear console
-	system("cls");
+	//system("cls");
 
     //Game Loop
 	while (running)

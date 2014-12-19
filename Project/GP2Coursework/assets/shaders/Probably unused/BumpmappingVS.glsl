@@ -1,6 +1,6 @@
 #version 150
 
-in vec3 vertexPosition;
+in vec4 vertexPosition;
 in vec3 vertexNormals;
 in vec2 vertexTexCoords;
 in vec3 vertexTangents;
@@ -17,12 +17,12 @@ uniform mat4 Model;
 uniform vec3 lightDirection;
 uniform vec3 cameraPosition;
 
-void main()
+void main(void)
 {
 	mat3 tangentMatrix = mat3(normalize(vertexNormals), normalize(vertexTangents), normalize(vertexBinormals));
 
 	vec3 vertexNormalModel = normalize(Model*vec4(vertexNormals, 0.0f)).xyz;
-	vec3 worldPos = (Model*vec4(vertexPosition, 1.0)).xyz;
+	vec3 worldPos = (Model*vertexPosition).xyz;
 	vec3 cameraDir = normalize(cameraPosition - worldPos);
 
 	lightDirectionOut = normalize(tangentMatrix*lightDirection);
@@ -30,5 +30,5 @@ void main()
 	cameraDirectionOut = normalize(tangentMatrix*cameraDir);
 
 	texCoordsOut = vertexTexCoords;
-	gl_Position = MVP * vec4(vertexPosition, 1.0);
+	gl_Position = MVP * vertexPosition;
 }
