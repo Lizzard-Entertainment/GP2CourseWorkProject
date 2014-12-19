@@ -22,6 +22,7 @@ public:
 	void update();
     
 	void setLookAt(float x, float y, float z);
+	void setLookAt(vec3 xyx);
 	vec3 getLookAt();
 
 	void setUp(float x, float y, float z);

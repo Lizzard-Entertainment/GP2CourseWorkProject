@@ -117,8 +117,7 @@ PostProcessing postProcessor;
 //Input globals
 float cameraSpeed = 1.0f;
 
-//Orbit camera tracking globals
-vec3 focus = vec3(0.0f, 0.0f, 0.0f);
+//Orbit camera tracking list index
 int focusableListIndex = 0;
 
 
@@ -442,10 +441,9 @@ void Initialise()
 
 #pragma region Calum
 
-	//ComplexDraw("armoredrecon.fbx", "parallax", "diff.png", "armoredrecon_TNorm.png","armoredrecon_TSpec.png",  "armoredrecon_THeight.png", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "BumpJeep1", true);
-
-
-	ComplexDraw("armoredrecon.fbx", "bump", "diff.png", "norm.png", "spec.png", "", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "BumpJeep2", true);
+	ComplexDraw("armoredrecon.fbx", "parallax", "diff.png", "armoredrecon_TNorm.png","armoredrecon_TSpec.png",  "armoredrecon_THeight.png", vec3(20, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "Jeep1", true);
+	
+	ComplexDraw("armoredrecon.fbx", "bump", "diff.png", "norm.png", "spec.png", "", vec3(-20, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Jeep2", true);
 
 
 	// Draw Ground
@@ -572,7 +570,6 @@ void renderGameObject(GameObject * pObject)
 		currentMesh->bind();
 
 		//Original stuff
-		/*
 		GLint MVPLocation = currentMaterial->getUniformLocation("MVP");
 		GLint ModelLocation = currentMaterial->getUniformLocation("Model");
 		GLint ambientMatLocation = currentMaterial->getUniformLocation("ambientMaterialColour");
@@ -624,10 +621,11 @@ void renderGameObject(GameObject * pObject)
 		glUniform1i(specTextureLocation, 1);
 		glUniform1i(bumpTextureLocation, 2);
 		glUniform1i(heightTextureLocation, 3);
-		*/
 
+		/*
 		//Get main camera's camera
 		Camera * cam = mainCamera->getCamera();
+		Light* light = mainLight->getLight();
 
 		//Uniforms - VS
 		GLint MVPMatrixLocation = currentMaterial->getUniformLocation("mvpMatrix");
@@ -665,7 +663,8 @@ void renderGameObject(GameObject * pObject)
 		glUniformMatrix4fv(MVPMatrixLocation, 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix3fv(NormalMatrixLocation, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
 		glUniform4fv(LightPositionLocation, 1, glm::value_ptr(LightPos));
-
+		*/
+		
 		glDrawElements(GL_TRIANGLES, currentMesh->getIndexCount(), GL_UNSIGNED_INT, 0);
 
 		currentMaterial->unbind();
@@ -761,10 +760,10 @@ void ComplexDraw(std::string modelFile, std::string shaderType, std::string diff
 	}
 	else if (shaderType == "bump")
 	{
-		VSPath = ASSET_PATH + SHADER_PATH + "bmtestvs.glsl";
-		FSPath = ASSET_PATH + SHADER_PATH + "bmtestfs.glsl";
-		//VSPath = ASSET_PATH + SHADER_PATH + "bumpmappingVS.glsl";
-		//FSPath = ASSET_PATH + SHADER_PATH + "bumpmappingFS.glsl";
+		//VSPath = ASSET_PATH + SHADER_PATH + "bmtestvs.glsl";
+		//FSPath = ASSET_PATH + SHADER_PATH + "bmtestfs.glsl";
+		VSPath = ASSET_PATH + SHADER_PATH + "bumpmappingVS.glsl";
+		FSPath = ASSET_PATH + SHADER_PATH + "bumpmappingFS.glsl";
 	}
 	else
 	{
@@ -891,13 +890,13 @@ void HandleInput(SDL_Keycode key)
 			{
 				case SDLK_a:
 				{
-					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, Y_AXIS, focus);
+					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, Y_AXIS, mainCamera->getCamera()->getLookAt());
 					break;
 				}
 
 				case SDLK_d:
 				{
-					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, Y_AXIS, focus);
+					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, Y_AXIS, mainCamera->getCamera()->getLookAt());
 					break;
 				}
 
@@ -905,7 +904,7 @@ void HandleInput(SDL_Keycode key)
 				{
 					if (mainCamera->getTransform()->getPosition().y < 7.0f)
 					{
-						mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, focus);
+						mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, mainCamera->getCamera()->getLookAt());
 						break;
 					}
 					else break;
@@ -915,7 +914,7 @@ void HandleInput(SDL_Keycode key)
 				{
 					if (mainCamera->getTransform()->getPosition().y > 1.0f) 
 					{
-						mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, focus);
+						mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, mainCamera->getCamera()->getLookAt());
 						break;
 					}
 					else break;
@@ -925,7 +924,7 @@ void HandleInput(SDL_Keycode key)
 				{
 					if (mainCamera->getTransform()->getPosition().z > 2.0f)
 					{
-						mainCamera->getTransform()->zoom(-cameraSpeed, focus);
+						mainCamera->getTransform()->zoom(-cameraSpeed, mainCamera->getCamera()->getLookAt());
 						break;
 					}
 					else break;
@@ -933,7 +932,7 @@ void HandleInput(SDL_Keycode key)
 
 				case SDLK_c:
 				{
-					mainCamera->getTransform()->zoom(cameraSpeed, focus);
+					mainCamera->getTransform()->zoom(cameraSpeed, mainCamera->getCamera()->getLookAt());
 					break;
 				}
 
@@ -943,8 +942,11 @@ void HandleInput(SDL_Keycode key)
 					if (focusableListIndex < focusableList.size()-1)
 					{
 						focusableListIndex++;
-						//mainCamera->getTransform()->setPosition(focusableList[focusableListIndex]->getTransform()->getPosition());
-						std::cout << "Debug - Focus target: " << focusableList[focusableListIndex]->getName() << std::endl;
+						mainCamera->getCamera()->setLookAt(focusableList[focusableListIndex]->getTransform()->getPosition());
+						mainCamera->getTransform()->reset(mainCamera->getCamera()->getLookAt());
+						std::cout << "Debug - Focus target: " << focusableList[focusableListIndex]->getName() << std::endl 
+							<< "Location: " << std::to_string(mainCamera->getCamera()->getLookAt().x) << std::to_string(mainCamera->getCamera()->getLookAt().y) 
+							<< std::to_string(mainCamera->getCamera()->getLookAt().z) << std::endl;
 					}
 
 					break;
@@ -956,8 +958,11 @@ void HandleInput(SDL_Keycode key)
 					if (focusableListIndex > 0)
 					{
 						focusableListIndex--;
-						//mainCamera->getTransform()->setPosition(focusableList[focusableListIndex]->getTransform()->getPosition());
-						std::cout << "Debug - Focus target: " << focusableList[focusableListIndex]->getName() << std::endl;
+						mainCamera->getCamera()->setLookAt(focusableList[focusableListIndex]->getTransform()->getPosition());
+						mainCamera->getTransform()->reset(mainCamera->getCamera()->getLookAt());
+						std::cout << "Debug - Focus target: " << focusableList[focusableListIndex]->getName() << std::endl
+							<< "Location: " << std::to_string(mainCamera->getCamera()->getLookAt().x) << std::to_string(mainCamera->getCamera()->getLookAt().y)
+							<< std::to_string(mainCamera->getCamera()->getLookAt().z) << std::endl;
 					}		
 
 					break;
