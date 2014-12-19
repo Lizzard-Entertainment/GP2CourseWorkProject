@@ -31,8 +31,7 @@ private:
     int m_IndexCount;
     GLuint m_VBO;
     GLuint m_EBO;
-    GLuint m_VAO;
-    
+    GLuint m_VAO;    
 };
 
 #endif

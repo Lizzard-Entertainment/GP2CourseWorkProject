@@ -11,6 +11,7 @@ GLuint loadShaderFromFile(std::string& filename, SHADER_TYPE shaderType)
         std::cout<<"File not found at this path"<<std::endl;
 		return 0;
 	}
+
 	//calculate file size
 	if (file.good())
 	{

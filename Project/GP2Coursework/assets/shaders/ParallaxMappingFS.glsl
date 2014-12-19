@@ -36,9 +36,7 @@ void main()
     correctedTexCoords = texCoordsOut-correctedTexCoords;
 
     //get normals from normal map, rescale from 0 to 1 to -1 to 1
-	vec3 bumpNormals = 2.0 * texture(bumpMap, correctedTexCoords).rgb - 1.0;
-    //normalize!!
-	bumpNormals = normalize(bumpNormals);
+	vec3 bumpNormals = normalize((texture(bumpMap, correctedTexCoords).rgb * 2.0) - 1.0);
 
     //now use bumpnormals in reflectance calculate
 	float diffuseTerm = dot(bumpNormals, lightDirectionOut);

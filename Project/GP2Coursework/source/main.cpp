@@ -43,14 +43,10 @@ const std::string SHADER_PATH = "shaders/";
 const std::string MODEL_TEXTURE_PATH = "textures/models/";
 const std::string SKYBOX_TEXTURE_PATH = "textures/skybox/";
 
-//TEST DIRECTORY
-const std::string TESTPATH = "test/";
-
 //Constant vectors
 const vec3 X_AXIS = vec3(1, 0, 0);
 const vec3 Y_AXIS = vec3(0, 1, 0);
 const vec3 Z_AXIS = vec3(0, 0, 1);
-
 
 //SDL Window
 SDL_Window * window = NULL;
@@ -118,7 +114,7 @@ PostProcessing postProcessor;
 float cameraSpeed = 1.0f;
 
 //Orbit camera tracking list index
-int focusableListIndex = 0;
+size_t focusableListIndex = 0;
 
 
 //Texture
@@ -346,15 +342,15 @@ void createSkyBox()
 void Initialise()
 {
 	//grab mouse
-	//int MouseTrapVar;
-	//MouseTrapVar = SDL_SetRelativeMouseMode(SDL_TRUE);
+	int MouseTrapVar;
+	MouseTrapVar = SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	//Forward declare draw methods
-	void ComplexDraw(std::string modelFile, std::string shaderType, std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation, vec3 scale, std::string name, bool focusable);
+	void ComplexDraw(std::string modelFile, std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation, vec3 scale, std::string name, bool focusable);
 	void BasicDraw(std::string modelFile, std::string diffuseFile, vec3 position, vec3 rotation, vec3 scale, std::string name, bool focusable);
 
 	//Create Skybox
-	//createSkyBox();
+	createSkyBox();
 
 	//Set shader paths
 	std::string vsPath = ASSET_PATH + SHADER_PATH + "passThroughVS.glsl";
@@ -440,10 +436,11 @@ void Initialise()
     }
 
 #pragma region Calum
-
-	ComplexDraw("armoredrecon.fbx", "parallax", "diff.png", "armoredrecon_TNorm.png","armoredrecon_TSpec.png",  "armoredrecon_THeight.png", vec3(20, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "Jeep1", true);
 	
-	ComplexDraw("armoredrecon.fbx", "bump", "diff.png", "norm.png", "spec.png", "", vec3(-20, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Jeep2", true);
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Jeep1", true);
+	
+	
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "Jeep2", true);
 
 
 	// Draw Ground
@@ -541,7 +538,7 @@ void Timer()
 //Function to update the game state
 void update()
 {
-	//skyBox->update();
+	skyBox->update();
 
     //Update all game objects.
     for(auto iter=displayList.begin();iter!=displayList.end();iter++)
@@ -622,49 +619,6 @@ void renderGameObject(GameObject * pObject)
 		glUniform1i(bumpTextureLocation, 2);
 		glUniform1i(heightTextureLocation, 3);
 
-		/*
-		//Get main camera's camera
-		Camera * cam = mainCamera->getCamera();
-		Light* light = mainLight->getLight();
-
-		//Uniforms - VS
-		GLint MVPMatrixLocation = currentMaterial->getUniformLocation("mvpMatrix");
-		GLint ModelLocation = currentMaterial->getUniformLocation("mvMatrix");
-		GLint NormalMatrixLocation = currentMaterial->getUniformLocation("normalMatrix");
-		GLint LightPositionLocation = currentMaterial->getUniformLocation("LightPosition");
-
-		//Uniforms - FS
-		GLint ambientColourLocation = currentMaterial->getUniformLocation("ambientColour");
-		GLint diffuseColourLocation = currentMaterial->getUniformLocation("diffuseColour");
-		GLint specularColourLocation = currentMaterial->getUniformLocation("specularColour");
-		GLint diffuseMapLocation = currentMaterial->getUniformLocation("diffuseMap"); //Does not use valueptr
-		GLint normalMapLocation = currentMaterial->getUniformLocation("normalMap"); //Does not use valueptr
-
-		//Set values to send to uniforms		
-		mat4 MVP = cam->getProjection()*cam->getView()*currentTransform->getModel();
-		mat4 Model = currentTransform->getModel();
-		mat4 NormalMatrix = glm::transpose(glm::inverse(Model));
-		vec3 LightPos = mainLight->getTransform()->getPosition();
-		vec4 ambientMaterialColour = currentMaterial->getAmbientColour();
-		vec4 diffuseMaterialColour = currentMaterial->getDiffuseColour();
-		vec4 specularMaterialColour = currentMaterial->getSpecularColour();
-
-		//Send texture uniforms
-		glUniform1i(diffuseMapLocation, 0);
-		glUniform1i(normalMapLocation, 1);
-
-		//Send fragment shader uniforms.
-		glUniform4fv(ambientColourLocation, 1, glm::value_ptr(ambientMaterialColour));
-		glUniform4fv(diffuseColourLocation, 1, glm::value_ptr(diffuseMaterialColour));
-		glUniform4fv(specularColourLocation, 1, glm::value_ptr(specularMaterialColour));
-
-		//Send vertex shader uniforms.
-		glUniformMatrix4fv(ModelLocation, 1, GL_FALSE, glm::value_ptr(Model));
-		glUniformMatrix4fv(MVPMatrixLocation, 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix3fv(NormalMatrixLocation, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
-		glUniform4fv(LightPositionLocation, 1, glm::value_ptr(LightPos));
-		*/
-		
 		glDrawElements(GL_TRIANGLES, currentMesh->getIndexCount(), GL_UNSIGNED_INT, 0);
 
 		currentMaterial->unbind();
@@ -719,11 +673,8 @@ void render()
     //clear the colour and depth buffer
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	//render skybox
-	//renderSkyBox();
+	renderSkyBox();
 
     //alternative sytanx
 	for (auto iter = displayList.begin(); iter != displayList.end(); iter++)
@@ -748,41 +699,20 @@ void render()
 }
 
 #pragma region Euan
-void ComplexDraw(std::string modelFile, std::string shaderType, std::string diffuseFile, std::string normalFile, std::string specularFile, std::string heightFile, vec3 position, vec3 rotation, vec3 scale, std::string name, bool focusable)
+void ComplexDraw(std::string modelFile, std::string diffuseFile, std::string normalFile, std::string specularFile, std::string heightFile, vec3 position, vec3 rotation, vec3 scale, std::string name, bool focusable)
 {
 	GameObject * go = loadFBXFromFile(ASSET_PATH + MODEL_PATH + modelFile);
-	std::string VSPath, FSPath;
-
-	if (shaderType == "parallax")
-	{
-		VSPath = ASSET_PATH + SHADER_PATH + "ParallaxMappingVS.glsl";
-		FSPath = ASSET_PATH + SHADER_PATH + "ParallaxMappingFS.glsl";
-	}
-	else if (shaderType == "bump")
-	{
-		//VSPath = ASSET_PATH + SHADER_PATH + "bmtestvs.glsl";
-		//FSPath = ASSET_PATH + SHADER_PATH + "bmtestfs.glsl";
-		VSPath = ASSET_PATH + SHADER_PATH + "bumpmappingVS.glsl";
-		FSPath = ASSET_PATH + SHADER_PATH + "bumpmappingFS.glsl";
-	}
-	else
-	{
-		std::cout << "Invalid shader type: " << shaderType << std::endl;
-		return;
-	}
-
 
 	for (int i = 0; i < go->getChildCount(); i++)
 	{
 		Material * material = new Material();
 		material->init();
-		material->loadShader(VSPath, FSPath);
+		material->loadShader(ASSET_PATH + SHADER_PATH + "ParallaxMappingVS.glsl", ASSET_PATH + SHADER_PATH + "ParallaxMappingFS.glsl");
 		
-		//DELETE REFERENCES TO TESTPATH AFTER.
-		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + TESTPATH + diffuseFile);
-		material->loadBumpMap(ASSET_PATH + MODEL_TEXTURE_PATH + TESTPATH + normalFile);
-		material->loadSpecularMap(ASSET_PATH + MODEL_TEXTURE_PATH + TESTPATH + specularFile);		
-		if (heightFile != "") material->loadHeightMap(ASSET_PATH + MODEL_TEXTURE_PATH + TESTPATH + heightFile);  //BUMP MAPPING DOESN'T USE A HEIGHT MAP.  IF THIS IS NULL, SKIP OVER.
+		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + diffuseFile);
+		material->loadBumpMap(ASSET_PATH + MODEL_TEXTURE_PATH + normalFile);
+		material->loadSpecularMap(ASSET_PATH + MODEL_TEXTURE_PATH + specularFile);		
+		if (heightFile != "") material->loadHeightMap(ASSET_PATH + MODEL_TEXTURE_PATH + heightFile);  //BUMP MAPPING DOESN'T USE A HEIGHT MAP.  IF THIS IS NULL, SKIP OVER.
 		go->getChild(i)->setMaterial(material);
 	}
 	go->getTransform()->setPosition(position);
@@ -939,7 +869,7 @@ void HandleInput(SDL_Keycode key)
 				case SDLK_RIGHT:
 				{
 					//Check that the index will not exceed the array
-					if (focusableListIndex < focusableList.size()-1)
+					if (focusableListIndex < (focusableList.size()-1))
 					{
 						focusableListIndex++;
 						mainCamera->getCamera()->setLookAt(focusableList[focusableListIndex]->getTransform()->getPosition());

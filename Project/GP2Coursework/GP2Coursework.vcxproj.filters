@@ -109,12 +109,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\BumpmappingFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="assets\shaders\BumpmappingVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="assets\shaders\ColourFilterPPFS.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
@@ -133,10 +127,10 @@
     <None Include="assets\shaders\textureVS.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="assets\shaders\bmtestfs.glsl">
+    <None Include="assets\shaders\ParallaxMappingFS.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="assets\shaders\bmtestvs.glsl">
+    <None Include="assets\shaders\ParallaxMappingVS.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>

@@ -159,7 +159,7 @@ void Transform::reset(vec3 focus)
 	m_Position = vec3(focus.x, focus.y + 2, focus.z + 10);
 }
 
-void Transform::forwardT(float zoomSpeed, vec3 focus)
+void Transform::forwardT(float zoomSpeed, vec3 focus) 
 {
 	/*
 	Get direction of the focus point from the camera's position.
