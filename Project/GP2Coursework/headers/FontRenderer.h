@@ -37,17 +37,12 @@ public:
     FontRenderer();
     ~FontRenderer();
     
-    void init(int windowWidth,int windowHeight);
+	void init(int windowWidth, int windowHeight, const std::string fontFilename, int fontSize, std::string& VertexShaderLocation, std::string& FragmentShaderLocation);
     void destroy();
     
     void drawString(int x,int y,const std::string& text);
 private:
-    const static std::string DEFAULT_FONT_FILENAME;
-    const static int DEFAULT_FONT_SIZE;
-    const static int BUFFER_SIZE;
-    static std::string DEFAULT_VERTEX_SHADER_FILENAME;
-    static std::string DEFAULT_FRAGMENT_SHADER_FILENAME;
-    Font *m_DefaultFont;
+
     Font *m_CurrentFont;
 
 	mat4 m_OrthoMatrix;

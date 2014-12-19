@@ -41,8 +41,7 @@ private:
     int m_FontHeight;
     
     int m_AtlasWidth;
-    int m_AtlasHeight;
-    
+    int m_AtlasHeight;    
 };
 
 #endif

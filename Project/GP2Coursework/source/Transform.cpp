@@ -131,47 +131,33 @@ void Transform::zoom(float zoomSpeed, vec3 focus)
 	Get direction of the focus point from the camera's position.
 	glm::normalize converts a vector into a unit vector, making it a direction.
 	*/
-	vec3 DirectionToFocus = glm::normalize(m_Position - focus);
+	vec3 direction = glm::normalize(m_Position - focus);
 
-	//Move along directionToFocus direction by zoomspeed
-	m_Position += DirectionToFocus * zoomSpeed;
+	//Move along  direction by zoomspeed
+	m_Position += direction * zoomSpeed;
 
 	DEBUGShowCoords();
 }
 
 void Transform::reset(vec3 focus)
 {
-	////Position the camera at (0,2,10) in relation to lookAt or focus
-	////Calculate the vector to the focus from camera position
-	//vec3 positionToFocusVector = m_Position - focus;
-	//mat4 TranslationMatrixToFocus = glm::translate(mat4(1.0f), -positionToFocusVector);
-
-	////Reset rotation
-	//m_Rotation = vec3(0.0f);
-
-	////Move to coords
-	//vec3 focusToNewPos = m_Position + vec3(0.0f, 2.0f, 10.0f);
-	//mat4 TranslationMatrixToNewPos = glm::translate(TranslationMatrixToFocus, focusToNewPos);
-
-	//m_Position = vec3(TranslationMatrixToNewPos * vec4(m_Position, 1.0f));
-
 	m_Rotation = vec3(0.0f);
 	m_Position = vec3(focus.x, focus.y + 2, focus.z + 10);
 }
 
-void Transform::forwardT(float zoomSpeed, vec3 focus) 
-{
-	/*
-	Get direction of the focus point from the camera's position.
-	glm::normalize converts a vector into a unit vector, making it a direction.
-	*/
-	vec3 DirectionToFocus = glm::normalize(m_Position - focus);
-
-	//Move along directionToFocus direction by zoomspeed
-	m_Position += DirectionToFocus * zoomSpeed;
-
-	//DEBUGShowCoords();
-}
+//void Transform::forwardT(float zoomSpeed, vec3 focus) 
+//{
+//	/*
+//	Get direction of the focus point from the camera's position.
+//	glm::normalize converts a vector into a unit vector, making it a direction.
+//	*/
+//	vec3 DirectionToFocus = glm::normalize(m_Position - focus);
+//
+//	//Move along directionToFocus direction by zoomspeed
+//	m_Position += DirectionToFocus * zoomSpeed;
+//
+//	//DEBUGShowCoords();
+//}
 
 void Transform::DEBUGShowCoords()
 {

@@ -43,12 +43,12 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)\dll\;$(ProjectDir)\headers;$(ProjectDir)\libraries\glew\include\gl;$(ProjectDir)\libraries\glew\include;$(ProjectDir)\libraries\glm;$(ProjectDir)\libraries\SDL2\SDL2_ttf-2.0.12\include;$(ProjectDir)\libraries\SDL2\SDL2_image-2.0.0\include;$(ProjectDir)\libraries\SDL2\SDL2-2.0.3\include;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\headers;$(ProjectDir)\libraries\glew\include\gl;$(ProjectDir)\libraries\glew\include;$(ProjectDir)\libraries\glm;$(ProjectDir)\libraries\SDL2\SDL2_ttf-2.0.12\include;$(ProjectDir)\libraries\SDL2\SDL2_image-2.0.0\include;$(ProjectDir)\libraries\SDL2\SDL2-2.0.3\include;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)\dll\;$(ProjectDir)\libraries\glew\lib\Release MX\Win32;$(ProjectDir)\libraries\glew\lib\Release\Win32;$(ProjectDir)\libraries\SDL2\SDL2_ttf-2.0.12\lib\x86;$(ProjectDir)\libraries\SDL2\SDL2_image-2.0.0\lib\x86;$(ProjectDir)\libraries\SDL2\SDL2-2.0.3\lib\x86;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\lib\vs2013\x86\debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sdl2.lib;sdl2main.lib;opengl32.lib;glu32.lib;glew32.lib;SDL2_image.lib;SDL2_ttf.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\libraries\glew\lib\Release MX\Win32;$(ProjectDir)\libraries\glew\lib\Release\Win32;$(ProjectDir)\libraries\SDL2\SDL2_ttf-2.0.12\lib\x86;$(ProjectDir)\libraries\SDL2\SDL2_image-2.0.0\lib\x86;$(ProjectDir)\libraries\SDL2\SDL2-2.0.3\lib\x86;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\lib\vs2013\x86\debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sdl2.lib;sdl2main.lib;opengl32.lib;glu32.lib;glew32.lib;SDL2_image.lib;SDL2_ttf.lib;libfbxsdk.lib;libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
