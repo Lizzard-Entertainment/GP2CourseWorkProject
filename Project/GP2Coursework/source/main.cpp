@@ -1019,7 +1019,7 @@ void HandleInput(SDL_Keycode key)
 
 					
 
-					c->setLookAt(LookAt.x, LookAt.y, mainCamera->getTransform()->getPosition().z - 1.0f);
+					c->setLookAt(LookAt.x, LookAt.y, mainCamera->getTransform()->getPosition().z + 1.0f);
 
 					break;
 				}
