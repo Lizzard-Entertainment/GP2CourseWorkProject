@@ -17,7 +17,7 @@ uniform mat4 Model;
 uniform vec3 lightDirection;
 uniform vec3 cameraPosition;
 
-void main()
+void main(void)
 {
 	mat3 tangentMatrix = mat3(normalize(vertexNormals), normalize(vertexTangents), normalize(vertexBinormals));
 

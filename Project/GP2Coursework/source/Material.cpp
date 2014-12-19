@@ -13,7 +13,7 @@ Material::Material()
 	m_SpecularPower = 2.0f;
 	m_DiffuseMap = 0;
 	m_SpecularMap = 0;
-	m_HeightMap = 0;
+	//m_HeightMap = 0;
 }
 
 Material::~Material()
@@ -25,13 +25,15 @@ void Material::destroy()
 {
 	glDeleteProgram(m_ShaderProgram);
 	glDeleteTextures(1, &m_DiffuseMap);
-	glDeleteTextures(1, &m_SpecularMap);
 	glDeleteTextures(1, &m_BumpMap);
+	glDeleteTextures(1, &m_SpecularMap);	
 	glDeleteTextures(1, &m_HeightMap);
 }
 
 void Material::bind()
 {
+	/*
+	//ORIGINAL STUFF
 	glUseProgram(m_ShaderProgram);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_DiffuseMap);
@@ -52,11 +54,18 @@ void Material::bind()
 	GLint vertexTangentLocation = glGetAttribLocation(m_ShaderProgram, "vertexTangents");
 	GLint vertexBinormalLocation = glGetAttribLocation(m_ShaderProgram, "vertexBinormals");
 
-	glBindAttribLocation(m_ShaderProgram, vertexPosLocation, "vertexPosition");
-	glBindAttribLocation(m_ShaderProgram, vertexNormalLocation, "vertexNormals");
-	glBindAttribLocation(m_ShaderProgram, vertexTexLocation, "vertexTexCoords");
-	glBindAttribLocation(m_ShaderProgram, vertexColourLocation, "vertexColour");
-	glBindAttribLocation(m_ShaderProgram, vertexTangentLocation, "vertexTangents");
+	//glBindAttribLocation(m_ShaderProgram, vertexPosLocation, "vertexPosition");
+	//glBindAttribLocation(m_ShaderProgram, vertexNormalLocation, "vertexNormals");
+	//glBindAttribLocation(m_ShaderProgram, vertexTexLocation, "vertexTexCoords");
+	//glBindAttribLocation(m_ShaderProgram, vertexColourLocation, "vertexColour");
+	//glBindAttribLocation(m_ShaderProgram, vertexTangentLocation, "vertexTangents");
+	//glBindAttribLocation(m_ShaderProgram, 5, "vertexBinormals");
+
+	glBindAttribLocation(m_ShaderProgram, 0, "vertexPosition");
+	glBindAttribLocation(m_ShaderProgram, 1, "vertexNormals");
+	glBindAttribLocation(m_ShaderProgram, 2, "vertexTexCoords");
+	glBindAttribLocation(m_ShaderProgram, 3, "vertexColour");
+	glBindAttribLocation(m_ShaderProgram, 4, "vertexTangents");
 	glBindAttribLocation(m_ShaderProgram, 5, "vertexBinormals");
 
 	//Tell the shader that 0 is the position element
@@ -72,6 +81,38 @@ void Material::bind()
 	glVertexAttribPointer(vertexTangentLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec3) + sizeof(vec2) + sizeof(vec4)));
 	glEnableVertexAttribArray(vertexBinormalLocation);
 	glVertexAttribPointer(vertexBinormalLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec3) + sizeof(vec2) + sizeof(vec4) + sizeof(vec3)));
+	*/
+
+	glUseProgram(m_ShaderProgram);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_DiffuseMap);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_BumpMap);
+
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_SpecularMap);
+
+	GLint vertexPosLocation = glGetAttribLocation(m_ShaderProgram, "VertexPosition");
+	GLint vertexNormalLocation = glGetAttribLocation(m_ShaderProgram, "VertexNormal");
+	GLint vertexTexLocation = glGetAttribLocation(m_ShaderProgram, "VertexTexture");
+
+	glBindAttribLocation(m_ShaderProgram, vertexPosLocation, "VertexPosition");
+	glBindAttribLocation(m_ShaderProgram, vertexNormalLocation, "VertexNormal");
+	glBindAttribLocation(m_ShaderProgram, vertexTexLocation, "VertexTexture");
+
+	//vertexPosLocation is the first location.
+	glEnableVertexAttribArray(vertexPosLocation);
+	glVertexAttribPointer(vertexPosLocation, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), NULL);
+
+	//vertexNormalLocation is "a vector 4's worth of data" from the start.
+	glEnableVertexAttribArray(vertexNormalLocation);
+	glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)sizeof(vec4));
+
+	//vertextexLocation is vector 4 plus vector 3 from start.
+	glEnableVertexAttribArray(vertexTexLocation);
+	glVertexAttribPointer(vertexTexLocation, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec4) + sizeof(vec3)));
 }
 
 bool BaseMaterial::loadShader(const std::string& vsFilename, const std::string& fsFilename)
@@ -80,7 +121,7 @@ bool BaseMaterial::loadShader(const std::string& vsFilename, const std::string& 
 	vertexShaderProgram = loadShaderFromFile(const_cast<std::string&>(vsFilename), VERTEX_SHADER);
 
 	GLuint fragmentShaderProgram = 0;
-	fragmentShaderProgram = loadShaderFromFile(const_cast<std::string&>(fsFilename), FRAGMENT_SHADER);
+	fragmentShaderProgram = loadShaderFromFile(const_cast<std::string&>(fsFilename), FRAGMENT_SHADER);	
 
 	m_ShaderProgram = glCreateProgram();
 	glAttachShader(m_ShaderProgram, vertexShaderProgram);

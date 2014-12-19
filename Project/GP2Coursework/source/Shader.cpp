@@ -3,9 +3,6 @@
 //Load Shader from File
 GLuint loadShaderFromFile(std::string& filename, SHADER_TYPE shaderType)
 {
-#ifdef __APPLE__
-    filename=filename.substr(filename.rfind('/')+1);
-#endif
 	std::string fileContents;
 	std::ifstream file;
 	file.open(filename.c_str(), std::ios::in);

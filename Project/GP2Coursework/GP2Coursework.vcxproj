@@ -101,6 +101,8 @@
     <ClInclude Include="headers\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\shaders\bmtestfs.glsl" />
+    <None Include="assets\shaders\bmtestvs.glsl" />
     <None Include="assets\shaders\BumpmappingFS.glsl" />
     <None Include="assets\shaders\BumpmappingVS.glsl" />
     <None Include="assets\shaders\ColourFilterPPFS.glsl" />

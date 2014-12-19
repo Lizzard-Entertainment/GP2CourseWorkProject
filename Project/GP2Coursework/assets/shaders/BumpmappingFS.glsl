@@ -20,7 +20,7 @@ uniform sampler2D diffuseMap;
 uniform sampler2D specMap;
 uniform sampler2D bumpMap;
 
-void main()
+void main(void)
 {
 	vec3 bumpNormals = normalize(2.0 * texture2D(bumpMap, texCoordsOut).rgb - 1.0);
 

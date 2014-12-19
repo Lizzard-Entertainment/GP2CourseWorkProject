@@ -133,5 +133,11 @@
     <None Include="assets\shaders\textureVS.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="assets\shaders\bmtestfs.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="assets\shaders\bmtestvs.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
