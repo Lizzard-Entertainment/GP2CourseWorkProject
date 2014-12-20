@@ -852,6 +852,8 @@ void HandleMouse(Sint32 x, Sint32 y)
 		newLookAt.x = oldLookAt.x + (x*sensitivity);
 		newLookAt.y = oldLookAt.y - (y*sensitivity);
 		c->setLookAt(newLookAt.x, newLookAt.y, oldLookAt.z);
+
+		std::cout << "camera lookat: " << newLookAt.x << " , " << newLookAt.y << " , " << newLookAt.z << std::endl;
 }
 #pragma endregion
 
@@ -1016,10 +1018,7 @@ void HandleInput(SDL_Keycode key)
 
 					mainCamera->getTransform()->forwardT(1.0f, LookAt);
 				//	LookAt.z = mainCamera->getTransform()->getPosition().z+28.0f;
-
-					
-
-					c->setLookAt(LookAt.x, LookAt.y, mainCamera->getTransform()->getPosition().z + 1.0f);
+					c->setLookAt(LookAt.x, LookAt.y, flyingCamera->getTransform()->getPosition().z + 1.0f);
 
 					break;
 				}
@@ -1028,7 +1027,7 @@ void HandleInput(SDL_Keycode key)
 				{
 					mainCamera->getTransform()->forwardT(-1.0f, LookAt);
 
-					c->setLookAt(LookAt.x, LookAt.y, mainCamera->getTransform()->getPosition().z - 1.0f);
+					c->setLookAt(LookAt.x, LookAt.y, flyingCamera->getTransform()->getPosition().z - 1.0f);
 
 
 					break;
