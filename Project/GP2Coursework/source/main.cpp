@@ -991,6 +991,7 @@ void HandleInput(SDL_Keycode key)
 
 			float Mx = 0.0f;
 			float My = 0.0f;
+			float Mz = 0.0f;
 
 			Camera * c = flyingCamera->getCamera();
 			vec3 LookAt = c->getLookAt();
@@ -1001,23 +1002,43 @@ void HandleInput(SDL_Keycode key)
 				{
 					Mx = (-1.0f);
 					My = 0.0f;
+					Mz = 0.0f;
+
+					vec3 oldMinCamPos = mainCamera->getTransform()->getPosition();
+					mainCamera->getTransform()->setPosition(oldMinCamPos.x + Mx, oldMinCamPos.y + My, oldMinCamPos.z);
+
+					c->setLookAt(LookAt.x + Mx, LookAt.y, LookAt.z);
+
+					std::cout << "old pos: " << oldMinCamPos.x << " , " << oldMinCamPos.y << " , " << oldMinCamPos.z << std::endl;
+					std::cout << "new pos: " << oldMinCamPos.x + Mx << " , " << oldMinCamPos.y + My << " , " << oldMinCamPos.z << std::endl << std::endl;
+
+
+
 					break;
 				}
 
 				case SDLK_d:
 				{
+					
+					
 					Mx = 1.0f;
 					My = 0.0f;
-					
+					Mz = 0.0f;
+
+					vec3 oldMinCamPos = mainCamera->getTransform()->getPosition();
+					mainCamera->getTransform()->setPosition(oldMinCamPos.x + Mx, oldMinCamPos.y + My, oldMinCamPos.z);
+
+					c->setLookAt(LookAt.x + Mx, LookAt.y, LookAt.z);
+
+					std::cout << "old pos: " << oldMinCamPos.x << " , " << oldMinCamPos.y << " , " << oldMinCamPos.z << std::endl;
+					std::cout << "new pos: " << oldMinCamPos.x + Mx << " , " << oldMinCamPos.y + My << " , " << oldMinCamPos.z << std::endl << std::endl;
+
 					break;
 				}
 
 				case SDLK_s:
 				{
-					//vec3 DirectionToFocus = glm::normalize(mainCamera->getTransform()->getPosition() - LookAt);
-
 					mainCamera->getTransform()->forwardT(1.0f, LookAt);
-				//	LookAt.z = mainCamera->getTransform()->getPosition().z+28.0f;
 					c->setLookAt(LookAt.x, LookAt.y, flyingCamera->getTransform()->getPosition().z + 1.0f);
 
 					break;
@@ -1039,12 +1060,10 @@ void HandleInput(SDL_Keycode key)
 
 			}
 
-			vec3 oldMinCamPos = mainCamera->getTransform()->getPosition();
-			mainCamera->getTransform()->setPosition(oldMinCamPos.x + Mx, oldMinCamPos.y + My, oldMinCamPos.z);
+
 
 			// --DEBUG--
-			std::cout << "old pos: " << oldMinCamPos.x << " , " << oldMinCamPos.y << " , " << oldMinCamPos.z << std::endl;
-			std::cout << "new pos: " << oldMinCamPos.x + Mx << " , " << oldMinCamPos.y + My << " , " << oldMinCamPos.z << std::endl << std::endl;
+
 
 			return;
 #pragma endregion
