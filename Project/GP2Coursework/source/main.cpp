@@ -845,15 +845,23 @@ vec3 switchObjectFocus(int direction) //NOT FULLY FUNTIONAL.
 void HandleMouse(Sint32 x, Sint32 y)
 {
 		float sensitivity = 0.025f;
+		float angle = 0.00f;
 
 		Camera * c = flyingCamera->getCamera();
 		vec3 oldLookAt = c->getLookAt();
-		vec3 newLookAt(0.0f, 0.0f, 0.0f);
+		vec3 newLookAt(0.0f, 0.0f, 10.0f);
+
 		newLookAt.x = oldLookAt.x + (x*sensitivity);
 		newLookAt.y = oldLookAt.y - (y*sensitivity);
-		c->setLookAt(newLookAt.x, newLookAt.y, oldLookAt.z);
 
-		std::cout << "camera lookat: " << newLookAt.x << " , " << newLookAt.y << " , " << newLookAt.z << std::endl;
+		newLookAt.z = sqrtf(fabsf(100.00f - pow(newLookAt.x,2.0f)));
+		angle = asin((newLookAt.z / 100.00f)) * 180.0 / 3.14159265;
+
+		c->setLookAt(newLookAt.x, newLookAt.y, newLookAt.z);
+
+
+		std::cout << "rotation " << newLookAt.x << " , " << newLookAt.y << " , " << newLookAt.z << std::endl;
+		std::cout << angle << std::endl;
 }
 #pragma endregion
 
@@ -1036,23 +1044,26 @@ void HandleInput(SDL_Keycode key)
 					break;
 				}
 
-				case SDLK_s:
-				{
-					mainCamera->getTransform()->forwardT(1.0f, LookAt);
-					c->setLookAt(LookAt.x, LookAt.y, flyingCamera->getTransform()->getPosition().z + 1.0f);
-
-					break;
-				}
 
 				case SDLK_w:
 				{
 					mainCamera->getTransform()->forwardT(-1.0f, LookAt);
-
 					c->setLookAt(LookAt.x, LookAt.y, flyingCamera->getTransform()->getPosition().z - 1.0f);
 
 
 					break;
 				}
+
+
+				case SDLK_s:
+				{
+					mainCamera->getTransform()->forwardT(1.0f, LookAt);
+
+					c->setLookAt(LookAt.x, LookAt.y, flyingCamera->getTransform()->getPosition().z + 1.0f);
+
+					break;
+				}
+
 
 
 				default:
