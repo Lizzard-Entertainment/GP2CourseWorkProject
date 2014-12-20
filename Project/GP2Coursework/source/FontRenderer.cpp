@@ -1,11 +1,3 @@
-//
-//  FontRenderer.cpp
-//  GP2BaseCode
-//
-//  Created by Brian on 18/11/2014.
-//  Copyright (c) 2014 Glasgow Caledonian University. All rights reserved.
-//
-
 #include "FontRenderer.h"
 #include "Font.h"
 #include "Shader.h"
@@ -92,23 +84,23 @@ void FontRenderer::init(int windowWidth, int windowHeight, const std::string fon
 }
 
 void FontRenderer::drawString(int x,int y,const std::string& text)
-{
-	m_Vertices.clear();
+{	
 	glDisable(GL_DEPTH_TEST);
+	m_Vertices.clear();
 
 	//for every character generate a translation vector, store in the VB
-    int characterWidth=m_CurrentFont->getFontWidth();
-    int characterHeight=m_CurrentFont->getFontHeight();
-    int atlasWidth=m_CurrentFont->getAtlasWidth();
-    int atlasHeight=m_CurrentFont->getAtlasHeight();
+    //int characterWidth=m_CurrentFont->getFontWidth();
+    //int characterHeight=m_CurrentFont->getFontHeight();
+    //int atlasWidth=m_CurrentFont->getAtlasWidth();
+    //int atlasHeight=m_CurrentFont->getAtlasHeight();
     
-	float offsetX = ((float)characterWidth / (float)atlasWidth) / 2.0f;
+	//float offsetX = ((float)characterWidth / (float)atlasWidth) / 2.0f;
 
-    for(auto charIter=text.begin();charIter!=text.end();charIter++)
-    {
-        float index=(float)(*charIter);        
-        float centreX=(float)(characterWidth/atlasWidth)*index;
-    }
+    //for(auto charIter=text.begin();charIter!=text.end();charIter++)
+    //{
+    //    float index=(float)(*charIter);        
+    //    float centreX=(float)(characterWidth/atlasWidth)*index;
+    //}
     
     //Bind program
     glUseProgram(m_ShaderProgram);

@@ -255,17 +255,16 @@ void setViewport( int width, int height )
 void createSkyBox()
 {
 	Vertex triangleData[] = {
-			{ vec3(-10.0f, 10.0f, 10.0f) },// Top Left
-			{ vec3(-10.0f, -10.0f, 10.0f) },// Bottom Left
-			{ vec3(10.0f, -10.0f, 10.0f) }, //Bottom Right
-			{ vec3(10.0f, 10.0f, 10.0f) },// Top Right
-
+		{ vec3(-900, 900, 900) },// Top Left
+		{ vec3(-900, -900, 900) },// Bottom Left
+		{ vec3(900, -900, 900) }, //Bottom Right
+		{ vec3(900, 900, 900) },// Top Right
 
 			//back
-			{ vec3(-10.0f, 10.0f, -10.0f) },// Top Left
-			{ vec3(-10.0f, -10.0f, -10.0f) },// Bottom Left
-			{ vec3(10.0, -10.0f, -10.0f) }, //Bottom Right
-			{ vec3(10.0f, 10.0f, -10.0f) }// Top Right
+		{ vec3(-900, 900, -900) },// Top Left
+		{ vec3(-900, -900, -900) },// Bottom Left
+		{ vec3(900, -900, -900) }, //Bottom Right
+		{ vec3(900, 900, -900) }// Top Right
 	};
 
 
