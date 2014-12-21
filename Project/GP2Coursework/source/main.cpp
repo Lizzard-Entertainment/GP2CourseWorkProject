@@ -895,40 +895,6 @@ void HandleKeyboard(SDL_Keycode key)
 					break;
 				}
 
-				//case SDLK_RIGHT:
-				//{
-				//	//Check that the index will not exceed the array
-				//	if (focusableListIndex < (focusableList.size()-1))
-				//	{
-				//		focusableListIndex++;
-				//		mainCamera->getCamera()->setLookAt(focusableList[focusableListIndex]->getTransform()->getPosition());
-				//		mainCamera->getTransform()->reset(mainCamera->getCamera()->getLookAt());
-
-				//		//Debug
-				//		std::cout << "Debug - Focus target: " << focusableList[focusableListIndex]->getName() << std::endl 
-				//			<< "Location: " << std::to_string(mainCamera->getCamera()->getLookAt().x) << std::to_string(mainCamera->getCamera()->getLookAt().y) 
-				//			<< std::to_string(mainCamera->getCamera()->getLookAt().z) << std::endl;
-				//	}
-				//	break;
-				//}
-
-				//case SDLK_LEFT:
-				//{
-				//	//check that the index will not be below 0.
-				//	if (focusableListIndex > 0)
-				//	{
-				//		focusableListIndex--;
-				//		mainCamera->getCamera()->setLookAt(focusableList[focusableListIndex]->getTransform()->getPosition());
-				//		mainCamera->getTransform()->reset(mainCamera->getCamera()->getLookAt());
-
-				//		//Debug
-				//		std::cout << "Debug - Focus target: " << focusableList[focusableListIndex]->getName() << std::endl
-				//			<< "Location: " << std::to_string(mainCamera->getCamera()->getLookAt().x) << std::to_string(mainCamera->getCamera()->getLookAt().y)
-				//			<< std::to_string(mainCamera->getCamera()->getLookAt().z) << std::endl;
-				//	}						
-				//	break;
-				//}
-
 				default:
 					break;
 			}
@@ -938,10 +904,11 @@ void HandleKeyboard(SDL_Keycode key)
 		case FLYING_CAMERA:
 		{
 			//Flying Camera controls: WASD for movement, mouse to aim.
-#pragma region Tom - Flying camera control.
+#pragma region Tom - Flying camera implementation.
 
 			float Mx = 0.0f;
 			float My = 0.0f;
+			float Mz = 0.0f;
 
 			Camera * c = mainCamera->getCamera();
 			vec3 LookAt = c->getLookAt();
@@ -952,14 +919,37 @@ void HandleKeyboard(SDL_Keycode key)
 				{
 					Mx = (-1.0f);
 					My = 0.0f;
+					Mz = 0.0f;
+
+					vec3 oldMinCamPos = mainCamera->getTransform()->getPosition();
+					mainCamera->getTransform()->setPosition(oldMinCamPos.x + Mx, oldMinCamPos.y + My, oldMinCamPos.z);
+
+					c->setLookAt(LookAt.x + Mx, LookAt.y, LookAt.z);
+
+					std::cout << "old pos: " << oldMinCamPos.x << " , " << oldMinCamPos.y << " , " << oldMinCamPos.z << std::endl;
+					std::cout << "new pos: " << oldMinCamPos.x + Mx << " , " << oldMinCamPos.y + My << " , " << oldMinCamPos.z << std::endl << std::endl;
+
+
+
 					break;
 				}
 
 				case SDLK_d:
 				{
+
+
 					Mx = 1.0f;
 					My = 0.0f;
-					
+					Mz = 0.0f;
+
+					vec3 oldMinCamPos = mainCamera->getTransform()->getPosition();
+					mainCamera->getTransform()->setPosition(oldMinCamPos.x + Mx, oldMinCamPos.y + My, oldMinCamPos.z);
+
+					c->setLookAt(LookAt.x + Mx, LookAt.y, LookAt.z);
+
+					std::cout << "old pos: " << oldMinCamPos.x << " , " << oldMinCamPos.y << " , " << oldMinCamPos.z << std::endl;
+					std::cout << "new pos: " << oldMinCamPos.x + Mx << " , " << oldMinCamPos.y + My << " , " << oldMinCamPos.z << std::endl << std::endl;
+
 					break;
 				}
 
