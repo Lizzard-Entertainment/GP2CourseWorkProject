@@ -148,7 +148,8 @@ void Transform::forwardT(float zoomSpeed, vec3 focus)
 	vec3 DirectionToFocus = glm::normalize(m_Position - focus);
 
 	//Move along directionToFocus direction by zoomspeed
-	m_Position += DirectionToFocus * zoomSpeed;
+	 m_Position += DirectionToFocus * zoomSpeed;
+
 
 	//DEBUGShowCoords();
 }

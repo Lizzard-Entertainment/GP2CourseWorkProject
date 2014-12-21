@@ -399,12 +399,12 @@ void Initialise()
 
 	//Set up debugcamera transform
 	t = new Transform();
-	t->setPosition(0.0f, 8.0f, 10.0f);
+	t->setPosition(0.0f, 4.0f, -2.0f);
 	flyingCamera->setTransform(t);
 
 	//Set up debugcamera camera
 	c = new Camera();
-	c->setLookAt(0.0f, 0.0f, 0.0f);
+	c->setLookAt(-0.5f, 4.0f, -2.5f);
 	flyingCamera->setCamera(c);
 
 	//Push to cameras vector
@@ -851,11 +851,14 @@ void HandleMouse(Sint32 x, Sint32 y)
 		vec3 oldLookAt = c->getLookAt();
 		vec3 newLookAt(1.0f, 0.0f, 0.0f);
 
-		newLookAt.x = oldLookAt.x + (x*sensitivity);
-		newLookAt.y = oldLookAt.y - (y*sensitivity);
+		newLookAt.x = oldLookAt.x + ((float)x*sensitivity);
+		//newLookAt.y = oldLookAt.y - (y*sensitivity);
 
+		
+		
 		flyingCamera->getTransform()->rotateAroundPoint(oldLookAt.x - (x*sensitivity), Y_AXIS, newLookAt);
-		flyingCamera->getTransform()->rotateAroundPoint(oldLookAt.y - (y*sensitivity), X_AXIS, newLookAt);
+		
+		//flyingCamera->getTransform()->rotateAroundPoint(oldLookAt.y - (y*sensitivity), X_AXIS, newLookAt);
 
 //		vec3 direction(cos(newLookAt.y) * sin(newLookAt.x),
 //			sin(newLookAt.y),
@@ -1009,7 +1012,7 @@ void HandleInput(SDL_Keycode key)
 			float My = 0.0f;
 			float Mz = 0.0f;
 
-			Camera * c = flyingCamera->getCamera();
+			Camera * c = mainCamera->getCamera();
 			vec3 LookAt = c->getLookAt();
 
 			switch (key)
@@ -1055,8 +1058,12 @@ void HandleInput(SDL_Keycode key)
 
 				case SDLK_w:
 				{
-					mainCamera->getTransform()->forwardT(-1.0f, LookAt);
-					c->setLookAt(LookAt.x, LookAt.y, flyingCamera->getTransform()->getPosition().z - 1.0f);
+					Camera * c = mainCamera->getCamera();
+					vec3 LookAt = c->getLookAt();
+
+					mainCamera->getTransform()->setPosition(LookAt);
+					c->setLookAt(LookAt.x + 0.5f, LookAt.y, LookAt.z + 0.5f);
+					//c->setLookAt(LookAt.x, LookAt.y, flyingCamera->getTransform()->getPosition().z - 1.0f);
 
 
 					break;
@@ -1065,7 +1072,10 @@ void HandleInput(SDL_Keycode key)
 
 				case SDLK_s:
 				{
-					mainCamera->getTransform()->forwardT(1.0f, LookAt);
+					Camera * c = mainCamera->getCamera();
+					vec3 LookAt = c->getLookAt();
+
+					mainCamera->getTransform()->forwardT(-1.0f, LookAt);
 
 					c->setLookAt(LookAt.x, LookAt.y, flyingCamera->getTransform()->getPosition().z + 1.0f);
 
@@ -1158,17 +1168,19 @@ int main(int argc, char * arg[])
                 running = false;
             }
 			
+			if (event.type == SDL_MOUSEMOTION)
+			{
+				//Handle mouse input
+				HandleMouse(event.motion.xrel, event.motion.yrel);
+			}
+
 			if (event.type == SDL_KEYDOWN)
 			{
 				//Handle keyboard inputs
 				HandleInput(event.key.keysym.sym);
 			}
 
-			if (event.type == SDL_MOUSEMOTION)
-			{
-				//Handle mouse input
-				HandleMouse(event.motion.xrel, event.motion.yrel);
-			}
+
         }
 
 		//Update and render all game objects
