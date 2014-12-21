@@ -399,7 +399,7 @@ void Initialise()
 
 	//Set up debugcamera transform
 	t = new Transform();
-	t->setPosition(0.0f, 2.0f, 10.0f);
+	t->setPosition(0.0f, 8.0f, 10.0f);
 	flyingCamera->setTransform(t);
 
 	//Set up debugcamera camera
@@ -849,19 +849,27 @@ void HandleMouse(Sint32 x, Sint32 y)
 
 		Camera * c = flyingCamera->getCamera();
 		vec3 oldLookAt = c->getLookAt();
-		vec3 newLookAt(0.0f, 0.0f, 10.0f);
+		vec3 newLookAt(1.0f, 0.0f, 0.0f);
 
 		newLookAt.x = oldLookAt.x + (x*sensitivity);
 		newLookAt.y = oldLookAt.y - (y*sensitivity);
 
-		newLookAt.z = sqrtf(fabsf(100.00f - pow(newLookAt.x,2.0f)));
-		angle = asin((newLookAt.z / 100.00f)) * 180.0 / 3.14159265;
+		flyingCamera->getTransform()->rotateAroundPoint(oldLookAt.x - (x*sensitivity), Y_AXIS, newLookAt);
+		flyingCamera->getTransform()->rotateAroundPoint(oldLookAt.y - (y*sensitivity), X_AXIS, newLookAt);
 
-		c->setLookAt(newLookAt.x, newLookAt.y, newLookAt.z);
+//		vec3 direction(cos(newLookAt.y) * sin(newLookAt.x),
+//			sin(newLookAt.y),
+//			cos(newLookAt.y) * cos(newLookAt.x));
+//		vec3 right = vec3(sin(newLookAt.x - 3.14f / 2.0f), 0, cos(newLookAt.y - 3.14 / 2.0f));
+//		glm::vec3 up = glm::cross(direction, right);
 
+//		flyingCamera->getTransform()->setRotation(direction);
 
 		std::cout << "rotation " << newLookAt.x << " , " << newLookAt.y << " , " << newLookAt.z << std::endl;
 		std::cout << angle << std::endl;
+
+		
+
 }
 #pragma endregion
 
