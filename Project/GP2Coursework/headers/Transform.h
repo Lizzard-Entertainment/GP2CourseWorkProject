@@ -32,7 +32,7 @@ public:
     void setScale(float x,float y,float z);
 	void setScale(vec3 xyz);
     
-	void rotateAroundPoint(float rotation, vec3 axis, vec3 focus);
+	void rotateAroundPoint(float rotation, vec3 axis);
 	void zoom(float zoomSpeed, vec3 focus);
 	void Transform::reset(vec3 focus);
 	//void forwardT(float zoomSpeed, vec3 focus);

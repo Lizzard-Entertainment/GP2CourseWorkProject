@@ -15,7 +15,6 @@ GameObject::GameObject()
 	m_Light = NULL;
     m_Name="GameObject";
 	m_Parent = NULL;
-	m_Focusable = false;
 }
 
 GameObject::~GameObject()
@@ -118,16 +117,6 @@ void GameObject::setName(const std::string& name)
 const std::string& GameObject::getName()
 {
     return m_Name;
-}
-
-void GameObject::setFocusable(bool focusable)
-{
-	m_Focusable = focusable;
-}
-
-bool GameObject::canFocus()
-{
-	return m_Focusable;
 }
 
 void GameObject::setTransform(Transform * transform)

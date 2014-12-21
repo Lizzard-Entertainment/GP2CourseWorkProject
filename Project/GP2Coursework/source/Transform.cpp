@@ -103,13 +103,13 @@ mat4& Transform::getModel()
 }
 
 #pragma region Euan
-void Transform::rotateAroundPoint(float rotation, vec3 axis, vec3 focus)
+void Transform::rotateAroundPoint(float rotation, vec3 axis)
 {
 	//Initialise matrices
-	mat4 TranslationToOrigin(1.0f);   //Matrix for the translation to the origin.  T1
+	mat4 TranslationToOrigin(1.0f);   //Matrix for the translation to the focus point.  T1
 	mat4 RotationAroundOrigin(1.0f);  //Rotation matrix for rotation around the origin. R o T1
 	mat4 CompositeMatrix(1.0f);       //Composite matrix for reverse translation after rotation. T2 o R o T1
-	vec3 positionToFocusVector = m_Position - focus;  //Vector to origin.  Necessary for pivots around the origin.
+	vec3 positionToFocusVector = m_Position - m_Position;  //Vector to origin.  Necessary for pivots around the focus.
 
 	//Move to the origin, rotate, move back.
 	TranslationToOrigin = glm::translate(mat4(1.0f), -positionToFocusVector);
@@ -142,7 +142,7 @@ void Transform::zoom(float zoomSpeed, vec3 focus)
 void Transform::reset(vec3 focus)
 {
 	m_Rotation = vec3(0.0f);
-	m_Position = vec3(focus.x, focus.y + 2, focus.z + 10);
+	m_Position = vec3(focus.x, focus.y + 5, focus.z + 20);
 }
 
 //void Transform::forwardT(float zoomSpeed, vec3 focus) 

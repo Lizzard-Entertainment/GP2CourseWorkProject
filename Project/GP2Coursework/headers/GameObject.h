@@ -30,9 +30,6 @@ public:
     void addComponent(Component * component);
     void setName(const std::string& name);
     const std::string& getName();
-
-	void setFocusable(bool focusable);
-	bool canFocus();
     
     void setTransform(Transform * transform);
     void setMesh(Mesh * mesh);
@@ -59,8 +56,6 @@ private:
     std::vector<Component*> m_Components;
 	std::vector<GameObject*> m_Children;
 	std::string m_Name;
-	
-	bool m_Focusable;
     
     Transform *m_Transform;
     Mesh *m_Mesh;

@@ -1,3 +1,21 @@
+/*
+SUMMARY OF CODE CONTRIBUTIONS.
+
+Euan:
+	- Orbit camera.
+	- Post processing shader tabbing. (tab key) (OPTIONAL ELEMENT)
+	- Camera switching. (m key)
+Tom:
+	- Flying camera.
+	- Ambient daylight system. (OPTIONAL ELEMENT)
+	- mouse capture.
+
+Calum:
+	- Model position, rotation, scale.
+	- Skybox
+	- On-screen controls display. (OPTIONAL ELEMENT)
+*/
+
 //Headers
 #include <iostream>
 #include <time.h>
@@ -97,11 +115,11 @@ int ColorTemp[24][3] = {
 
 
 //Scene bare light colour
-vec4 ambientLightColour = vec4(0.1f, 0.5f, 1.0f, 0.5f);
+//vec4 ambientLightColour = vec4(0.1f, 0.5f, 1.0f, 0.5f);
+vec4 ambientLightColour = vec4(2.0f, 2.0f, 1.0f, 1.0f);
 
 //Main scene game objects
 std::vector<GameObject*> displayList;
-std::vector<GameObject*> focusableList; //Vector for all focusable game objects.
 std::vector<GameObject*> camerasVec;  //Vector for the camera types.  
 GameObject * orbitCamera;
 GameObject * flyingCamera;
@@ -117,6 +135,9 @@ float cameraSpeed = 1.0f;
 
 //Orbit camera tracking list index
 size_t focusableListIndex = 0;
+
+//Model Loading folder string
+std::string modelSubPath;
 
 void CheckForErrors()
 {
@@ -304,6 +325,7 @@ void createSkyBox()
 
 	Transform *t = new Transform();
 	t->setPosition(0.0f, 0.0f, 0.0f);
+
 	//load textures and skybox material + Shaders
 	SkyBoxMaterial *material = new SkyBoxMaterial();
 	material->init();
@@ -312,14 +334,14 @@ void createSkyBox()
 	std::string fsPath = ASSET_PATH + SHADER_PATH + "skyboxFS.glsl";
 	material->loadShader(vsPath, fsPath);
 
-	std::string posZTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysFront2048.png";
-	std::string negZTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysBack2048.png";
 	std::string posXTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysLeft2048.png";
 	std::string negXTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysRight2048.png";
 	std::string posYTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysUp2048.png";
 	std::string negYTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysDown2048.png";
-
-	material->loadCubeTexture(posZTexturename, negZTexturename, posXTexturename, negXTexturename, posYTexturename, negYTexturename);
+	std::string posZTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysFront2048.png";
+	std::string negZTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysBack2048.png";
+	
+	material->loadCubeTexture(posXTexturename, negXTexturename, posYTexturename, negYTexturename, posZTexturename, negZTexturename);
 	
 	//create gameobject but don't add to queue!
 	skyBox = new GameObject();
@@ -339,12 +361,12 @@ void Initialise()
 		ASSET_PATH + SHADER_PATH + "textureVS.glsl", ASSET_PATH + SHADER_PATH + "textureFS.glsl");
 
 	//grab mouse
-	//int MouseTrapVar;
-	//MouseTrapVar = SDL_SetRelativeMouseMode(SDL_TRUE);
+	int MouseTrapVar;
+	MouseTrapVar = SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	//Forward declare draw methods
-	void ComplexDraw(std::string modelFile, std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation, vec3 scale, std::string name, bool focusable);
-	void BasicDraw(std::string modelFile, std::string diffuseFile, vec3 position, vec3 rotation, vec3 scale, std::string name, bool focusable);
+	void ComplexDraw(std::string modelFile, std::string diffuseFile, std::string specularFile, std::string normalFile, std::string heightFile, vec3 position, vec3 rotation, vec3 scale, std::string name);
+	void BasicDraw(std::string modelFile, std::string diffuseFile, vec3 position, vec3 rotation, vec3 scale, std::string name);
 
 	//Create Skybox
 	createSkyBox();
@@ -364,7 +386,7 @@ void Initialise()
     
 	//Set up orbitcamera transform
 	Transform *t = new Transform();
-    t->setPosition(0.0f, 2.0f, 10.0f);
+	t->setPosition(0.0f, 30.0f, 70.0f);
 	orbitCamera->setTransform(t);
     
 	//Set up orbitcamera camera
@@ -432,18 +454,31 @@ void Initialise()
         (*iter)->init();
     }
 
-#pragma region Calum
-	
+#pragma region Calum - Model positioning.
+
 	//Parallax jeeps
-	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "Jeep1", true);		
-	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Jeep2", true);
+	modelSubPath = "ArmouredCar/";
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "Jeep1");		
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(10.0f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Jeep2");
 
 	// Draw Ground
-	BasicDraw("Ground.fbx", "Ground.png", vec3(0.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), "Ground", true);
+	modelSubPath = "Ground/";
+	BasicDraw("Ground.fbx", "Ground.png", vec3(0.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), "Ground");
+
+	//Draw building - NONE OF THESE LOOK GOOD.
+	modelSubPath = "Building/";
+	ComplexDraw("Building1.fbx", "buildingdiffusemap.png", "buildingnormalsmap.png", "buildingspecularmap.png", "buildingheightmap.png", vec3(15.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	ComplexDraw("Building1.fbx", "buildingdiffusemap.png", "n.png", "s.png", "h.png", vec3(-12.5f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	ComplexDraw("Building1.fbx", "building_d.png", "building_n.png", "building_s.png", "building_h.png", vec3(-40.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+
+	//Draw Tanks - NONE OF THESE LOOK GOOD.
+	modelSubPath = "Tank/";
+	ComplexDraw("Tank.fbx", "tank_d.png", "tank_n.png", "tank_s.png", "tank_h.png", vec3(-30.0f, 0.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	ComplexDraw("Tank.fbx", "tank_d.png", "tank_n.png", "tank_s.png", "tank_h.png", vec3(-12.5f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
 
 	//Draw Tents with UV
-	BasicDraw("Tent.fbx", "TentUV2.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", true);
-
+	//BasicDraw("Tent.fbx", "TentUV2.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", true);
+	
 	//ComplexDraw("Tent.fbx", "Camo.png", "Camo.png", vec3(60.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
 
 	////Draw tanks
@@ -477,15 +512,14 @@ void Initialise()
 
 	//BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(5.0f, 0.0f, 60.0f), vec3(0.0f, 170.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), "Car", "Focusable");
 
-	//We need to draw a last model for some odd reason
-
-	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(-10.0f, -1000000.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Car", false);
+	//modelSubPath = "ArmouredCar/";
+	///BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(-10.0f, -1000000.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Car");
 
 #pragma endregion
 }
 
 
-#pragma region Tom - messing around with the lights (daylightsystem)
+#pragma region Tom - Ambient daylight system.
 
 void DayLightChange(int hours, int mins)
 {
@@ -697,8 +731,8 @@ void render()
     SDL_GL_SwapWindow(window);
 }
 
-#pragma region Euan
-void ComplexDraw(std::string modelFile, std::string diffuseFile, std::string normalFile, std::string specularFile, std::string heightFile, vec3 position, vec3 rotation, vec3 scale, std::string name, bool focusable)
+#pragma region Euan - Modified model loading.
+void ComplexDraw(std::string modelFile, std::string diffuseFile, std::string normalFile, std::string specularFile, std::string heightFile, vec3 position, vec3 rotation, vec3 scale, std::string name)
 {
 	GameObject * go = loadFBXFromFile(ASSET_PATH + MODEL_PATH + modelFile);
 
@@ -708,25 +742,21 @@ void ComplexDraw(std::string modelFile, std::string diffuseFile, std::string nor
 		material->init();
 		material->loadShader(ASSET_PATH + SHADER_PATH + "ParallaxMappingVS.glsl", ASSET_PATH + SHADER_PATH + "ParallaxMappingFS.glsl");
 		
-		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + diffuseFile);
-		material->loadBumpMap(ASSET_PATH + MODEL_TEXTURE_PATH + normalFile);
-		material->loadSpecularMap(ASSET_PATH + MODEL_TEXTURE_PATH + specularFile);		
-		material->loadHeightMap(ASSET_PATH + MODEL_TEXTURE_PATH + heightFile);
+		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + modelSubPath + diffuseFile);
+		material->loadBumpMap(ASSET_PATH + MODEL_TEXTURE_PATH + modelSubPath + normalFile);
+		material->loadSpecularMap(ASSET_PATH + MODEL_TEXTURE_PATH + modelSubPath + specularFile);
+		material->loadHeightMap(ASSET_PATH + MODEL_TEXTURE_PATH + modelSubPath + heightFile);
 		go->getChild(i)->setMaterial(material);
 	}
 	go->getTransform()->setPosition(position);
 	go->getTransform()->setRotation(rotation);
 	go->getTransform()->setScale(scale);
 	go->setName(name);
-	go->setFocusable(focusable);
 
 	displayList.push_back(go);
-
-	if (focusable)
-		focusableList.push_back(go);
 }
 
-void BasicDraw(std::string modelFile, std::string diffuseFile, vec3 position, vec3 rotation, vec3 scale, std::string name, bool focusable)
+void BasicDraw(std::string modelFile, std::string diffuseFile, vec3 position, vec3 rotation, vec3 scale, std::string name)
 {
 	GameObject * go = loadFBXFromFile(ASSET_PATH + MODEL_PATH + modelFile);
 
@@ -734,7 +764,7 @@ void BasicDraw(std::string modelFile, std::string diffuseFile, vec3 position, ve
 	{
 		Material * material = new Material();
 		material->init();
-		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + diffuseFile);
+		material->loadDiffuseMap(ASSET_PATH + MODEL_TEXTURE_PATH + modelSubPath + diffuseFile);
 		material->loadShader(ASSET_PATH + SHADER_PATH + "textureVS.glsl", ASSET_PATH + SHADER_PATH + "textureFS.glsl");
 		go->getChild(i)->setMaterial(material);
 	}
@@ -742,16 +772,12 @@ void BasicDraw(std::string modelFile, std::string diffuseFile, vec3 position, ve
 	go->getTransform()->setRotation(rotation);
 	go->getTransform()->setScale(scale);
 	go->setName(name);
-	go->setFocusable(focusable);
 
 	displayList.push_back(go);
-	if (focusable) 
-		focusableList.push_back(go);
 }
-
 #pragma endregion
 
-#pragma region Tom
+#pragma region Tom - Mouse input for flying camera.
 void HandleMouse(Sint32 x, Sint32 y)
 {
 		float sensitivity = 0.025f;
@@ -765,7 +791,7 @@ void HandleMouse(Sint32 x, Sint32 y)
 }
 #pragma endregion
 
-#pragma region Euan
+#pragma region Euan - Keyboard input.
 void HandleKeyboard(SDL_Keycode key)
 {
 	//Switch main camera and return out of the method.
@@ -803,7 +829,7 @@ void HandleKeyboard(SDL_Keycode key)
 		return;
 	}
 
-	//exits the program when pressing ESC, since the cursor is trapped 
+	//exits the program when pressing ESC, since the cursor is trapped
 	if (key == SDLK_ESCAPE)
 	{
 		running = false;	
@@ -819,34 +845,34 @@ void HandleKeyboard(SDL_Keycode key)
 			{
 				case SDLK_a:
 				{
-					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, Y_AXIS, mainCamera->getCamera()->getLookAt());
+					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed * 2, Y_AXIS);
 					break;
 				}
 
 				case SDLK_d:
 				{
-					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, Y_AXIS, mainCamera->getCamera()->getLookAt());
+					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed * 2, Y_AXIS);
 					break;
 				}
 
 				case SDLK_w:
 				{
-					if (mainCamera->getTransform()->getPosition().y < 7.0f)
-					{
-						mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed, X_AXIS, mainCamera->getCamera()->getLookAt());
+					//if (mainCamera->getTransform()->getPosition().y < 7.0f)
+					//{
+					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed * 2, X_AXIS);
 						break;
-					}
-					else break;
+					//}
+					//break;
 				}
 
 				case SDLK_s:
 				{
-					if (mainCamera->getTransform()->getPosition().y > 1.0f) 
-					{
-						mainCamera->getTransform()->rotateAroundPoint(cameraSpeed, X_AXIS, mainCamera->getCamera()->getLookAt());
+					//if (mainCamera->getTransform()->getPosition().y > 1.0f) 
+					//{
+					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed * 2, X_AXIS);
 						break;
-					}
-					else break;
+					//}
+					//break;
 				}
 
 				case SDLK_z:
@@ -855,51 +881,53 @@ void HandleKeyboard(SDL_Keycode key)
 					{
 						mainCamera->getTransform()->zoom(-cameraSpeed, mainCamera->getCamera()->getLookAt());
 						break;
-					}
-					else break;
+					}					
+					break;
 				}
 
 				case SDLK_c:
 				{
-					mainCamera->getTransform()->zoom(cameraSpeed, mainCamera->getCamera()->getLookAt());
-					break;
-				}
-
-				case SDLK_RIGHT:
-				{
-					//Check that the index will not exceed the array
-					if (focusableListIndex < (focusableList.size()-1))
+					if (glm::distance(mainCamera->getTransform()->getPosition(), mainCamera->getCamera()->getLookAt()) < 100.0f)
 					{
-						focusableListIndex++;
-						mainCamera->getCamera()->setLookAt(focusableList[focusableListIndex]->getTransform()->getPosition());
-						mainCamera->getTransform()->reset(mainCamera->getCamera()->getLookAt());
-
-						//Debug
-						std::cout << "Debug - Focus target: " << focusableList[focusableListIndex]->getName() << std::endl 
-							<< "Location: " << std::to_string(mainCamera->getCamera()->getLookAt().x) << std::to_string(mainCamera->getCamera()->getLookAt().y) 
-							<< std::to_string(mainCamera->getCamera()->getLookAt().z) << std::endl;
+						mainCamera->getTransform()->zoom(cameraSpeed, mainCamera->getCamera()->getLookAt());
+						break;
 					}
-
 					break;
 				}
 
-				case SDLK_LEFT:
-				{
-					//check that the index will not be below 0.
-					if (focusableListIndex > 0)
-					{
-						focusableListIndex--;
-						mainCamera->getCamera()->setLookAt(focusableList[focusableListIndex]->getTransform()->getPosition());
-						mainCamera->getTransform()->reset(mainCamera->getCamera()->getLookAt());
+				//case SDLK_RIGHT:
+				//{
+				//	//Check that the index will not exceed the array
+				//	if (focusableListIndex < (focusableList.size()-1))
+				//	{
+				//		focusableListIndex++;
+				//		mainCamera->getCamera()->setLookAt(focusableList[focusableListIndex]->getTransform()->getPosition());
+				//		mainCamera->getTransform()->reset(mainCamera->getCamera()->getLookAt());
 
-						//Debug
-						std::cout << "Debug - Focus target: " << focusableList[focusableListIndex]->getName() << std::endl
-							<< "Location: " << std::to_string(mainCamera->getCamera()->getLookAt().x) << std::to_string(mainCamera->getCamera()->getLookAt().y)
-							<< std::to_string(mainCamera->getCamera()->getLookAt().z) << std::endl;
-					}		
+				//		//Debug
+				//		std::cout << "Debug - Focus target: " << focusableList[focusableListIndex]->getName() << std::endl 
+				//			<< "Location: " << std::to_string(mainCamera->getCamera()->getLookAt().x) << std::to_string(mainCamera->getCamera()->getLookAt().y) 
+				//			<< std::to_string(mainCamera->getCamera()->getLookAt().z) << std::endl;
+				//	}
+				//	break;
+				//}
 
-					break;
-				}
+				//case SDLK_LEFT:
+				//{
+				//	//check that the index will not be below 0.
+				//	if (focusableListIndex > 0)
+				//	{
+				//		focusableListIndex--;
+				//		mainCamera->getCamera()->setLookAt(focusableList[focusableListIndex]->getTransform()->getPosition());
+				//		mainCamera->getTransform()->reset(mainCamera->getCamera()->getLookAt());
+
+				//		//Debug
+				//		std::cout << "Debug - Focus target: " << focusableList[focusableListIndex]->getName() << std::endl
+				//			<< "Location: " << std::to_string(mainCamera->getCamera()->getLookAt().x) << std::to_string(mainCamera->getCamera()->getLookAt().y)
+				//			<< std::to_string(mainCamera->getCamera()->getLookAt().z) << std::endl;
+				//	}						
+				//	break;
+				//}
 
 				default:
 					break;
@@ -910,12 +938,12 @@ void HandleKeyboard(SDL_Keycode key)
 		case FLYING_CAMERA:
 		{
 			//Flying Camera controls: WASD for movement, mouse to aim.
-#pragma region Tom
+#pragma region Tom - Flying camera control.
 
 			float Mx = 0.0f;
 			float My = 0.0f;
 
-			Camera * c = flyingCamera->getCamera();
+			Camera * c = mainCamera->getCamera();
 			vec3 LookAt = c->getLookAt();
 
 			switch (key)
