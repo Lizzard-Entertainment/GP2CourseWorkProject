@@ -457,9 +457,14 @@ void Initialise()
 #pragma region Calum - Model positioning.
 
 	//Parallax jeeps
+<<<<<<< HEAD
 	modelSubPath = "ArmouredCar/";
 	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "Jeep1");		
 	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_TN.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(10.0f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Jeep2");
+=======
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Jeep1", true);		
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "Jeep2", true);
+>>>>>>> parent of f4a3595... Swapped the vehicles so the switching thing...
 
 	// Draw Ground
 	modelSubPath = "Ground/";
