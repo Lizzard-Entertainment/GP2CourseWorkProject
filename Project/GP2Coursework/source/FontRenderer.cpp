@@ -54,7 +54,7 @@ void FontRenderer::init(int windowWidth, int windowHeight, const std::string fon
     
     //create an ortho matrix
 	m_OrthoMatrix = glm::ortho(0.0f, (float)windowWidth, (float)windowHeight, 0.0f, -1.0f, 100.0f);
-	m_ViewMatrix = glm::lookAt(glm::vec3(0, 0, 10), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	m_ViewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     
     //Create buffer
 	glGenBuffers(1, &m_FontVB);
