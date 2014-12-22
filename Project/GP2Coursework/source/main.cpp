@@ -455,6 +455,43 @@ void Initialise()
     }
 
 
+#pragma region Calum
+	
+	//Parallax jeeps
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(2.5f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Jeep1", true);		
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(-2.5f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "Jeep2", true);
+
+	// Draw Ground
+	BasicDraw("Ground.fbx", "Ground.png", vec3(0.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), "Ground", true);
+
+	//Draw Tents with UV
+	BasicDraw("Tent.fbx", "TentUV2.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", true);
+
+	//ComplexDraw("Tent.fbx", "Camo.png", "Camo.png", vec3(60.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+
+	////Draw tanks
+	//BasicDraw("Tank.fbx", "Tank.png", vec3(-30.0f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f), "Tank", "Focusable");
+	//BasicDraw("Tank.fbx", "Tank.png", vec3(-12.5f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f), "Tank", "Focusable");
+	//
+	////Draw Building
+	//BasicDraw("Building1.fbx", "building.png", vec3(-12.5f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building", "Focusable");
+	//BasicDraw("Building1.fbx", "building.png", vec3(-40.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building", "Focusable");
+	//BasicDraw("Building1.fbx", "building.png", vec3(190.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building", "Focusable");
+
+	////Draw Tents
+	//BasicDraw("Tent.fbx", "Camo.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	//BasicDraw("Tent.fbx", "Camo.png", vec3(60.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+
+	//BasicDraw("Tent.fbx", "Camo.png", vec3(30.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	//BasicDraw("Tent.fbx", "Camo.png", vec3(60.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+
+	//BasicDraw("Tent.fbx", "Camo.png", vec3(110.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	//BasicDraw("Tent.fbx", "Camo.png", vec3(140.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+
+	//BasicDraw("Tent.fbx", "Camo.png", vec3(110.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+	//BasicDraw("Tent.fbx", "Camo.png", vec3(140.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
+
+
 }
 
 
