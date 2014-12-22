@@ -6,7 +6,7 @@ GLuint convertSDLSurfaceToGLTexture(SDL_Surface * surface)
 	GLuint textureID = 0;
     GLint  nOfColors = surface->format->BytesPerPixel;
 	GLenum texture_format = GL_RGB;
-    GLenum internalFormat=GL_RGB8;
+    GLenum internalFormat= GL_RGB8;
 	if (nOfColors == 4)     // contains an alpha channel
 	{
 		if (surface->format->Rmask == 0x000000ff){
@@ -46,7 +46,7 @@ GLuint loadTextureFromFile(const std::string& filename)
 	SDL_Surface *imageSurface = IMG_Load(filename.c_str());
 
 	if (!imageSurface){
-		std::cout << "Can' Load image " << filename << " " << IMG_GetError();
+		std::cout << "Can't Load image " << filename << " " << IMG_GetError();
 		return textureID;
 	}
 

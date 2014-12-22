@@ -5,6 +5,7 @@ Euan:
 	- Orbit camera.
 	- Post processing shader tabbing. (tab key) (OPTIONAL ELEMENT)
 	- Camera switching. (m key)
+
 Tom:
 	- Flying camera.
 	- Ambient daylight system. (OPTIONAL ELEMENT)
@@ -12,8 +13,7 @@ Tom:
 
 Calum:
 	- Model position, rotation, scale.
-	- Skybox
-	- On-screen controls display. (OPTIONAL ELEMENT)
+	- On-screen controls display. (OPTIONAL ELEMENT) - PLANNED BUT NOT IMPLEMENTED.  COULDN'T GET FONT TO WORK.
 */
 
 //Headers
@@ -115,8 +115,8 @@ int ColorTemp[24][3] = {
 
 
 //Scene bare light colour
-//vec4 ambientLightColour = vec4(0.1f, 0.5f, 1.0f, 0.5f);
-vec4 ambientLightColour = vec4(2.0f, 2.0f, 1.0f, 1.0f);
+vec4 ambientLightColour = vec4(0.1f, 0.5f, 1.0f, 0.5f);
+//vec4 ambientLightColour = vec4(2.0f, 2.0f, 1.0f, 1.0f);
 
 //Main scene game objects
 std::vector<GameObject*> displayList;
@@ -132,9 +132,6 @@ FontRenderer fontRenderer;
 
 //Input globals
 float cameraSpeed = 1.0f;
-
-//Orbit camera tracking list index
-size_t focusableListIndex = 0;
 
 //Model Loading folder string
 std::string modelSubPath;
@@ -153,20 +150,18 @@ void InitWindow(int width, int height, bool fullscreen)
 	//Create a window
 	window = SDL_CreateWindow
 	(
-		"Coursework",             // window title
+		"Lizzard Entertainment",    // window title
 		SDL_WINDOWPOS_CENTERED,     // x position, centered
 		SDL_WINDOWPOS_CENTERED,     // y position, centered
-		width,                        // width, in pixels
-		height,                        // height, in pixels
-										// flags
-		SDL_WINDOW_OPENGL	
+		width,                      // width, in pixels
+		height,                     // height, in pixels
+		SDL_WINDOW_OPENGL			// flags		
 	);
 }
 
 void CleanUp()
 {
 	// clean up in reverse
-
 	//Clean up font renderer
 	fontRenderer.destroy();
 
@@ -275,17 +270,19 @@ void setViewport( int width, int height )
 
 void createSkyBox()
 {
-	Vertex triangleData[] = {
-		{ vec3(-900, 900, 900) },// Top Left
-		{ vec3(-900, -900, 900) },// Bottom Left
-		{ vec3(900, -900, 900) }, //Bottom Right
-		{ vec3(900, 900, 900) },// Top Right
+	Vertex triangleData[] = 
+	{
+		//Front
+		{ vec3(-500, 500, 500) },// Top Left
+		{ vec3(-500, -500, 500) },// Bottom Left
+		{ vec3(500, -500, 500) }, //Bottom Right
+		{ vec3(500, 500, 500) },// Top Right
 
-			//back
-		{ vec3(-900, 900, -900) },// Top Left
-		{ vec3(-900, -900, -900) },// Bottom Left
-		{ vec3(900, -900, -900) }, //Bottom Right
-		{ vec3(900, 900, -900) }// Top Right
+		//back
+		{ vec3(-500, 500, -500) },// Top Left
+		{ vec3(-500, -500, -500) },// Bottom Left
+		{ vec3(500, -500, -500) }, //Bottom Right
+		{ vec3(500, 500, 500) }// Top Right
 	};
 
 
@@ -321,7 +318,7 @@ void createSkyBox()
 	pMesh->init();
 
 	pMesh->copyVertexData(8, sizeof(Vertex), (void**)triangleData);
-	pMesh->copyIndexData(36, sizeof(int), (void**)indices);
+	pMesh->copyIndexData(36, sizeof(GLuint), (void**)indices);
 
 	Transform *t = new Transform();
 	t->setPosition(0.0f, 0.0f, 0.0f);
@@ -357,7 +354,7 @@ void createSkyBox()
 void Initialise()
 {
 	//Initialise font renderer
-	fontRenderer.init(WINDOW_WIDTH, WINDOW_HEIGHT, ASSET_PATH + FONT_PATH + "OratorStd.otf", 16, 
+	fontRenderer.init(WINDOW_WIDTH, WINDOW_HEIGHT, ASSET_PATH + FONT_PATH + "oratorstd.otf", 16, 
 		ASSET_PATH + SHADER_PATH + "textureVS.glsl", ASSET_PATH + SHADER_PATH + "textureFS.glsl");
 
 	//grab mouse
@@ -456,10 +453,50 @@ void Initialise()
 
 #pragma region Calum - Model positioning.
 
+	// Draw Ground
+	modelSubPath = "Ground/";
+	BasicDraw("Ground.fbx", "Ground.png", vec3(0.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), "Ground");
+
+
+	//Draw Jeeps
+	modelSubPath = "ArmouredCar/";
+	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(5.0f, 0.0f, 60.0f), vec3(0.0f, 250.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), "Jeep1");
+	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(20.0f, 0.0f, 60.0f), vec3(0.0f, -40.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), "Jeep2");
+	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(100.0f, 5.0f, 60.0f), vec3(0.0f, -180.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), "Jeep2");
+	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(10.0f, 0.0f, 40.0f), vec3(0.0f, -180.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), "Jeep2");
+	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, -180.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), "Jeep2");
+
+	//Draw tanks
+	modelSubPath = "Tank/";
+	BasicDraw("Tank.fbx", "Tank.png", vec3(-45.0f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	BasicDraw("Tank.fbx", "Tank.png", vec3(-30.0f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	BasicDraw("Tank.fbx", "Tank.png", vec3(-12.5f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	BasicDraw("Tank.fbx", "Tank.png", vec3(-45.0f, 1.0f, 30.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	BasicDraw("Tank.fbx", "Tank.png", vec3(-30.0f, 1.0f, 30.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	BasicDraw("Tank.fbx", "Tank.png", vec3(-12.5f, 1.0f, 30.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	BasicDraw("Tank.fbx", "Tank.png", vec3(50.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, -180.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	BasicDraw("Tank.fbx", "Tank.png", vec3(80.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, -180.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	BasicDraw("Tank.fbx", "Tank.png", vec3(50.0f, 1.0f, -120.0f), vec3(-90.0f, 0.0f, -180.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	BasicDraw("Tank.fbx", "Tank.png", vec3(80.0f, 1.0f, -120.0f), vec3(-90.0f, 0.0f, -180.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+
+	//Draw Building
+	modelSubPath = "Building/";
+	BasicDraw("Building1.fbx", "building.png", vec3(-10.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	BasicDraw("Building1.fbx", "building.png", vec3(-40.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	BasicDraw("Building1.fbx", "building.png", vec3(20.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	BasicDraw("Building1.fbx", "building.png", vec3(50.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	BasicDraw("Building1.fbx", "building.png", vec3(80.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	BasicDraw("Building1.fbx", "building.png", vec3(110.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	BasicDraw("Building1.fbx", "building.png", vec3(140.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	BasicDraw("Building1.fbx", "building.png", vec3(150.0f, 10.0f, 80.0f), vec3(0.0f, -90.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+
+	BasicDraw("Tank.fbx", "Tank.png", vec3(0.0f, -100.0f, -0.0f), vec3(-90.0f, 0.0f, -180.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+
+	/*
 	//Parallax jeeps
 	modelSubPath = "ArmouredCar/";
 	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "Jeep1");		
-	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_TN.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(10.0f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Jeep2");
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(10.0f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Jeep2");
 
 	// Draw Ground
 	modelSubPath = "Ground/";
@@ -467,9 +504,9 @@ void Initialise()
 
 	//Draw building - NONE OF THESE LOOK GOOD.
 	modelSubPath = "Building/";
-	ComplexDraw("Building1.fbx", "buildingdiffusemap.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(15.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
-	ComplexDraw("Building1.fbx", "buildingdiffusemap.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(-12.5f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
-	ComplexDraw("Building1.fbx", "buildingdiffusemap.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(-40.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	ComplexDraw("Building1.fbx", "building_d.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(15.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	ComplexDraw("Building1.fbx", "building_d.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(-12.5f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	ComplexDraw("Building1.fbx", "building_d.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(-40.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
 
 	//Draw Tanks - looks OK.
 	modelSubPath = "Tank/";
@@ -514,10 +551,10 @@ void Initialise()
 
 	//modelSubPath = "ArmouredCar/";
 	///BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(-10.0f, -1000000.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Car");
+	*/
 
 #pragma endregion
 }
-
 
 #pragma region Tom - Ambient daylight system.
 
@@ -725,7 +762,7 @@ void render()
 	postProcessor.draw();
 
 	//Draw string
-	fontRenderer.drawString(100, 100, "FONT TEST");
+	//fontRenderer.drawString(100, 100, "FONTTEST");  - FONT TUTORIAL DID NOT WORK.
 
 	//Swap buffers and draw to scene.
     SDL_GL_SwapWindow(window);
@@ -856,22 +893,14 @@ void HandleKeyboard(SDL_Keycode key)
 
 				case SDLK_w:
 				{
-					//if (mainCamera->getTransform()->getPosition().y < 7.0f)
-					//{
 					mainCamera->getTransform()->rotateAroundPoint(-cameraSpeed * 2, X_AXIS);
-						break;
-					//}
-					//break;
+					break;
 				}
 
 				case SDLK_s:
 				{
-					//if (mainCamera->getTransform()->getPosition().y > 1.0f) 
-					//{
 					mainCamera->getTransform()->rotateAroundPoint(cameraSpeed * 2, X_AXIS);
-						break;
-					//}
-					//break;
+					break;
 				}
 
 				case SDLK_z:
@@ -927,8 +956,6 @@ void HandleKeyboard(SDL_Keycode key)
 
 					std::cout << "old pos: " << oldMinCamPos.x << " , " << oldMinCamPos.y << " , " << oldMinCamPos.z << std::endl;
 					std::cout << "new pos: " << oldMinCamPos.x + Mx << " , " << oldMinCamPos.y + My << " , " << oldMinCamPos.z << std::endl << std::endl;
-
-
 
 					break;
 				}

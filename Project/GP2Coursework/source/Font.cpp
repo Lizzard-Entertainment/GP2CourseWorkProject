@@ -17,7 +17,7 @@ Font::~Font()
     
 }
 
-bool Font::init(const std::string& filename, int pointSize)
+bool Font::init(const std::string& filename,int pointSize)
 {
     m_Font = TTF_OpenFont(filename.c_str(),pointSize);
     if (!m_Font)
@@ -80,12 +80,7 @@ GLuint Font::getAtlas()
 
 void Font::createTextureFromString(const std::string& text)
 {
-	//SDL_Color white = { 255, 255, 255, 255 };
-	//SDL_Color black = { 0, 0, 0, 255 };
-
-	//SDL_Surface *textSurface = TTF_RenderText(m_Font, text.c_str(), white, black);
-
-	SDL_Surface *textSurface = TTF_RenderText_Blended(m_Font, text.c_str(), { 255, 255, 255 });
+	SDL_Surface *textSurface = TTF_RenderText_Blended(m_Font, text.c_str(), { 255, 255, 255, 255 });
 	if (!textSurface)
 	{
 		std::string errorMsg = TTF_GetError();
