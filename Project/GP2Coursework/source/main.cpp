@@ -454,11 +454,7 @@ void Initialise()
         (*iter)->init();
     }
 
-#pragma region Calum - Model positioning.
 
-
-
-#pragma endregion
 }
 
 
