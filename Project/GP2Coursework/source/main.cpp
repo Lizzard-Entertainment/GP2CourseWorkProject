@@ -334,12 +334,12 @@ void createSkyBox()
 	std::string fsPath = ASSET_PATH + SHADER_PATH + "skyboxFS.glsl";
 	material->loadShader(vsPath, fsPath);
 
-	std::string posXTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysLeft2048.png";
-	std::string negXTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysRight2048.png";
-	std::string posYTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysUp2048.png";
-	std::string negYTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysDown2048.png";
-	std::string posZTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysFront2048.png";
-	std::string negZTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "CloudyLightRaysBack2048.png";
+	std::string posXTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "Sunny_left.png";
+	std::string negXTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "Sunny_right.png";
+	std::string posYTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "Sunny_up.png";
+	std::string negYTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "Sunny_down.png";
+	std::string posZTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "Sunny_front.png";
+	std::string negZTexturename = ASSET_PATH + SKYBOX_TEXTURE_PATH + "Sunny_back.png";
 	
 	material->loadCubeTexture(posXTexturename, negXTexturename, posYTexturename, negYTexturename, posZTexturename, negZTexturename);
 	
@@ -725,7 +725,7 @@ void render()
 	postProcessor.draw();
 
 	//Draw string
-	fontRenderer.drawString(0, 0, "FONT TEST");
+	fontRenderer.drawString(100, 100, "FONT TEST");
 
 	//Swap buffers and draw to scene.
     SDL_GL_SwapWindow(window);
@@ -783,11 +783,10 @@ void HandleMouse(Sint32 x, Sint32 y)
 		float sensitivity = 0.025f;
 
 		Camera * c = flyingCamera->getCamera();
-		vec3 oldLookAt = c->getLookAt();
-		vec3 newLookAt(0.0f, 0.0f, 0.0f);
-		newLookAt.x = oldLookAt.x + (x*sensitivity);
-		newLookAt.y = oldLookAt.y - (y*sensitivity);
-		c->setLookAt(newLookAt.x, newLookAt.y, oldLookAt.z);
+		vec3 LookAt = c->getLookAt();
+		LookAt.x += (x*sensitivity);
+		LookAt.y += (-y*sensitivity);
+		c->setLookAt(LookAt);
 }
 #pragma endregion
 
