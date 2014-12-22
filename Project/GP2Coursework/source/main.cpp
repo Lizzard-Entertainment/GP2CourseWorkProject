@@ -459,7 +459,7 @@ void Initialise()
 	//Parallax jeeps
 	modelSubPath = "ArmouredCar/";
 	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "Jeep1");		
-	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(10.0f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Jeep2");
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_TN.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(10.0f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Jeep2");
 
 	// Draw Ground
 	modelSubPath = "Ground/";
@@ -467,14 +467,14 @@ void Initialise()
 
 	//Draw building - NONE OF THESE LOOK GOOD.
 	modelSubPath = "Building/";
-	ComplexDraw("Building1.fbx", "buildingdiffusemap.png", "buildingnormalsmap.png", "buildingspecularmap.png", "buildingheightmap.png", vec3(15.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
-	ComplexDraw("Building1.fbx", "buildingdiffusemap.png", "n.png", "s.png", "h.png", vec3(-12.5f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
-	ComplexDraw("Building1.fbx", "building_d.png", "building_n.png", "building_s.png", "building_h.png", vec3(-40.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	ComplexDraw("Building1.fbx", "buildingdiffusemap.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(15.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	ComplexDraw("Building1.fbx", "buildingdiffusemap.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(-12.5f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	ComplexDraw("Building1.fbx", "buildingdiffusemap.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(-40.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
 
-	//Draw Tanks - NONE OF THESE LOOK GOOD.
+	//Draw Tanks - looks OK.
 	modelSubPath = "Tank/";
-	ComplexDraw("Tank.fbx", "tank_d.png", "tank_n.png", "tank_s.png", "tank_h.png", vec3(-30.0f, 0.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
-	ComplexDraw("Tank.fbx", "tank_d.png", "tank_n.png", "tank_s.png", "tank_h.png", vec3(-12.5f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	ComplexDraw("Tank.fbx", "tank_d.png", "tank_Tn.png", "tank_Ts.png", "tank_Th.png", vec3(-30.0f, 0.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	ComplexDraw("Tank.fbx", "tank_d.png", "tank_Tn.png", "tank_Ts.png", "tank_Th.png", vec3(-12.5f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
 
 	//Draw Tents with UV
 	//BasicDraw("Tent.fbx", "TentUV2.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", true);
