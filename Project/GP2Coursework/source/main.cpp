@@ -457,103 +457,39 @@ void Initialise()
 	modelSubPath = "Ground/";
 	BasicDraw("Ground.fbx", "Ground.png", vec3(0.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), "Ground");
 
-
 	//Draw Jeeps
 	modelSubPath = "ArmouredCar/";
-	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(5.0f, 0.0f, 60.0f), vec3(0.0f, 250.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), "Jeep1");
-	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(20.0f, 0.0f, 60.0f), vec3(0.0f, -40.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), "Jeep2");
-	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(100.0f, 5.0f, 60.0f), vec3(0.0f, -180.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), "Jeep2");
-	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(10.0f, 0.0f, 40.0f), vec3(0.0f, -180.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), "Jeep2");
-	BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, -180.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), "Jeep2");
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(5.0f, 0.0f, 60.0f), vec3(0.0f, 250.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), "Jeep1");
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(20.0f, 0.0f, 60.0f), vec3(0.0f, -40.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), "Jeep2");
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(100.0f, 5.0f, 60.0f), vec3(0.0f, -180.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), "Jeep2");
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(10.0f, 0.0f, 40.0f), vec3(0.0f, -180.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), "Jeep2");
+	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, -90.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), "Jeep2");
 
 	//Draw tanks
 	modelSubPath = "Tank/";
-	BasicDraw("Tank.fbx", "Tank.png", vec3(-45.0f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
-	BasicDraw("Tank.fbx", "Tank.png", vec3(-30.0f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
-	BasicDraw("Tank.fbx", "Tank.png", vec3(-12.5f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
-	BasicDraw("Tank.fbx", "Tank.png", vec3(-45.0f, 1.0f, 30.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
-	BasicDraw("Tank.fbx", "Tank.png", vec3(-30.0f, 1.0f, 30.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
-	BasicDraw("Tank.fbx", "Tank.png", vec3(-12.5f, 1.0f, 30.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
-	BasicDraw("Tank.fbx", "Tank.png", vec3(50.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, -180.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
-	BasicDraw("Tank.fbx", "Tank.png", vec3(80.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, -180.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
-	BasicDraw("Tank.fbx", "Tank.png", vec3(50.0f, 1.0f, -120.0f), vec3(-90.0f, 0.0f, -180.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
-	BasicDraw("Tank.fbx", "Tank.png", vec3(80.0f, 1.0f, -120.0f), vec3(-90.0f, 0.0f, -180.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	ComplexDraw("Tank.fbx", "tank_d.png", "tank_Tn.png", "tank_Ts.png", "tank_Th.png", vec3(-45.0f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	ComplexDraw("Tank.fbx", "tank_d.png", "tank_Tn.png", "tank_Ts.png", "tank_Th.png", vec3(-30.0f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	ComplexDraw("Tank.fbx", "tank_d.png", "tank_Tn.png", "tank_Ts.png", "tank_Th.png", vec3(-12.5f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	ComplexDraw("Tank.fbx", "tank_d.png", "tank_Tn.png", "tank_Ts.png", "tank_Th.png", vec3(-45.0f, 1.0f, 30.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	ComplexDraw("Tank.fbx", "tank_d.png", "tank_Tn.png", "tank_Ts.png", "tank_Th.png", vec3(-30.0f, 1.0f, 30.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	ComplexDraw("Tank.fbx", "tank_d.png", "tank_Tn.png", "tank_Ts.png", "tank_Th.png", vec3(-12.5f, 1.0f, 30.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	ComplexDraw("Tank.fbx", "tank_d.png", "tank_Tn.png", "tank_Ts.png", "tank_Th.png", vec3(50.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, -180.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	ComplexDraw("Tank.fbx", "tank_d.png", "tank_Tn.png", "tank_Ts.png", "tank_Th.png", vec3(80.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, -180.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	ComplexDraw("Tank.fbx", "tank_d.png", "tank_Tn.png", "tank_Ts.png", "tank_Th.png", vec3(50.0f, 1.0f, -120.0f), vec3(-90.0f, 0.0f, -180.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
+	ComplexDraw("Tank.fbx", "tank_d.png", "tank_Tn.png", "tank_Ts.png", "tank_Th.png", vec3(80.0f, 1.0f, -120.0f), vec3(-90.0f, 0.0f, -180.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
 
 	//Draw Building
 	modelSubPath = "Building/";
-	BasicDraw("Building1.fbx", "building.png", vec3(-10.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
-	BasicDraw("Building1.fbx", "building.png", vec3(-40.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
-	BasicDraw("Building1.fbx", "building.png", vec3(20.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
-	BasicDraw("Building1.fbx", "building.png", vec3(50.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
-	BasicDraw("Building1.fbx", "building.png", vec3(80.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
-	BasicDraw("Building1.fbx", "building.png", vec3(110.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
-	BasicDraw("Building1.fbx", "building.png", vec3(140.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
-	BasicDraw("Building1.fbx", "building.png", vec3(150.0f, 10.0f, 80.0f), vec3(0.0f, -90.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
-
-	BasicDraw("Tank.fbx", "Tank.png", vec3(0.0f, -100.0f, -0.0f), vec3(-90.0f, 0.0f, -180.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
-
-	/*
-	//Parallax jeeps
-	modelSubPath = "ArmouredCar/";
-	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f, -40.0f, 0.0f), vec3(1.0f), "Jeep1");		
-	ComplexDraw("armoredrecon.fbx", "armoredrecon_diff.png", "armoredrecon_N.png", "armoredrecon_spec.png", "armoredrecon_Height.png", vec3(10.0f, 0.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Jeep2");
-
-	// Draw Ground
-	modelSubPath = "Ground/";
-	BasicDraw("Ground.fbx", "Ground.png", vec3(0.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), "Ground");
-
-	//Draw building - NONE OF THESE LOOK GOOD.
-	modelSubPath = "Building/";
-	ComplexDraw("Building1.fbx", "building_d.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(15.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
-	ComplexDraw("Building1.fbx", "building_d.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(-12.5f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	ComplexDraw("Building1.fbx", "building_d.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(-10.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
 	ComplexDraw("Building1.fbx", "building_d.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(-40.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
-
-	//Draw Tanks - looks OK.
-	modelSubPath = "Tank/";
-	ComplexDraw("Tank.fbx", "tank_d.png", "tank_Tn.png", "tank_Ts.png", "tank_Th.png", vec3(-30.0f, 0.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
-	ComplexDraw("Tank.fbx", "tank_d.png", "tank_Tn.png", "tank_Ts.png", "tank_Th.png", vec3(-12.5f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(20.0f, 20.0f, 20.0f), "Tank");
-
-	//Draw Tents with UV
-	//BasicDraw("Tent.fbx", "TentUV2.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", true);
-	
-	//ComplexDraw("Tent.fbx", "Camo.png", "Camo.png", vec3(60.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-
-	////Draw tanks
-	//BasicDraw("Tank.fbx", "Tank.png", vec3(-30.0f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f), "Tank", "Focusable");
-	//BasicDraw("Tank.fbx", "Tank.png", vec3(-12.5f, 1.0f, 60.0f), vec3(-90.0f, 0.0f, -90.0f), vec3(31.73838f, 31.73838f, 31.73838f), "Tank", "Focusable");
-	//
-	////Draw Building
-	//BasicDraw("Building1.fbx", "building.png", vec3(-12.5f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building", "Focusable");
-	//BasicDraw("Building1.fbx", "building.png", vec3(-40.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building", "Focusable");
-	//BasicDraw("Building1.fbx", "building.png", vec3(190.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building", "Focusable");
-
-	////Draw Tents
-	//BasicDraw("Tent.fbx", "Camo.png", vec3(30.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-	//BasicDraw("Tent.fbx", "Camo.png", vec3(60.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-
-	//BasicDraw("Tent.fbx", "Camo.png", vec3(30.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-	//BasicDraw("Tent.fbx", "Camo.png", vec3(60.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-
-	//BasicDraw("Tent.fbx", "Camo.png", vec3(110.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-	//BasicDraw("Tent.fbx", "Camo.png", vec3(140.0f, 1.0f, -40.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-
-	//BasicDraw("Tent.fbx", "Camo.png", vec3(110.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-	//BasicDraw("Tent.fbx", "Camo.png", vec3(140.0f, 1.0f, -100.0f), vec3(-90.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-
-	//BasicDraw("Tent.fbx", "Camo.png", vec3(140.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-	//BasicDraw("Tent.fbx", "Camo.png", vec3(165.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-	//BasicDraw("Tent.fbx", "Camo.png", vec3(190.0f, 5.0f, 60.0f), vec3(-90.0f, 0.0f, 180.0f), vec3(1.0f, 1.0f, 0.7f), "Tent", "Focusable");
-
-	////Draw armoured cars
-	//BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(20.0f, 0.0f, 60.0f), vec3(0.0f, 140.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), "Car", "Focusable");
-
-	//BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(5.0f, 0.0f, 60.0f), vec3(0.0f, 170.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), "Car", "Focusable");
-
-	//modelSubPath = "ArmouredCar/";
-	///BasicDraw("armoredrecon.fbx", "armoredrecon_diff.png", vec3(-10.0f, -1000000.0f, 0.0f), vec3(0.0f, 40.0f, 0.0f), vec3(1.0f), "Car");
-	*/
-
+	ComplexDraw("Building1.fbx", "building_d.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(20.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	ComplexDraw("Building1.fbx", "building_d.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(50.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	ComplexDraw("Building1.fbx", "building_d.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(80.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	ComplexDraw("Building1.fbx", "building_d.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(110.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	ComplexDraw("Building1.fbx", "building_d.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(140.0f, 4.5f, -40.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
+	ComplexDraw("Building1.fbx", "building_d.png", "building_Tn.png", "building_Ts.png", "building_Th.png", vec3(150.0f, 10.0f, 80.0f), vec3(0.0f, -90.0f, 0.0f), vec3(1.79655f, 0.502816f, 1), "Building");
 #pragma endregion
+
 }
 
 #pragma region Tom - Ambient daylight system.
@@ -1065,7 +1001,7 @@ int main(int argc, char * arg[])
     SDL_Event event;
 
 	//clear console
-	//system("cls");
+	system("cls");
 
     //Game Loop
 	while (running)
