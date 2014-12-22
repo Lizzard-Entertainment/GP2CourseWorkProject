@@ -121,6 +121,18 @@ int gameObjectIndex = 0;
 //Texture
 GLuint fontTexture = 0;
 
+
+// Text Stuff
+
+TTF_Font *font;
+SDL_Surface *message;
+SDL_Texture *text;
+SDL_Rect textRect;
+SDL_Color textColor = { textColor.r = 255, textColor.g = 255, textColor.b = 255 };
+SDL_Renderer* renderer;
+
+
+
 void CheckForErrors()
 {
     GLenum error;
@@ -262,6 +274,27 @@ void setViewport( int width, int height )
     glViewport( 0, 0, ( GLsizei )width, ( GLsizei )height );
 }
 
+//load font
+void loadfont(){
+
+
+
+	font = TTF_OpenFont("Tahoma.ttf" , 20);
+	if (font == NULL)
+	{
+//		
+	}
+
+	int h = WINDOW_HEIGHT;
+	int w = WINDOW_WIDTH;
+
+	message = TTF_RenderText_Solid(font, "This is just a short sentence.", textColor);
+	text = SDL_CreateTextureFromSurface(renderer, message);
+	SDL_QueryTexture(text, NULL, NULL, &w , &h);
+	textRect.x = 50; textRect.y = 50; textRect.w = w; textRect.h = h;
+
+}
+
 void createSkyBox()
 {
 	Vertex triangleData[] = {
@@ -366,6 +399,10 @@ void Initialise()
 
 	//Initialise post-processor
 	postProcessor.init(WINDOW_WIDTH, WINDOW_HEIGHT, vsPath, fsPath);
+
+	//Initialise fonts
+	TTF_Init();
+	
 
 #pragma region Euan
 
@@ -585,6 +622,8 @@ void update()
     }
 
 	Timer();
+
+	loadfont();
 }
 
 
@@ -726,7 +765,7 @@ void render()
 		renderGameObject((*iter));
 	}
 
-	createFontTexture();
+
 
 	//now switch to normal framebuffer
 	postProcessor.preDraw();
@@ -738,8 +777,15 @@ void render()
 	//Post processor draw
 	postProcessor.draw();
 
+	SDL_RenderCopy(renderer, text, NULL, &textRect);
+
+	createFontTexture();
+	SDL_RenderPresent(renderer);
+
 	//Swap buffers and draw to scene.
     SDL_GL_SwapWindow(window);
+
+
 }
 
 #pragma region Euan
